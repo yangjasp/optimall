@@ -81,5 +81,8 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
 
       }
     }
+    else {
+      stop("'method' must be one of 'Neyman' or 'WrightII'")
+    }
   }
 }
