@@ -1,12 +1,19 @@
 Package: optimall
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Allocate Samples Among Strata
 Version: 0.1.0
-Author: Who wrote it
+Authors@R:
+	person(given = "Jasper",
+		family = "Yang",
+		role = c("aut","che")
+		email = "Jasper.Yang@pennmedicine.upenn.edu") 
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
+Depends: 
+	dplyr
+Oxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
