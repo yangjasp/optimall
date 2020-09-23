@@ -3,9 +3,7 @@ Type: Package
 Title: Allocate Samples Among Strata
 Version: 0.1.0
 Authors@R:
-	person(given = "Jasper",
-		family = "Yang",
-		role = c("aut","che")
+	person("Jasper", "Yang", role = c("aut","cre"),
 		email = "Jasper.Yang@pennmedicine.upenn.edu") 
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: More about what it does (maybe more than one line)
