@@ -11,7 +11,7 @@
 #' optimal_allocation(data = iris, strata = "Species", y = "Sepal.Length",
 #' nsample = 100, method = "WrightII")
 #' @export
-#' @reference Wright, T. (2014). A simple method of exact optimal sample allocation under stratification with any mixed constraint patterns. Statistics, 07.
+#' @references Wright, T. (2014). A simple method of exact optimal sample allocation under stratification with any mixed constraint patterns. Statistics, 07.
 #' @return Returns a data frame with the n allocated to each strata or the sampling fractions if nsample is NULL.
 
 optimal_allocation <- function(data, strata, y, nsample = NULL,
