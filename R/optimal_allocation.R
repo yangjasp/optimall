@@ -7,7 +7,7 @@
 #' @param nsample the desired total sample size. Defaults to NULL
 #' @param method a character string specifying the method of optimal sample allocation to use. Must be one of "Neyman" or "WrightII".
 #' @examples
-#' neyman_allocation(data = iris, strata = "Species", y = "Sepal.Length",
+#' optimal_allocation(data = iris, strata = "Species", y = "Sepal.Length",
 #' nsample = 100, method = "WrightII")
 #' @export
 #' @return Returns a data frame with the n allocated to each strata or the sampling fractions if nsample is NULL.
