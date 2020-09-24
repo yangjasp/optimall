@@ -4,7 +4,14 @@
 \alias{optimal_allocation}
 \title{Optimal Allocation}
 \usage{
-optimal_allocation(data, strata, y, nsample = NULL, method = "WrightII")
+optimal_allocation(
+  data,
+  strata,
+  y,
+  nsample = NULL,
+  ndigits = 2,
+  method = "WrightII"
+)
 }
 \arguments{
 \item{data}{A data frame or matrix with one row for each sampled unit, one column specifying each unit's stratum, and one column holding the value of the continuous variable for which the variance should be minimized.}
@@ -15,15 +22,17 @@ optimal_allocation(data, strata, y, nsample = NULL, method = "WrightII")
 
 \item{nsample}{the desired total sample size. Defaults to NULL}
 
+\item{ndigits}{a numeric value specifying the number of digits to round the stratum fraction to.}
+
 \item{method}{a character string specifying the method of optimal sample allocation to use. Must be one of "Neyman" or "WrightII".}
 }
 \value{
 Returns a data frame with the n allocated to each strata or the sampling fractions if nsample is NULL.
 }
 \description{
-Determines the optimal sample size for each stratum in a stratified random sample according to Neyman Allocation or Exact Optimum Sample Allocation (Wright 2012).
+Determines the optimal sampling fraction and sample size for each stratum in a stratified random sample according to Neyman Allocation or Exact Optimum Sample Allocation (Wright 2012).
 }
 \examples{
-neyman_allocation(data = iris, strata = "Species", y = "Sepal.Length",
+optimal_allocation(data = iris, strata = "Species", y = "Sepal.Length",
 nsample = 100, method = "WrightII")
 }
