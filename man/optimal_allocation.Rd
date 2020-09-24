@@ -30,7 +30,7 @@ optimal_allocation(
 Returns a data frame with the n allocated to each strata or the sampling fractions if nsample is NULL.
 }
 \description{
-Determines the optimal sampling fraction and sample size for each stratum in a stratified random sample according to Neyman Allocation or Exact Optimum Sample Allocation (Wright 2012).
+Determines the optimal sampling fraction and sample size for each stratum in a stratified random sample according to Neyman Allocation or Exact Optimum Sample Allocation (Wright 2014).
 }
 \examples{
 optimal_allocation(data = iris, strata = "Species", y = "Sepal.Length",

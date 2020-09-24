@@ -1,6 +1,6 @@
 #' Optimal Allocation
 #'
-#' Determines the optimal sampling fraction and sample size for each stratum in a stratified random sample according to Neyman Allocation or Exact Optimum Sample Allocation (Wright 2012).
+#' Determines the optimal sampling fraction and sample size for each stratum in a stratified random sample according to Neyman Allocation or Exact Optimum Sample Allocation (Wright 2014).
 #' @param data A data frame or matrix with one row for each sampled unit, one column specifying each unit's stratum, and one column holding the value of the continuous variable for which the variance should be minimized.
 #' @param strata a character string specifying the name of column indicating the stratum that each unit belongs to.
 #' @param y a character string specifying the name of the continuous variable for which the variance should be minimized.
