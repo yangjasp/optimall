@@ -36,3 +36,6 @@ Determines the optimal sampling fraction and sample size for each stratum in a s
 optimal_allocation(data = iris, strata = "Species", y = "Sepal.Length",
 nsample = 100, method = "WrightII")
 }
+\references{
+Wright, T. (2014). A simple method of exact optimal sample allocation under stratification with any mixed constraint patterns. Statistics, 07.
+}
