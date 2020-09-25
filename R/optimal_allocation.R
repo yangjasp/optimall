@@ -22,32 +22,36 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
   if (is.data.frame(data) == FALSE) {
     stop("Input data must be a dataframe or matrix with named columns.")
   }
-  else if (strata %in% names(data) == FALSE) {
+  if (all(strata %in% names(data)) == FALSE) {
     stop("'Strata' must be a character string matching a column name of data.")
   }
-  else if (y %in% names(data) == FALSE) {
+  if (y %in% names(data) == FALSE) {
     stop("'y' must be a character string matching a column name of data.")
   }
-  else if (method %in% c("WrightI","WrightII","Ney",
-                         "Neym","Neyma","Neyman") == FALSE)
+  if (any(grepl(method,c("WrightI","WrightII","Neyman"))) == FALSE)
     stop("'Method' must be a character string that matches or partially matches one of 'WrightI','WrightII', or 'Neyman'")
-  else {
-    method <- match.arg(method, c("WrightI","WrightII","Neyman"))
-    output_df <- data %>%
-      dplyr::select(!!sym(strata), !!sym(y))
-    if (sum(is.na(output_df)) >= 1) {
-      stop("Data contains NAs")
-    }
-    if (method == "Neyman"){
-      output_df <- output_df %>%
-        dplyr::group_by(!!sym(strata)) %>%
-        dplyr::summarize(n = n(),
-                         sd = sd(!!sym(y)),
-                         n_sd = sd(!!sym(y)) * n()) %>%
-        dplyr::mutate(stratum_fraction = round(n_sd / sum(n_sd),
-                                                      digits = ndigits),
-                      sd = round(sd, digits = 2),
-                      n_sd = round(n_sd, digits = 2))
+  method <- match.arg(method, c("WrightI","WrightII","Neyman"))
+  y <- enquo(y)
+  strata <- enquo(strata)
+  output_df <- data %>%
+    dplyr::select(!!strata, !!y)
+  group <- interaction(dplyr::select(output_df,-!!y))
+  output_df <- cbind(group,output_df)
+  output_df <- output_df[,c(1,ncol(output_df))] #Only columns of interest
+  names(output_df) <- c("group","y")
+  if (sum(is.na(output_df)) >= 1) {
+    stop("Data contains NAs")
+  }
+  if (method == "Neyman"){
+    output_df <- output_df %>%
+      dplyr::group_by(group) %>%
+      dplyr::summarize(n = n(),
+                       sd = sd(y),
+                       n_sd = sd(y) * n()) %>%
+      dplyr::mutate(stratum_fraction = round(n_sd / sum(n_sd),
+                                                    digits = ndigits),
+                    sd = round(sd, digits = 2),
+                    n_sd = round(n_sd, digits = 2))
       if (is.null(nsample)) {
         return(as.data.frame(output_df))
       }
@@ -65,13 +69,16 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
         stop("This method requires a fixed nsample. Try method = 'Neyman' for exact sampling fractions.")
       }
       else {
-        n_strata <- length(unique(data[,strata]))
+        n_strata <- length(unique(group))
         n_minus_H <- nsample - n_strata
+        if (n_minus_H <= 0){
+          stop("nsample is too small for this method.")
+        }
         output_df <- output_df %>%
-          dplyr::group_by(!!sym(strata)) %>%
+          dplyr::group_by(group) %>%
           dplyr::summarize(n = n(),
-                           sd = sd(!!sym(y)),
-                           n_sd = sd(!!sym(y)) * n())
+                           sd = sd(y),
+                           n_sd = sd(y) * n())
         priority_array <- list()
         for (i in 1:n_strata){
           priority_array[[i]] <- rep(output_df[i,"n_sd"],times = n_minus_H)
@@ -88,13 +95,13 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
         cutoff <- (sort(unlist(Wright_output, use.names = FALSE),
                         decreasing = T))[n_minus_H]
         stratum_size <- rowSums(Wright_output >= cutoff) + 1
-        final_output <- cbind(output_df[,c(strata,"n","sd","n_sd")], stratum_size)
+        final_output <- cbind(output_df[,c("group","n","sd","n_sd")], stratum_size)
         final_output <- final_output %>%
           dplyr::mutate(stratum_fraction = round(stratum_size / nsample,
                                                  digits = ndigits),
                         sd = round(sd, digits = 2),
                         n_sd = round(n_sd, digits = 2))
-        final_output <- final_output[c(strata,"n","sd","n_sd","stratum_fraction","stratum_size")]
+        final_output <- final_output[c("group","n","sd","n_sd","stratum_fraction","stratum_size")]
         return(final_output)
 
       }
@@ -104,15 +111,16 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
         stop("This method requires a fixed nsample. Try method = 'Neyman' for exact sampling fractions.")
       }
       else {
-        n_strata <- length(unique(data[,strata]))
+        n_strata <- length(unique(group))
         n_minus_2H <- nsample - 2*n_strata
+        if (n_minus_2H <= 0){
+          stop("nsample is too small for this method.")
+        }
         output_df <- output_df %>%
-          dplyr::group_by(!!sym(strata)) %>%
+          dplyr::group_by(group) %>%
           dplyr::summarize(n = n(),
-                           sd = sd(!!sym(y)),
-                           n_sd = sd(!!sym(y)) * n())
-        #priority_array <- matrix(0,nrow = n_strata,ncol = n_minus_2H,
-        #dimnames = list(unique()))
+                           sd = sd(y),
+                           n_sd = sd(y) * n())
         priority_array <- list()
         for (i in 1:n_strata){
           priority_array[[i]] <- rep(output_df[i,"n_sd"],times = n_minus_2H)
@@ -129,16 +137,18 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
         cutoff <- (sort(unlist(Wright_output, use.names = FALSE),
                         decreasing = T))[n_minus_2H]
         stratum_size <- rowSums(Wright_output >= cutoff) + 2
-        final_output <- cbind(output_df[,c(strata,"n","sd","n_sd")], stratum_size)
+        final_output <- cbind(output_df[,c("group","n","sd","n_sd")], stratum_size)
         final_output <- final_output %>%
           dplyr::mutate(stratum_fraction = round(stratum_size / nsample,
                                                         digits = ndigits),
                         sd = round(sd, digits = 2),
                         n_sd = round(n_sd, digits = 2))
-        final_output <- final_output[c(strata,"n","sd","n_sd","stratum_fraction","stratum_size")]
+        final_output <- final_output[c("group","n","sd","n_sd","stratum_fraction","stratum_size")]
         return(final_output)
 
       }
     }
-  }
+    else {
+      stop("'Method' must be a character string that matches or partially matches one of 'WrightI','WrightII', or 'Neyman'")
+    }
 }
