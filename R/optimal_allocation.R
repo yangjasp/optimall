@@ -23,13 +23,13 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
     stop("Input data must be a dataframe or matrix with named columns.")
   }
   if (all(strata %in% names(data)) == FALSE) {
-    stop("'Strata' must be a character string matching a column name of data.")
+    stop("'Strata' must be a string or vector of strings matching column names of data.")
   }
   if (y %in% names(data) == FALSE) {
     stop("'y' must be a character string matching a column name of data.")
   }
   if (any(grepl(method,c("WrightI","WrightII","Neyman"))) == FALSE)
-    stop("'Method' must be a character string that matches or partially matches one of 'WrightI','WrightII', or 'Neyman'")
+    stop("'Method' must be a character string that matches or partially matches one of 'WrightI','WrightII', or 'Neyman'.")
   method <- match.arg(method, c("WrightI","WrightII","Neyman"))
   y <- enquo(y)
   strata <- enquo(strata)
@@ -149,6 +149,6 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
       }
     }
     else {
-      stop("'Method' must be a character string that matches or partially matches one of 'WrightI','WrightII', or 'Neyman'")
+      stop("'Method' must be a character string that matches or partially matches one of 'WrightI','WrightII', or 'Neyman'.")
     }
 }
