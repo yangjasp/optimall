@@ -2,10 +2,10 @@
 #'
 #' Determines the optimal sampling fraction and sample size for each stratum in a stratified random sample according to Neyman Allocation or Exact Optimum Sample Allocation (Wright 2014).
 #' @param data A data frame or matrix with one row for each sampled unit, one column specifying each unit's stratum, and one column holding the value of the continuous variable for which the variance should be minimized.
-#' @param strata a character string specifying the name of column indicating the stratum that each unit belongs to.
+#' @param strata a character string or vector of character strings specifying the name of columns which indicate the stratum that each unit belongs to.
 #' @param y a character string specifying the name of the continuous variable for which the variance should be minimized.
 #' @param nsample the desired total sample size. Defaults to NULL
-#' @param method a character string specifying the method of optimal sample allocation to use. Must be one of "Neyman" or "WrightII".
+#' @param method a character string specifying the method of optimal sample allocation to use. Must be one of "Neyman", "WrightI" or "WrightII". Defaults to "WrightII".
 #' @param ndigits a numeric value specifying the number of digits to round the stratum fraction to.
 #' @examples
 #' optimal_allocation(data = iris, strata = "Species", y = "Sepal.Length",
@@ -28,7 +28,11 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
   else if (y %in% names(data) == FALSE) {
     stop("'y' must be a character string matching a column name of data.")
   }
+  else if (method %in% c("WrightI","WrightII","Ney",
+                         "Neym","Neyma","Neyman") == FALSE)
+    stop("'Method' must be a character string that matches or partially matches one of 'WrightI','WrightII', or 'Neyman'")
   else {
+    method <- match.arg(method, c("WrightI","WrightII","Neyman"))
     output_df <- data %>%
       dplyr::select(!!sym(strata), !!sym(y))
     if (sum(is.na(output_df)) >= 1) {
@@ -40,7 +44,8 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
         dplyr::summarize(n = n(),
                          sd = sd(!!sym(y)),
                          n_sd = sd(!!sym(y)) * n()) %>%
-        dplyr::mutate(stratum_fraction = round(n_sd / sum(n_sd), digits = ndigits),
+        dplyr::mutate(stratum_fraction = round(n_sd / sum(n_sd),
+                                                      digits = ndigits),
                       sd = round(sd, digits = 2),
                       n_sd = round(n_sd, digits = 2))
       if (is.null(nsample)) {
@@ -55,9 +60,48 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
         return(as.data.frame(output_df))
       }
     }
+    else if (method == "WrightI"){
+      if (is.null(nsample)){
+        stop("This method requires a fixed nsample. Try method = 'Neyman' for exact sampling fractions.")
+      }
+      else {
+        n_strata <- length(unique(data[,strata]))
+        n_minus_H <- nsample - n_strata
+        output_df <- output_df %>%
+          dplyr::group_by(!!sym(strata)) %>%
+          dplyr::summarize(n = n(),
+                           sd = sd(!!sym(y)),
+                           n_sd = sd(!!sym(y)) * n())
+        priority_array <- list()
+        for (i in 1:n_strata){
+          priority_array[[i]] <- rep(output_df[i,"n_sd"],times = n_minus_H)
+          names(priority_array)[[i]] <- paste0("n_sd",as.character(i))
+        }
+        suppressMessages(Wright_output <- bind_rows(priority_array))
+        mult_vec <- vector()
+        for (i in 1:(n_minus_H+1)){
+          mult_vec[i] <- 1/(sqrt(i*(i+1)))
+        }
+        for (i in 1:ncol(Wright_output)){
+          Wright_output[,i] <- Wright_output[,i]*mult_vec[i]
+        }
+        cutoff <- (sort(unlist(Wright_output, use.names = FALSE),
+                        decreasing = T))[n_minus_H]
+        stratum_size <- rowSums(Wright_output >= cutoff) + 1
+        final_output <- cbind(output_df[,c(strata,"n","sd","n_sd")], stratum_size)
+        final_output <- final_output %>%
+          dplyr::mutate(stratum_fraction = round(stratum_size / nsample,
+                                                 digits = ndigits),
+                        sd = round(sd, digits = 2),
+                        n_sd = round(n_sd, digits = 2))
+        final_output <- final_output[c(strata,"n","sd","n_sd","stratum_fraction","stratum_size")]
+        return(final_output)
+
+      }
+    }
     else if (method == "WrightII"){
       if (is.null(nsample)){
-        stop("This method requires a fixed nsample. Try method = 'Neyman'.")
+        stop("This method requires a fixed nsample. Try method = 'Neyman' for exact sampling fractions.")
       }
       else {
         n_strata <- length(unique(data[,strata]))
@@ -88,16 +132,13 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
         final_output <- cbind(output_df[,c(strata,"n","sd","n_sd")], stratum_size)
         final_output <- final_output %>%
           dplyr::mutate(stratum_fraction = round(stratum_size / nsample,
-                                                 digits = ndigits),
+                                                        digits = ndigits),
                         sd = round(sd, digits = 2),
                         n_sd = round(n_sd, digits = 2))
         final_output <- final_output[c(strata,"n","sd","n_sd","stratum_fraction","stratum_size")]
         return(final_output)
 
       }
-    }
-    else {
-      stop("'method' must be one of 'Neyman' or 'WrightII'")
     }
   }
 }
