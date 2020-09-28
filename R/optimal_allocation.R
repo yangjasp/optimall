@@ -39,6 +39,9 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
   output_df <- cbind(group,output_df)
   output_df <- output_df[,c(1,ncol(output_df))] #Only columns of interest
   names(output_df) <- c("group","y")
+  if (min(dplyr::count(output_df,group)[,"n"]) < 2){
+    stop("Function requires at least two observations per stratum")
+  }
   if (sum(is.na(output_df)) >= 1) {
     stop("Data contains NAs")
   }
