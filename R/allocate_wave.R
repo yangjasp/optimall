@@ -56,9 +56,10 @@ allocate_wave <- function(data, strata, y, key, n){
   if(all(comp_df$difference >= 0) & all(comp_df$n_avail > comp_df$difference)){
     comp_df <- comp_df %>%
       dplyr::rename(n_optimal = stratum_size,
-             n_already_sampled = wave1_size,
-             n_sample = difference) %>%
-      dplyr::select(group, n, n_optimal, n_already_sampled, n_sample)
+             nsample_prior = wave1_size,
+             nsample = difference) %>%
+      dplyr::mutate(nsample_total = nsample_prior + nsample)
+      dplyr::select(group, n, nsample_total, nsample_prior, nsample)
     return(comp_df)
   }
   if(any(comp_df$difference <0)){
@@ -77,15 +78,17 @@ allocate_wave <- function(data, strata, y, key, n){
 
     open_output <- open_output %>%
       dplyr::rename(n_optimal = stratum_size,
-                    n_already_sampled = wave1_size) %>%
-      dplyr::mutate(n_sample = difference) %>%
-      dplyr::select(group, n, n_already_sampled, n_sample)
+                    nsample_prior = wave1_size) %>%
+      dplyr::mutate(nsample = difference,
+                    nsample_total = nsample_prior + nsample) %>%
+      dplyr::select(group, n, nsample_total, nsample_prior, nsample)
 
     closed_output <- temp %>%
       dplyr::rename(n_optimal = stratum_size,
-                    n_already_sampled = wave1_size) %>%
-      dplyr::mutate(n_sample = 0) %>%
-      dplyr::select(group, n, n_already_sampled, n_sample)
+                    nsample_prior = wave1_size) %>%
+      dplyr::mutate(nsample = 0,
+                    nsample_total = nsample_prior) %>%
+      dplyr::select(group, n, nsample_total, nsample_prior, nsample)
 
     output_df <- rbind(closed_output, open_output)
     return(output_df)
