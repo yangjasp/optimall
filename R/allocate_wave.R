@@ -71,7 +71,7 @@ allocate_wave <- function(data, strata, y, key, n){
     open_groups <- dplyr::filter(comp_df, difference > 0)$group
     open_df <- wave1_df %>%
       filter(group %in% open_groups)
-    open_output <- optimall::optimal_allocation(data = open_df, strata = "group",y = "y", nsample = n + nsampled - nsampled_in_closed_groups)
+    open_output <- optimall::optimal_allocation(data = open_df, strata = "group",y = "y", nsample = n + nsampled - nsampled_in_closed_groups, allow.na = T)
     names(open_output)[1] <- "group"
     open_output <- dplyr::inner_join(open_output, wave1_summary, by = "group")
     open_output <- dplyr::mutate(open_output, difference =  stratum_size - wave1_size, n_avail = n - wave1_size)
