@@ -6,10 +6,11 @@
 #' @param y a character string specifying the name of the continuous variable for which the variance should be minimized.
 #' @param wave2a a character string specifying the name of a column that contains a binary (Y/N or 1/0) indicator specifying whether each unit has already been sampled in a previous wave.
 #' @param n The desired sample size of the next wave.
+#' @param method a character string specifying the method to be used if at least one group was oversampled. Must be one of "simple" or "iterative". Defaults to simple.
 #' @export
 #' @return Returns a dataframe with the n allocated to each strata for the next sampling wave.
 
-allocate_wave <- function(data, strata, y, wave2a, n){
+allocate_wave <- function(data, strata, y, wave2a, n, method = "simple"){
   if (is.matrix(data)) {
     data <- data.frame(data)
     }
@@ -31,6 +32,7 @@ allocate_wave <- function(data, strata, y, wave2a, n){
   if (("Y" %in% data[,wave2a] == FALSE & 1 %in% data[,wave2a] == FALSE) | any(is.na(data[,wave2a]))){
     stop("'wave2a' column must contain '1' (numeric) or 'Y' (string) as indicators that a unit was sampled in a previous wave and cannot contain NAs")
   }
+  method <- match.arg(method, c("simple","iterative"))
  # Find the total sample size and optimally allocate that
   nsampled <- sum(data[,wave2a] == "Y" | data[,wave2a] == 1)
   output1 <- optimall::optimal_allocation(data = data, strata = strata, y = y, nsample = n + nsampled, allow.na = TRUE) #Optimal for total sample size
@@ -67,7 +69,7 @@ allocate_wave <- function(data, strata, y, wave2a, n){
   }
 
   #If some Strata have been oversampled. Basic, non-iterative method.
-  if(any(comp_df$difference <0)){
+  if(any(comp_df$difference <0) & method == "simple"){
     temp <- dplyr::filter(comp_df, difference <= 0)
     n_oversampled <- -sum(temp$difference)
     closed_groups <- (temp$group)
@@ -98,5 +100,50 @@ allocate_wave <- function(data, strata, y, wave2a, n){
     output_df <- rbind(closed_output, open_output)
     return(output_df)
   }
+  #Now, iterative method
 
+  if(any(comp_df$difference <0) & method == "iterative"){
+    closed_groups_df <- data.frame()
+
+    while (any(comp_df$difference < 0)){
+    #Find most oversampled group. Add that group to the closed strata.
+    closed_groups_df <- rbind(closed_groups_df, dplyr::filter(comp_df, difference == min(difference)))
+    nsampled_in_closed_groups <- sum(closed_groups_df$wave1_size)
+    closed_groups <- (closed_groups_df$group)
+
+    #Filter comp_df, remove the smallest group
+    open_groups_names <- dplyr::filter(comp_df, difference != min(difference))$group
+    open_df <- wave1_df %>%
+      dplyr::filter(group %in% open_groups_names)
+
+    #Run optimal allocation on this filtered df of open groups
+    outputn <- optimall::optimal_allocation(data = open_df, strata = "group",y = "y", nsample = n + nsampled - nsampled_in_closed_groups, allow.na = T)
+
+    #Re-join with (cleaned) input data to  get new differences
+    names(outputn)[1] <- "group"
+    comp_df <- dplyr::inner_join(outputn, wave1_summary, by = "group")
+    comp_df <- dplyr::mutate(comp_df, difference =  stratum_size - wave1_size,
+                             n_avail = n - wave1_size)
+
+    }
+    open_output <- comp_df %>%
+      dplyr::rename(n_optimal = stratum_size,
+                    nsample_prior = wave1_size) %>%
+      dplyr::mutate(nsample = difference,
+                    nsample_total = nsample_prior + nsample) %>%
+      dplyr::select(group, n, nsample_total, nsample_prior, nsample)
+
+    closed_output <- closed_groups_df %>%
+      dplyr::rename(n_optimal = stratum_size,
+                    nsample_prior = wave1_size) %>%
+      dplyr::mutate(nsample = 0,
+                    nsample_total = nsample_prior) %>%
+      dplyr::select(group, n, nsample_total, nsample_prior, nsample)
+
+    output_df <- rbind(closed_output, open_output)
+    return(output_df)
+  }
+  else {
+    stop("'Method' must be a character string that matches or partially matches one of 'simple' or 'iterative'.")
+  }
 }
