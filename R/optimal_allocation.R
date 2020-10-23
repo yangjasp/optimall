@@ -7,6 +7,7 @@
 #' @param nsample the desired total sample size. Defaults to NULL
 #' @param method a character string specifying the method of optimal sample allocation to use. Must be one of "Neyman", "WrightI" or "WrightII". Defaults to "WrightII".
 #' @param ndigits a numeric value specifying the number of digits to round the stratum fraction to.
+#' @param allow.na logical input specifying whether y should be allowed to have NA values. Defaults to FALSE
 #' @examples
 #' optimal_allocation(data = iris, strata = "Species", y = "Sepal.Length",
 #' nsample = 100, method = "WrightII")
@@ -15,7 +16,7 @@
 #' @return Returns a data frame with the n allocated to each strata or the sampling fractions if nsample is NULL.
 
 optimal_allocation <- function(data, strata, y, nsample = NULL,
-                               ndigits = 2, method = "WrightII") {
+                               ndigits = 2, method = "WrightII", allow.na = FALSE) {
   if (is.matrix(data)) {
     data <- data.frame(data)
   }
@@ -24,6 +25,9 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
   }
   if (all(strata %in% names(data)) == FALSE) {
     stop("'Strata' must be a string or vector of strings matching column names of data.")
+  }
+  if (any(is.na(data[,strata]))) {
+    stop("Columns specifying strata contain NAs")
   }
   if (y %in% names(data) == FALSE) {
     stop("'y' must be a character string matching a column name of data.")
@@ -42,15 +46,15 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
   if (min(dplyr::count(output_df,group)[,"n"]) < 2){
     stop("Function requires at least two observations per stratum")
   }
-  if (sum(is.na(output_df)) >= 1) {
-    stop("Data contains NAs")
+  if (allow.na == FALSE & sum(is.na(output_df)) >= 1) {
+    stop("Data contains NAs. If this is intentional, set allow.na to TRUE.")
   }
   if (method == "Neyman"){
     output_df <- output_df %>%
       dplyr::group_by(group) %>%
       dplyr::summarize(n = n(),
-                       sd = sd(y),
-                       n_sd = sd(y) * n()) %>%
+                       sd = sd(y, na.rm = T),
+                       n_sd = sd(y, na.rm = T) * n()) %>%
       dplyr::mutate(stratum_fraction = round(n_sd / sum(n_sd),
                                                     digits = ndigits),
                     sd = round(sd, digits = 2),
@@ -80,8 +84,8 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
         output_df <- output_df %>%
           dplyr::group_by(group) %>%
           dplyr::summarize(n = n(),
-                           sd = sd(y),
-                           n_sd = sd(y) * n())
+                           sd = sd(y, na.rm = T),
+                           n_sd = sd(y, na.rm = T) * n())
         priority_array <- list()
         for (i in 1:n_strata){
           priority_array[[i]] <- rep(output_df[i,"n_sd"],times = n_minus_H)
@@ -122,8 +126,8 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
         output_df <- output_df %>%
           dplyr::group_by(group) %>%
           dplyr::summarize(n = n(),
-                           sd = sd(y),
-                           n_sd = sd(y) * n())
+                           sd = sd(y, na.rm = T),
+                           n_sd = sd(y, na.rm = T) * n())
         priority_array <- list()
         for (i in 1:n_strata){
           priority_array[[i]] <- rep(output_df[i,"n_sd"],times = n_minus_2H)
