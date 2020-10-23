@@ -22,23 +22,23 @@ allocate_wave <- function(data, strata, y, wave2a, n){
   if (y %in% names(data) == FALSE) {
     stop("'y' must be a character string matching a column name of data.")
   }
-  if (key %in% names(data) == FALSE) {
-    stop("'key' must be a character string matching a column name of data.")
+  if (wave2a %in% names(data) == FALSE) {
+    stop("'wave2a' must be a character string matching a column name of data.")
   }
-  if (length(table(data[,key])) != 2) {
-    stop("'key' must be a character string matching a column in 'data' that has a binary indicator for whether each unit was already sampled.")
+  if (length(table(data[,wave2a])) != 2) {
+    stop("'wave2a' must be a character string matching a column in 'data' that has a binary indicator for whether each unit was already sampled.")
   }
-  if (("Y" %in% data[,key] == FALSE & 1 %in% data[,key] == FALSE) | any(is.na(data[,key]))){
-    stop("'key' column must contain '1' (numeric) or 'Y' (string) as indicators that a unit was sampled in a previous wave and cannot contain NAs")
+  if (("Y" %in% data[,wave2a] == FALSE & 1 %in% data[,wave2a] == FALSE) | any(is.na(data[,wave2a]))){
+    stop("'wave2a' column must contain '1' (numeric) or 'Y' (string) as indicators that a unit was sampled in a previous wave and cannot contain NAs")
   }
  # Find the total sample size and optimally allocate that
-  nsampled <- sum(data[,key] == "Y" | data[,key] == 1)
+  nsampled <- sum(data[,wave2a] == "Y" | data[,wave2a] == 1)
   output1 <- optimall::optimal_allocation(data = data, strata = strata, y = y, nsample = n + nsampled, allow.na = TRUE) #Optimal for total sample size
 
  #Create groups from strata argument and determine the prior sample size for each
   y <- enquo(y)
   strata <- enquo(strata)
-  key_q <- enquo(key)
+  key_q <- enquo(wave2a)
   wave1_df <- data %>%
     dplyr::select(!!strata, !!y, !!key_q)
   group <- interaction(dplyr::select(wave1_df, !!strata))
