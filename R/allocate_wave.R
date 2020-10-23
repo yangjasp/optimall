@@ -32,7 +32,7 @@ allocate_wave <- function(data, strata, y, key, n){
     stop("'key' column must contain '1' (numeric) or 'Y' (string) as indicators that a unit was sampled in a previous wave and cannot contain NAs")
   }
   nsampled <- sum(data[,key] == "Y" | data[,key] == 1)
-  output1 <- optimall::optimal_allocation(data = data, strata = strata, y = y, nsample = n + nsampled) #Optimal for total sample size
+  output1 <- optimall::optimal_allocation(data = data, strata = strata, y = y, nsample = n + nsampled, allow.na = TRUE) #Optimal for total sample size
 
   y <- enquo(y)
   strata <- enquo(strata)
