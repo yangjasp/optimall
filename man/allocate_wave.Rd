@@ -13,7 +13,7 @@ allocate_wave(data, strata, y, wave2a, n)
 
 \item{y}{a character string specifying the name of the continuous variable for which the variance should be minimized.}
 
-\item{wave2a}{a character string specifying the name of the column that contains the binary (Y/N or 1/0) indicator specifying whether each unit has already been sampled/verfified in a previous wave.}
+\item{wave2a}{a character string specifying the name of a column that contains a binary (Y/N or 1/0) indicator specifying whether each unit has already been sampled in a previous wave.}
 
 \item{n}{The desired sample size of the next wave.}
 }
@@ -21,5 +21,5 @@ allocate_wave(data, strata, y, wave2a, n)
 Returns a dataframe with the n allocated to each strata for the next sampling wave.
 }
 \description{
-Determines the optimal sampling allocation for a new sampling wave based on results  or verification from previous waves.
+Determines the optimal sampling allocation for a new sampling wave based on results from previous waves.
 }

@@ -1,10 +1,10 @@
 #' Adaptive Multi-Wave Sampling
 #'
-#' Determines the optimal sampling allocation for a new sampling wave based on results  or verification from previous waves.
+#' Determines the optimal sampling allocation for a new sampling wave based on results from previous waves.
 #' @param data A data frame or matrix with one row for each sampling unit, one column specifying each unit's stratum, one column holding the value of the continuous variable for which the variance should be minimized, and one column containing a key specifying if each unit has already been sampled.
 #' @param strata a character string or vector of character strings specifying the name of columns which indicate the stratum that each unit belongs to.
 #' @param y a character string specifying the name of the continuous variable for which the variance should be minimized.
-#' @param wave2a a character string specifying the name of the column that contains the binary (Y/N or 1/0) indicator specifying whether each unit has already been sampled/verfified in a previous wave.
+#' @param wave2a a character string specifying the name of a column that contains a binary (Y/N or 1/0) indicator specifying whether each unit has already been sampled in a previous wave.
 #' @param n The desired sample size of the next wave.
 #' @export
 #' @return Returns a dataframe with the n allocated to each strata for the next sampling wave.
