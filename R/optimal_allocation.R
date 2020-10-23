@@ -32,8 +32,6 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
   if (y %in% names(data) == FALSE) {
     stop("'y' must be a character string matching a column name of data.")
   }
-  if (any(grepl(method,c("WrightI","WrightII","Neyman"))) == FALSE)
-    stop("'Method' must be a character string that matches or partially matches one of 'WrightI','WrightII', or 'Neyman'.")
   method <- match.arg(method, c("WrightI","WrightII","Neyman"))
   y <- enquo(y)
   strata <- enquo(strata)
