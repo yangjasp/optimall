@@ -4,16 +4,16 @@
 \alias{allocate_wave}
 \title{Adaptive Multi-Wave Sampling}
 \usage{
-allocate_wave(data, strata, y, key, n)
+allocate_wave(data, strata, y, wave2a, n)
 }
 \arguments{
-\item{data}{A data frame or matrix with one row for each sampled unit, one column specifying each unit's stratum, one column holding the value of the continuous variable for which the variance should be minimized, and one column containing a key specifying if that unit has already been sampled.}
+\item{data}{A data frame or matrix with one row for each sampling unit, one column specifying each unit's stratum, one column holding the value of the continuous variable for which the variance should be minimized, and one column containing a key specifying if each unit has already been sampled.}
 
 \item{strata}{a character string or vector of character strings specifying the name of columns which indicate the stratum that each unit belongs to.}
 
 \item{y}{a character string specifying the name of the continuous variable for which the variance should be minimized.}
 
-\item{key}{a character string specifying the name of the column that contains the binary (Y/N or 1/0) indicator specifying if each unit has already been sampled.}
+\item{wave2a}{a character string specifying the name of the column that contains the binary (Y/N or 1/0) indicator specifying whether each unit has already been sampled/verfified in a previous wave.}
 
 \item{n}{The desired sample size of the next wave.}
 }
@@ -21,5 +21,5 @@ allocate_wave(data, strata, y, key, n)
 Returns a dataframe with the n allocated to each strata for the next sampling wave.
 }
 \description{
-Determines the optimal sampling allocation for a new sampling wave based on results from previous waves.
+Determines the optimal sampling allocation for a new sampling wave based on results  or verification from previous waves.
 }

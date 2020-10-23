@@ -1,15 +1,15 @@
 #' Adaptive Multi-Wave Sampling
 #'
-#' Determines the optimal sampling allocation for a new sampling wave based on results from previous waves.
-#' @param data A data frame or matrix with one row for each sampled unit, one column specifying each unit's stratum, one column holding the value of the continuous variable for which the variance should be minimized, and one column containing a key specifying if that unit has already been sampled.
+#' Determines the optimal sampling allocation for a new sampling wave based on results  or verification from previous waves.
+#' @param data A data frame or matrix with one row for each sampling unit, one column specifying each unit's stratum, one column holding the value of the continuous variable for which the variance should be minimized, and one column containing a key specifying if each unit has already been sampled.
 #' @param strata a character string or vector of character strings specifying the name of columns which indicate the stratum that each unit belongs to.
 #' @param y a character string specifying the name of the continuous variable for which the variance should be minimized.
-#' @param key a character string specifying the name of the column that contains the binary (Y/N or 1/0) indicator specifying if each unit has already been sampled.
+#' @param wave2a a character string specifying the name of the column that contains the binary (Y/N or 1/0) indicator specifying whether each unit has already been sampled/verfified in a previous wave.
 #' @param n The desired sample size of the next wave.
 #' @export
 #' @return Returns a dataframe with the n allocated to each strata for the next sampling wave.
 
-allocate_wave <- function(data, strata, y, key, n){
+allocate_wave <- function(data, strata, y, wave2a, n){
   if (is.matrix(data)) {
     data <- data.frame(data)
     }
@@ -31,9 +31,11 @@ allocate_wave <- function(data, strata, y, key, n){
   if (("Y" %in% data[,key] == FALSE & 1 %in% data[,key] == FALSE) | any(is.na(data[,key]))){
     stop("'key' column must contain '1' (numeric) or 'Y' (string) as indicators that a unit was sampled in a previous wave and cannot contain NAs")
   }
+ # Find the total sample size and optimally allocate that
   nsampled <- sum(data[,key] == "Y" | data[,key] == 1)
   output1 <- optimall::optimal_allocation(data = data, strata = strata, y = y, nsample = n + nsampled, allow.na = TRUE) #Optimal for total sample size
 
+ #Create groups from strata argument and determine the prior sample size for each
   y <- enquo(y)
   strata <- enquo(strata)
   key_q <- enquo(key)
@@ -53,6 +55,7 @@ allocate_wave <- function(data, strata, y, key, n){
   comp_df <- dplyr::mutate(comp_df, difference =  stratum_size - wave1_size,
                     n_avail = n - wave1_size)
 
+ #For the simple case in which no strata have been oversampled
   if(all(comp_df$difference >= 0) & all(comp_df$n_avail > comp_df$difference)){
     comp_df <- comp_df %>%
       dplyr::rename(n_optimal = stratum_size,
@@ -62,6 +65,8 @@ allocate_wave <- function(data, strata, y, key, n){
       dplyr::select(group, n, nsample_total, nsample_prior, nsample)
     return(comp_df)
   }
+
+  #If some Strata have been oversampled. Basic, non-iterative method.
   if(any(comp_df$difference <0)){
     temp <- dplyr::filter(comp_df, difference <= 0)
     n_oversampled <- -sum(temp$difference)
