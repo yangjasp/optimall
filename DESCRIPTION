@@ -5,13 +5,14 @@ Version: 0.1.0
 Authors@R:
 	person("Jasper", "Yang", role = c("aut","cre"),
 		email = "Jasper.Yang@pennmedicine.upenn.edu") 
-Maintainer: The package maintainer <yourself@somewhere.net>
+Maintainer: Jasper Yang <YangJas@pennmedicine.upenn.edu>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
 Depends: 
-	dplyr
+	dplyr,
+	stats
 Oxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
