@@ -12,7 +12,7 @@
 #' @return returns the input dataframe with a new column named 'new_strata' that holds the name of the stratum that each sample belongs to after the split.
 
 
-split_strata <- function(data, y, strata, split = NULL, split_var, type = "global quantile", split_at = .5 ){
+split_strata <- function(data, strata, split = NULL, split_var, type = "global quantile", split_at = .5 ){
   if(is.matrix(data)){
     data <- as.data.frame(data)
   }
@@ -41,11 +41,11 @@ split_strata <- function(data, y, strata, split = NULL, split_var, type = "globa
       stop("'split_var' must be a column of 'data' holding numeric values. If you want to split on a categorical variable, use type = 'categorical'." )
     }
     if (type == "global quantile" | (is.null(split) & type == "local quantile")){
-      cut_point <- sort(stats::quantile(data[,"split_variable"],
-                                        split_at)) #Find cut points
+      cut_point <- round(sort(stats::quantile(data[,"split_variable"],
+                                        split_at)), digits = 2) #Find cut points
     }
     if (type == "local quantile" & is.null(split) == FALSE){
-      cut_point <- sort(stats::quantile(data[data$old_strata == split,"split_variable"],split_at))
+      cut_point <- round(sort(stats::quantile(data[data$old_strata == split,"split_variable"],split_at)), digits = 2)
 
     }
     if (type == "value"){
@@ -73,14 +73,16 @@ split_strata <- function(data, y, strata, split = NULL, split_var, type = "globa
       data_filtered <- data_filtered %>%
         dplyr::mutate(split_var_updated = ifelse(split_variable < cut_point[1],
                                                  paste(split_var,
-                                                       paste("[",min(data$split_var), ",",cut_point[1],"]", sep = ""),
+                                                       paste("[",round(min(data$split_var), digits = 2), ",",cut_point[1],"]", sep = ""),
                                                        sep = "_"),
                                                  paste(split_var,
                                                        paste("(",cut_point[1], ",",max(data$split_var),"]", sep = ""),
                                                        sep = "_")))
     }
     if (length(cut_point) >1){
-      cut_point <- c(min(data$split_var),cut_point,max(data$split_var))
+      cut_point <- c(round(min(data$split_var), digits = 2),
+                     cut_point,
+                     round(max(data$split_var),digits = 2))
       data_filtered$split_var_updated <- data_filtered$split_var
       for (i in 2:length(cut_point)) {
         data_filtered <- data_filtered %>%

@@ -6,7 +6,6 @@
 \usage{
 split_strata(
   data,
-  y,
   strata,
   split = NULL,
   split_var,
