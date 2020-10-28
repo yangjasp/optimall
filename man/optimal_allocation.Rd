@@ -21,13 +21,13 @@ optimal_allocation(
 
 \item{y}{a character string specifying the name of the continuous variable for which the variance should be minimized.}
 
-\item{nsample}{the desired total sample size. Defaults to NULL}
+\item{nsample}{the desired total sample size. Defaults to NULL.}
 
 \item{ndigits}{a numeric value specifying the number of digits to round the stratum fraction to.}
 
 \item{method}{a character string specifying the method of optimal sample allocation to use. Must be one of "Neyman", "WrightI" or "WrightII". Defaults to "WrightII".}
 
-\item{allow.na}{logical input specifying whether y should be allowed to have NA values. Defaults to FALSE}
+\item{allow.na}{logical input specifying whether y should be allowed to have NA values. Defaults to FALSE.}
 }
 \value{
 Returns a data frame with the n allocated to each strata or the sampling fractions if nsample is NULL.

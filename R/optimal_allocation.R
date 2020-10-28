@@ -4,10 +4,10 @@
 #' @param data A data frame or matrix with one row for each sampled unit, one column specifying each unit's stratum, and one column holding the value of the continuous variable for which the variance should be minimized.
 #' @param strata a character string or vector of character strings specifying the name of columns which indicate the stratum that each unit belongs to.
 #' @param y a character string specifying the name of the continuous variable for which the variance should be minimized.
-#' @param nsample the desired total sample size. Defaults to NULL
+#' @param nsample the desired total sample size. Defaults to NULL.
 #' @param method a character string specifying the method of optimal sample allocation to use. Must be one of "Neyman", "WrightI" or "WrightII". Defaults to "WrightII".
 #' @param ndigits a numeric value specifying the number of digits to round the stratum fraction to.
-#' @param allow.na logical input specifying whether y should be allowed to have NA values. Defaults to FALSE
+#' @param allow.na logical input specifying whether y should be allowed to have NA values. Defaults to FALSE.
 #' @examples
 #' optimal_allocation(data = iris, strata = "Species", y = "Sepal.Length",
 #' nsample = 100, method = "WrightII")
