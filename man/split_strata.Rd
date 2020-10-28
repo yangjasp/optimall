@@ -4,13 +4,33 @@
 \alias{split_strata}
 \title{Split Strata}
 \usage{
-split_strata(data, y, strata, split, split_perc = 0.5)
+split_strata(
+  data,
+  y,
+  strata,
+  split = NULL,
+  split_var,
+  type = "global quantile",
+  split_at = 0.5
+)
 }
 \arguments{
-\item{strata}{a character string or vector of character strings specifying the columns that are being used to create the strata, leaving out the column that should be split.}
+\item{data}{a dataframe or matrix with one row for each sampling unit, one column specifying each unit's current stratum, one column containing the continuous or categorical values that will define the split, and any other relevant columns.}
 
-\item{split}{a character string specifying the column to split on.}
+\item{strata}{a character string specifying the name of the column that defines each unit's current strata.}
+
+\item{split}{the name of the stratum to be split, exactly as it appears in `strata`. Defaults to NULL, which indicates that all strata in `strata` will be split.}
+
+\item{type}{a character string specifying how the function should interpret the `split_at` argument. Must be one of "global quantile", "local quantile", "value", or "categorical". Defaults to "global quantile".}
+
+\item{split_at}{the percentile, value, or name(s) which `split_var` should be split at. Defaults to 0.5.}
+}
+\value{
+returns the input dataframe with a new column named 'new_strata' that holds the name of the stratum that each sample belongs to after the split.
 }
 \description{
-Splits strata
+Splits pre-defined sampling strata into smaller ones based on values of a continuous or categorical variable.
+}
+\examples{
+x <- split_strata(iris, "Sepal.Length", strata = c("Species"),split = "setosa", split_var = "Sepal.Width", split_at = c(0.5), type = "global quantile")
 }

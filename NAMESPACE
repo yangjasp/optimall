@@ -2,3 +2,4 @@
 
 export(allocate_wave)
 export(optimal_allocation)
+export(split_strata)
