@@ -79,7 +79,7 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
                                                        paste("[",round(min(data$split_var), digits = 2), ",",cut_point[1],"]", sep = ""),
                                                        sep = "_"),
                                                  paste(split_var,
-                                                       paste("(",cut_point[1], ",",max(data$split_var),"]", sep = ""),
+                                                       paste("(",cut_point[1], ",",round(max(data$split_var), digits = 2),"]", sep = ""),
                                                        sep = "_")))
     }
     if (length(cut_point) >1){
