@@ -30,7 +30,7 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
     stop("'split_var' must be a string matching a column name of 'data'")
   }
   if (strata != "old_strata" & "old_strata" %in% names(data)){
-    dplyr::select(data, -old_strata) #fixes error from assigning duplicate names
+    data <- dplyr::select(data, -old_strata) #fixes error from assigning duplicate names
   }
   names(data)[names(data) == strata] <- "old_strata"
   names(data)[names(data) == split_var] <- "split_variable"
