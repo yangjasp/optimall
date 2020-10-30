@@ -37,11 +37,11 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
   strata <- enquo(strata)
   output_df <- data %>%
     dplyr::select(!!strata, !!y)
-  group <- interaction(dplyr::select(output_df,-!!y))
-  output_df <- cbind(group,output_df)
+  strata <- interaction(dplyr::select(output_df,-!!y))
+  output_df <- cbind(strata,output_df)
   output_df <- output_df[,c(1,ncol(output_df))] #Only columns of interest
-  names(output_df) <- c("group","y")
-  if (min(dplyr::count(output_df,group)[,"n"]) < 2){
+  names(output_df) <- c("strata","y")
+  if (min(dplyr::count(output_df,strata)[,"n"]) < 2){
     stop("Function requires at least two observations per stratum")
   }
   if (allow.na == FALSE & sum(is.na(output_df)) >= 1) {
@@ -49,7 +49,7 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
   }
   if (method == "Neyman"){
     output_df <- output_df %>%
-      dplyr::group_by(group) %>%
+      dplyr::group_by(strata) %>%
       dplyr::summarize(n = n(),
                        sd = sd(y, na.rm = T),
                        n_sd = sd(y, na.rm = T) * n()) %>%
@@ -74,19 +74,25 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
         stop("This method requires a fixed nsample. Try method = 'Neyman' for exact sampling fractions.")
       }
       else {
-        n_strata <- length(unique(group))
+        n_strata <- length(unique(strata))
         n_minus_H <- nsample - n_strata
         if (n_minus_H <= 0){
           stop("nsample is too small for this method.")
         }
         output_df <- output_df %>%
-          dplyr::group_by(group) %>%
+          dplyr::group_by(strata) %>%
           dplyr::summarize(n = n(),
                            sd = sd(y, na.rm = T),
                            n_sd = sd(y, na.rm = T) * n())
         priority_array <- list()
         for (i in 1:n_strata){
-          priority_array[[i]] <- rep(output_df[i,"n_sd"],times = n_minus_H)
+          priority_array[[i]] <- c(rep(output_df[i,"n_sd"],
+                                       times = min(output_df[i,"n"],n_minus_H)),
+                                   rep(0,
+                                       times = ifelse(n_minus_H > output_df[i,"n"],
+                                                      n_minus_H - output_df[i,"n"],
+                                                      0)))
+          #All rows are same length, but zeroes so that n_sample won't be larger than n_strata
           names(priority_array)[[i]] <- paste0("n_sd",as.character(i))
         }
         suppressMessages(Wright_output <- bind_rows(priority_array))
@@ -100,13 +106,13 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
         cutoff <- (sort(unlist(Wright_output, use.names = FALSE),
                         decreasing = T))[n_minus_H]
         stratum_size <- rowSums(Wright_output >= cutoff) + 1
-        final_output <- cbind(output_df[,c("group","n","sd","n_sd")], stratum_size)
+        final_output <- cbind(output_df[,c("strata","n","sd","n_sd")], stratum_size)
         final_output <- final_output %>%
           dplyr::mutate(stratum_fraction = round(stratum_size / nsample,
                                                  digits = ndigits),
                         sd = round(sd, digits = 2),
                         n_sd = round(n_sd, digits = 2))
-        final_output <- final_output[c("group","n","sd","n_sd","stratum_fraction","stratum_size")]
+        final_output <- final_output[c("strata","n","sd","n_sd","stratum_fraction","stratum_size")]
         return(final_output)
 
       }
@@ -116,19 +122,25 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
         stop("This method requires a fixed nsample. Try method = 'Neyman' for exact sampling fractions.")
       }
       else {
-        n_strata <- length(unique(group))
+        n_strata <- length(unique(strata))
         n_minus_2H <- nsample - 2*n_strata
         if (n_minus_2H <= 0){
           stop("nsample is too small for this method.")
         }
         output_df <- output_df %>%
-          dplyr::group_by(group) %>%
+          dplyr::group_by(strata) %>%
           dplyr::summarize(n = n(),
                            sd = sd(y, na.rm = T),
                            n_sd = sd(y, na.rm = T) * n())
         priority_array <- list()
         for (i in 1:n_strata){
-          priority_array[[i]] <- rep(output_df[i,"n_sd"],times = n_minus_2H)
+          priority_array[[i]] <- c(rep(output_df[i,"n_sd"],
+                                       times = min(output_df[i,"n"],n_minus_2H)),
+                                   rep(0,
+                                       times = ifelse(n_minus_2H > output_df[i,"n"],
+                                                      n_minus_2H - output_df[i,"n"],
+                                                      0)))
+          #All rows are same length, but zeroes so that n_sample won't be larger than n_strata
           names(priority_array)[[i]] <- paste0("n_sd",as.character(i))
         }
         suppressMessages(Wright_output <- bind_rows(priority_array))
@@ -142,13 +154,13 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
         cutoff <- (sort(unlist(Wright_output, use.names = FALSE),
                         decreasing = T))[n_minus_2H]
         stratum_size <- rowSums(Wright_output >= cutoff) + 2
-        final_output <- cbind(output_df[,c("group","n","sd","n_sd")], stratum_size)
+        final_output <- cbind(output_df[,c("strata","n","sd","n_sd")], stratum_size)
         final_output <- final_output %>%
           dplyr::mutate(stratum_fraction = round(stratum_size / nsample,
                                                         digits = ndigits),
                         sd = round(sd, digits = 2),
                         n_sd = round(n_sd, digits = 2))
-        final_output <- final_output[c("group","n","sd","n_sd","stratum_fraction","stratum_size")]
+        final_output <- final_output[c("strata","n","sd","n_sd","stratum_fraction","stratum_size")]
         return(final_output)
 
       }
