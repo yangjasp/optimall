@@ -6,7 +6,7 @@
 #' @param y a character string specifying the name of the continuous variable for which the variance should be minimized.
 #' @param wave2a a character string specifying the name of a column that contains a binary (\code{Y}/\code{N} or \code{1}/\code{0}) indicator specifying whether each unit has already been sampled in a previous wave.
 #' @param nsample The desired sample size of the next wave.
-#' @param method a character string specifying the method to be used if at least one group was oversampled. Must be one of \code{"simple"} or \code{"iterative"}. Defaults to \code{"iterative}, which requires a longer runtime but is a more precise method of handling oversampled strata.
+#' @param method a character string specifying the method to be used if at least one group was oversampled. Must be one of \code{"simple"} or \code{"iterative"}. Defaults to \code{"iterative"}, which requires a longer runtime but is a more precise method of handling oversampled strata.
 #' @export
 #' @return Returns a dataframe with one row for each stratum and columns specifying the stratum name, population stratum size (npop), cumulative sample in that strata (nsampled_total), prior number sampled in that strata (nsampled_prior), and the optimally allocated number of units in each strata for the next wave (n_to_sample).
 
