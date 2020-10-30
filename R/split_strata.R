@@ -3,13 +3,19 @@
 #' Splits pre-defined sampling strata into smaller ones based on values of a continuous or categorical variable.
 #' @param data a dataframe or matrix with one row for each sampling unit, one column specifying each unit's current stratum, one column containing the continuous or categorical values that will define the split, and any other relevant columns.
 #' @param strata a character string specifying the name of the column that defines each unit's current strata.
-#' @param split the name of the stratum to be split, exactly as it appears in `strata`. Defaults to NULL, which indicates that all strata in `strata` will be split.
-#' @param split_at the percentile, value, or name(s) which `split_var` should be split at. Defaults to 0.5.
-#' @param type a character string specifying how the function should interpret the `split_at` argument. Must be one of "global quantile", "local quantile", "value", or "categorical". Defaults to "global quantile".
+#' @param split the name of the stratum to be split, exactly as it appears in `strata`. Defaults to NULL, which indicates that all strata in \code{strata} will be split.
+#' @param split_at the percentile, value, or name(s) which \code{split_var} should be split at. The interpretation of this input depends on \code{type}. For \code{"quantile"} types, input must be between \code{0} and \code{1}. Defaults to \code{0.5} (median).
+#' @param type a character string specifying how the function should interpret the \code{split_at} argument. Must be one of:
+#'\itemize{
+#'\item \code{"global quantile"}, the default, splits the strata at the quantiles specified in \code{split_at} defined along the entire, unfiltered \code{split_var} column .
+#'\item \code{"local quantile"} splits the strata at the quantiles specified in \code{split_at} defined along the filtered \code{split_var} column which only includes units in the stratum being split.
+#'\item \code{"value"} splits the strata at the values specified in \code{split_at} along \code{split_var} column.
+#'\item \code{"categorical"} splits the strata into two new strata, one that contains each unit where \code{split_var} matches an input of \code{split_at}, and a second that contains every other unit.
+#'}
 #' @examples
 #' x <- split_strata(iris, "Sepal.Length", strata = c("Species"),split = "setosa", split_var = "Sepal.Width", split_at = c(0.5), type = "global quantile")
 #' @export
-#' @return returns the input dataframe with a new column named 'new_strata' that holds the name of the stratum that each sample belongs to after the split.
+#' @return Returns the input dataframe with a new column named 'new_strata' that holds the name of the stratum that each sample belongs to after the split. The column containing the previous strata names is retained and given the name "old_strata".
 
 
 split_strata <- function(data, strata, split = NULL, split_var, type = "global quantile", split_at = .5 ){

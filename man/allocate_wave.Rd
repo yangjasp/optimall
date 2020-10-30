@@ -4,7 +4,7 @@
 \alias{allocate_wave}
 \title{Adaptive Multi-Wave Sampling}
 \usage{
-allocate_wave(data, strata, y, wave2a, n, method = "simple")
+allocate_wave(data, strata, y, wave2a, nsample, method = "iterative")
 }
 \arguments{
 \item{data}{A data frame or matrix with one row for each sampling unit, one column specifying each unit's stratum, one column holding the value of the continuous variable for which the variance should be minimized, and one column containing a key specifying if each unit has already been sampled.}
@@ -13,14 +13,14 @@ allocate_wave(data, strata, y, wave2a, n, method = "simple")
 
 \item{y}{a character string specifying the name of the continuous variable for which the variance should be minimized.}
 
-\item{wave2a}{a character string specifying the name of a column that contains a binary (Y/N or 1/0) indicator specifying whether each unit has already been sampled in a previous wave.}
+\item{wave2a}{a character string specifying the name of a column that contains a binary (\code{Y}/\code{N} or \code{1}/\code{0}) indicator specifying whether each unit has already been sampled in a previous wave.}
 
-\item{n}{The desired sample size of the next wave.}
+\item{nsample}{The desired sample size of the next wave.}
 
-\item{method}{a character string specifying the method to be used if at least one group was oversampled. Must be one of "simple" or "iterative". Defaults to simple.}
+\item{method}{a character string specifying the method to be used if at least one group was oversampled. Must be one of \code{"simple"} or \code{"iterative"}. Defaults to \code{"iterative}, which requires a longer runtime but is a more precise method of handling oversampled strata.}
 }
 \value{
-Returns a dataframe with the n allocated to each strata for the next sampling wave.
+Returns a dataframe with one row for each stratum and columns specifying the stratum name, population stratum size (npop), cumulative sample in that strata (nsampled_total), prior number sampled in that strata (nsampled_prior), and the optimally allocated number of units in each strata for the next wave (n_to_sample).
 }
 \description{
 Determines the optimal sampling allocation for a new sampling wave based on results from previous waves.

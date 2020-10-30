@@ -18,14 +18,20 @@ split_strata(
 
 \item{strata}{a character string specifying the name of the column that defines each unit's current strata.}
 
-\item{split}{the name of the stratum to be split, exactly as it appears in `strata`. Defaults to NULL, which indicates that all strata in `strata` will be split.}
+\item{split}{the name of the stratum to be split, exactly as it appears in `strata`. Defaults to NULL, which indicates that all strata in \code{strata} will be split.}
 
-\item{type}{a character string specifying how the function should interpret the `split_at` argument. Must be one of "global quantile", "local quantile", "value", or "categorical". Defaults to "global quantile".}
+\item{type}{a character string specifying how the function should interpret the \code{split_at} argument. Must be one of:
+\itemize{
+\item \code{"global quantile"}, the default, splits the strata at the quantiles specified in \code{split_at} defined along the entire, unfiltered \code{split_var} column .
+\item \code{"local quantile"} splits the strata at the quantiles specified in \code{split_at} defined along the filtered \code{split_var} column which only includes units in the stratum being split.
+\item \code{"value"} splits the strata at the values specified in \code{split_at} along \code{split_var} column.
+\item \code{"categorical"} splits the strata into two new strata, one that contains each unit where \code{split_var} matches an input of \code{split_at}, and a second that contains every other unit.
+}}
 
-\item{split_at}{the percentile, value, or name(s) which `split_var` should be split at. Defaults to 0.5.}
+\item{split_at}{the percentile, value, or name(s) which \code{split_var} should be split at. The interpretation of this input depends on \code{type}. For \code{"quantile"} types, input must be between \code{0} and \code{1}. Defaults to \code{0.5} (median).}
 }
 \value{
-returns the input dataframe with a new column named 'new_strata' that holds the name of the stratum that each sample belongs to after the split.
+Returns the input dataframe with a new column named 'new_strata' that holds the name of the stratum that each sample belongs to after the split. The column containing the previous strata names is retained and given the name "old_strata".
 }
 \description{
 Splits pre-defined sampling strata into smaller ones based on values of a continuous or categorical variable.

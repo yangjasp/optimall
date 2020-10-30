@@ -17,7 +17,7 @@ optimal_allocation(
 \arguments{
 \item{data}{A data frame or matrix with one row for each sampled unit, one column specifying each unit's stratum, and one column holding the value of the continuous variable for which the variance should be minimized.}
 
-\item{strata}{a character string or vector of character strings specifying the name of columns which indicate the stratum that each unit belongs to.}
+\item{strata}{a character string or vector of character strings specifying the name(s) of columns which specify the stratum that each unit belongs to. If multiple column names are provided, each unique combination of values in these columns is taken to define one stratum.}
 
 \item{y}{a character string specifying the name of the continuous variable for which the variance should be minimized.}
 
@@ -25,9 +25,9 @@ optimal_allocation(
 
 \item{ndigits}{a numeric value specifying the number of digits to round the stratum fraction to.}
 
-\item{method}{a character string specifying the method of optimal sample allocation to use. Must be one of "Neyman", "WrightI" or "WrightII". Defaults to "WrightII".}
+\item{method}{a character string specifying the method of optimal sample allocation to use. Must be one of \code{"Neyman"}, \code{"WrightI"} or \code{"WrightII"}. Defaults to \code{"WrightII"}.}
 
-\item{allow.na}{logical input specifying whether y should be allowed to have NA values. Defaults to FALSE.}
+\item{allow.na}{logical input specifying whether y should be allowed to have NA values. Defaults to \code{FALSE}.}
 }
 \value{
 Returns a data frame with the n allocated to each strata or the sampling fractions if nsample is NULL.
