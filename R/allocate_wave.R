@@ -5,12 +5,12 @@
 #' @param strata a character string or vector of character strings specifying the name of columns which indicate the stratum that each unit belongs to.
 #' @param y a character string specifying the name of the continuous variable for which the variance should be minimized.
 #' @param wave2a a character string specifying the name of a column that contains a binary (Y/N or 1/0) indicator specifying whether each unit has already been sampled in a previous wave.
-#' @param n The desired sample size of the next wave.
+#' @param nsample The desired sample size of the next wave.
 #' @param method a character string specifying the method to be used if at least one group was oversampled. Must be one of "simple" or "iterative". Defaults to simple.
 #' @export
 #' @return Returns a dataframe with the n allocated to each strata for the next sampling wave.
 
-allocate_wave <- function(data, strata, y, wave2a, n, method = "simple"){
+allocate_wave <- function(data, strata, y, wave2a, nsample, method = "simple"){
   if (is.matrix(data)) {
     data <- data.frame(data)
     }
@@ -35,7 +35,7 @@ allocate_wave <- function(data, strata, y, wave2a, n, method = "simple"){
   method <- match.arg(method, c("simple","iterative"))
  # Find the total sample size and optimally allocate that
   nsampled <- sum(data[,wave2a] == "Y" | data[,wave2a] == 1)
-  output1 <- optimall::optimal_allocation(data = data, strata = strata, y = y, nsample = n + nsampled, allow.na = TRUE) #Optimal for total sample size
+  output1 <- optimall::optimal_allocation(data = data, strata = strata, y = y, nsample = nsample + nsampled, allow.na = TRUE) #Optimal for total sample size
 
  #Create groups from strata argument and determine the prior sample size for each
   y <- enquo(y)
@@ -55,16 +55,16 @@ allocate_wave <- function(data, strata, y, wave2a, n, method = "simple"){
   names(output1)[1] <- "group"
   comp_df <- dplyr::inner_join(output1, wave1_summary, by = "group")
   comp_df <- dplyr::mutate(comp_df, difference =  stratum_size - wave1_size,
-                    n_avail = n - wave1_size)
+                    n_avail = nsample - wave1_size)
 
  #For the simple case in which no strata have been oversampled
   if(all(comp_df$difference >= 0) & all(comp_df$n_avail > comp_df$difference)){
     comp_df <- comp_df %>%
       dplyr::rename(n_optimal = stratum_size,
              nsample_prior = wave1_size,
-             nsample = difference) %>%
+             n_to_sample = difference) %>%
       dplyr::mutate(nsample_total = nsample_prior + nsample)
-      dplyr::select(group, n, nsample_total, nsample_prior, nsample)
+      dplyr::select(group, npop, nsample_total, nsample_prior, n_to_sample)
     return(comp_df)
   }
 
@@ -78,24 +78,24 @@ allocate_wave <- function(data, strata, y, wave2a, n, method = "simple"){
     open_groups <- dplyr::filter(comp_df, difference > 0)$group
     open_df <- wave1_df %>%
       filter(group %in% open_groups)
-    open_output <- optimall::optimal_allocation(data = open_df, strata = "group",y = "y", nsample = n + nsampled - nsampled_in_closed_groups, allow.na = T)
+    open_output <- optimall::optimal_allocation(data = open_df, strata = "group",y = "y", nsample = nsample + nsampled - nsampled_in_closed_groups, allow.na = T)
     names(open_output)[1] <- "group"
     open_output <- dplyr::inner_join(open_output, wave1_summary, by = "group")
-    open_output <- dplyr::mutate(open_output, difference =  stratum_size - wave1_size, n_avail = n - wave1_size)
+    open_output <- dplyr::mutate(open_output, difference =  stratum_size - wave1_size, n_avail = nsample - wave1_size)
 
     open_output <- open_output %>%
       dplyr::rename(n_optimal = stratum_size,
                     nsample_prior = wave1_size) %>%
-      dplyr::mutate(nsample = difference,
+      dplyr::mutate(n_to_sample = difference,
                     nsample_total = nsample_prior + nsample) %>%
-      dplyr::select(group, n, nsample_total, nsample_prior, nsample)
+      dplyr::select(group, npop, nsample_total, nsample_prior, n_to_sample)
 
     closed_output <- temp %>%
       dplyr::rename(n_optimal = stratum_size,
                     nsample_prior = wave1_size) %>%
-      dplyr::mutate(nsample = 0,
+      dplyr::mutate(n_to_sample = 0,
                     nsample_total = nsample_prior) %>%
-      dplyr::select(group, n, nsample_total, nsample_prior, nsample)
+      dplyr::select(group, npop, nsample_total, nsample_prior, n_to_sample)
 
     output_df <- rbind(closed_output, open_output)
     return(output_df)
@@ -117,29 +117,28 @@ allocate_wave <- function(data, strata, y, wave2a, n, method = "simple"){
       dplyr::filter(group %in% open_groups_names)
 
     #Run optimal allocation on this filtered df of open groups
-    outputn <- optimall::optimal_allocation(data = open_df, strata = "group",y = "y", nsample = n + nsampled - nsampled_in_closed_groups, allow.na = T)
+    outputn <- optimall::optimal_allocation(data = open_df, strata = "group",y = "y", nsample = nsample + nsampled - nsampled_in_closed_groups, allow.na = T)
 
     #Re-join with (cleaned) input data to  get new differences
     names(outputn)[1] <- "group"
     comp_df <- dplyr::inner_join(outputn, wave1_summary, by = "group")
     comp_df <- dplyr::mutate(comp_df, difference =  stratum_size - wave1_size,
-                             n_avail = n - wave1_size)
+                             n_avail = nsample - wave1_size)
 
     }
     open_output <- comp_df %>%
       dplyr::rename(n_optimal = stratum_size,
                     nsample_prior = wave1_size) %>%
-      dplyr::mutate(nsample = difference,
+      dplyr::mutate(n_to_sample = difference,
                     nsample_total = nsample_prior + nsample) %>%
-      dplyr::select(group, n, nsample_total, nsample_prior, nsample)
+      dplyr::select(group, npop, nsample_total, nsample_prior, n_to_sample)
 
     closed_output <- closed_groups_df %>%
       dplyr::rename(n_optimal = stratum_size,
                     nsample_prior = wave1_size) %>%
-      dplyr::mutate(nsample = 0,
+      dplyr::mutate(n_to_sample = 0,
                     nsample_total = nsample_prior) %>%
-      dplyr::select(group, n, nsample_total, nsample_prior, nsample)
-
+      dplyr::select(group, npop, nsample_total, nsample_prior, n_to_sample)
     output_df <- rbind(closed_output, open_output)
     return(output_df)
   }

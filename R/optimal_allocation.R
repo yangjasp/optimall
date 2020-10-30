@@ -57,6 +57,7 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
                                                     digits = ndigits),
                     sd = round(sd, digits = 2),
                     n_sd = round(n_sd, digits = 2))
+    names(output_df)[names(output_df) == "n"] <- "npop"
       if (is.null(nsample)) {
         return(as.data.frame(output_df))
       }
@@ -114,6 +115,7 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
                         sd = round(sd, digits = 2),
                         n_sd = round(n_sd, digits = 2))
         final_output <- final_output[c("strata","n","sd","n_sd","stratum_fraction","stratum_size")]
+        names(final_output)[names(final_output) == "n"] <- "npop"
         return(final_output)
 
       }
@@ -163,6 +165,7 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
                         sd = round(sd, digits = 2),
                         n_sd = round(n_sd, digits = 2))
         final_output <- final_output[c("strata","n","sd","n_sd","stratum_fraction","stratum_size")]
+        names(final_output)[names(final_output) == "n"] <- "npop"
         return(final_output)
 
       }
