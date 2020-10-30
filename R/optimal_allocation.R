@@ -87,15 +87,16 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
         priority_array <- list()
         for (i in 1:n_strata){
           priority_array[[i]] <- c(rep(output_df[i,"n_sd"],
-                                       times = min(output_df[i,"n"],n_minus_H)),
-                                   rep(0,
-                                       times = ifelse(n_minus_H > output_df[i,"n"],
-                                                      n_minus_H - output_df[i,"n"],
+                                       times = min(output_df[i,"n"] - 1,n_minus_H)),
+                                   rep(NULL,
+                                       times = ifelse(n_minus_H > (output_df[i,"n"] - 1),
+                                                      n_minus_H - (output_df[i,"n"] - 1),
                                                       0)))
           #All rows are same length, but zeroes so that n_sample won't be larger than n_strata
           names(priority_array)[[i]] <- paste0("n_sd",as.character(i))
         }
         suppressMessages(Wright_output <- bind_rows(priority_array))
+        Wright_output[is.na(Wright_output)] <- 0
         mult_vec <- vector()
         for (i in 1:(n_minus_H+1)){
           mult_vec[i] <- 1/(sqrt(i*(i+1)))
@@ -135,15 +136,16 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
         priority_array <- list()
         for (i in 1:n_strata){
           priority_array[[i]] <- c(rep(output_df[i,"n_sd"],
-                                       times = min(output_df[i,"n"],n_minus_2H)),
-                                   rep(0,
-                                       times = ifelse(n_minus_2H > output_df[i,"n"],
-                                                      n_minus_2H - output_df[i,"n"],
+                                       times = min(output_df[i,"n"] - 2,n_minus_2H)),
+                                   rep(NULL,
+                                       times = ifelse(n_minus_2H > (output_df[i,"n"] - 2),
+                                                      n_minus_2H - (output_df[i,"n"] - 2),
                                                       0)))
           #All rows are same length, but zeroes so that n_sample won't be larger than n_strata
           names(priority_array)[[i]] <- paste0("n_sd",as.character(i))
         }
         suppressMessages(Wright_output <- bind_rows(priority_array))
+        Wright_output[is.na(Wright_output)] <- 0
         mult_vec <- vector()
         for (i in 2:(n_minus_2H+1)){
           mult_vec[i-1] <- 1/(sqrt(i*(i+1)))
