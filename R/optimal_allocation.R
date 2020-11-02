@@ -17,7 +17,7 @@
 
 optimal_allocation <- function(data, strata, y, nsample = NULL,
                                ndigits = 2, method = "WrightII", allow.na = FALSE) {
-  if (is.matrix(data)) {
+  if (is.matrix(data) | tibble::is_tibble(data)) {
     data <- data.frame(data)
   }
   if (is.data.frame(data) == FALSE) {

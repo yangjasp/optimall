@@ -25,9 +25,11 @@ test_that("WrightI and WrightII work", {
 
 test_that("Output agrees whether input is matrix, df, or tibble",{
   data_mat <- as.matrix(data.frame("strata" = c(rep(1, times = 15), rep(2, times = 15), rep(3, times = 12)),"y" = data$y,"key" = data$key))
+  data_tib <- dplyr::as_tibble(data)
 
   expect_equal(optimal_allocation(data = data, strata = "strata", y = "y", nsample = 10)$stratum_size,
-               optimal_allocation(data = data_mat, strata = "strata", y = "y", nsample = 10)$stratum_size)
+               optimal_allocation(data = data_mat, strata = "strata", y = "y", nsample = 10)$stratum_size,
+               optimal_allocation(data = data_tib, strata = "strata", y = "y", nsample = 10)$stratum_size)
 })
 
 test_that("optimal_allocation prints error message when 'y' is not numeric",{
