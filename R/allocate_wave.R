@@ -32,6 +32,9 @@ allocate_wave <- function(data, strata, y, wave2a, nsample, method = "iterative"
   if (("Y" %in% data[,wave2a] == FALSE & 1 %in% data[,wave2a] == FALSE) | any(is.na(data[,wave2a]))){
     stop("'wave2a' column must contain '1' (numeric) or 'Y' (string) as indicators that a unit was sampled in a previous wave and cannot contain NAs")
   }
+  if(nsample + sum(data[,wave2a] == "Y") + sum(data[,wave2a] == 1) > length(data[,y])){
+    stop("Total sample size across waves, taken as nsampled in wave2a + nsample, is larger than the population size.")
+  }
   method <- match.arg(method, c("simple","iterative"))
  # Find the total sample size and optimally allocate that
   nsampled <- sum(data[,wave2a] == "Y" | data[,wave2a] == 1)
@@ -63,7 +66,7 @@ allocate_wave <- function(data, strata, y, wave2a, nsample, method = "iterative"
       dplyr::rename(n_optimal = stratum_size,
              nsample_prior = wave1_size,
              n_to_sample = difference) %>%
-      dplyr::mutate(nsample_total = nsample_prior + nsample)
+      dplyr::mutate(nsample_total = nsample_prior + n_to_sample) %>%
       dplyr::select(group, npop, nsample_total, nsample_prior, n_to_sample)
     return(comp_df)
   }
@@ -87,7 +90,7 @@ allocate_wave <- function(data, strata, y, wave2a, nsample, method = "iterative"
       dplyr::rename(n_optimal = stratum_size,
                     nsample_prior = wave1_size) %>%
       dplyr::mutate(n_to_sample = difference,
-                    nsample_total = nsample_prior + nsample) %>%
+                    nsample_total = nsample_prior + n_to_sample) %>%
       dplyr::select(group, npop, nsample_total, nsample_prior, n_to_sample)
 
     closed_output <- temp %>%
@@ -130,7 +133,7 @@ allocate_wave <- function(data, strata, y, wave2a, nsample, method = "iterative"
       dplyr::rename(n_optimal = stratum_size,
                     nsample_prior = wave1_size) %>%
       dplyr::mutate(n_to_sample = difference,
-                    nsample_total = nsample_prior + nsample) %>%
+                    nsample_total = nsample_prior + n_to_sample) %>%
       dplyr::select(group, npop, nsample_total, nsample_prior, n_to_sample)
 
     closed_output <- closed_groups_df %>%
