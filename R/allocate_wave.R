@@ -8,7 +8,7 @@
 #' @param nsample The desired sample size of the next wave.
 #' @param method a character string specifying the method to be used if at least one group was oversampled. Must be one of \code{"simple"} or \code{"iterative"}. Defaults to \code{"iterative"}, which requires a longer runtime but is a more precise method of handling oversampled strata.
 #' @export
-#' @return Returns a dataframe with one row for each stratum and columns specifying the stratum name, population stratum size (npop), cumulative sample in that strata (nsampled_total), prior number sampled in that strata (nsampled_prior), and the optimally allocated number of units in each strata for the next wave (n_to_sample).
+#' @return Returns a dataframe with one row for each stratum and columns specifying the stratum name, population stratum size (\code{"npop"}), cumulative sample in that strata (\code{"nsampled_total"}), prior number sampled in that strata (\code{"nsampled_prior"}), and the optimally allocated number of units in each strata for the next wave (\code{"n_to_sample"}).
 
 allocate_wave <- function(data, strata, y, wave2a, nsample, method = "iterative"){
   if (is.matrix(data)) {
