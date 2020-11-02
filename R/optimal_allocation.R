@@ -32,6 +32,9 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
   if (y %in% names(data) == FALSE) {
     stop("'y' must be a character string matching a column name of data.")
   }
+  if (is.numeric(data[,y]) == FALSE) {
+    stop("'y' must be numeric.")
+  }
   method <- match.arg(method, c("WrightI","WrightII","Neyman"))
   y <- enquo(y)
   strata <- enquo(strata)
@@ -78,13 +81,16 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
         n_strata <- length(unique(strata))
         n_minus_H <- nsample - n_strata
         if (n_minus_H <= 0){
-          stop("nsample is too small for this method.")
+          stop("'nsample' is too small for this method.")
         }
         output_df <- output_df %>%
           dplyr::group_by(strata) %>%
           dplyr::summarize(n = n(),
                            sd = sd(y, na.rm = T),
                            n_sd = sd(y, na.rm = T) * n())
+        if (nsample > sum(output_df$n)){
+          stop("'nsample' is larger than population size")
+        }
         priority_array <- list()
         for (i in 1:n_strata){
           priority_array[[i]] <- c(rep(output_df[i,"n_sd"],
@@ -128,13 +134,16 @@ optimal_allocation <- function(data, strata, y, nsample = NULL,
         n_strata <- length(unique(strata))
         n_minus_2H <- nsample - 2*n_strata
         if (n_minus_2H <= 0){
-          stop("nsample is too small for this method.")
+          stop("'nsample' is too small for this method.")
         }
         output_df <- output_df %>%
           dplyr::group_by(strata) %>%
           dplyr::summarize(n = n(),
                            sd = sd(y, na.rm = T),
                            n_sd = sd(y, na.rm = T) * n())
+        if (nsample > sum(output_df$n)){
+          stop("'nsample' is larger than population size")
+        }
         priority_array <- list()
         for (i in 1:n_strata){
           priority_array[[i]] <- c(rep(output_df[i,"n_sd"],
