@@ -16,3 +16,5 @@ Depends:
 	stats
 Oxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
+Suggests: 
+    testthat
