@@ -25,20 +25,32 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
   if(is.data.frame(data) == FALSE){
     stop("'data' must be a dataframe or matrix with named columns")
   }
-  if (is.null(split) == FALSE){
-    split <- match.arg(split, unique(data[,strata]))
-    if(split %in% data[,strata] ==  FALSE){
-      stop(paste(paste("'",split,"'",sep = ""), "does not match any value in 'strata'"))
-    }
-
-  }
   if (split_var %in% names(data) == FALSE){
     stop("'split_var' must be a string matching a column name of 'data'")
   }
-  if (strata != "old_strata" & "old_strata" %in% names(data)){
+  if (all(strata %in% names(data)) == FALSE) {
+    stop("'Strata' must be a string or vector of strings matching column names of data.")
+  }
+  if (all(strata != "old_strata") & "old_strata" %in% names(data)){
     data <- dplyr::select(data, -old_strata) #fixes error from assigning duplicate names
   }
+  if(length(strata) > 1){
+    strata_q <- enquo(strata)
+    strata_interact <- data %>%
+      dplyr::select(!!strata_q)
+    strata_interact <- interaction(strata_interact)
+    data <- cbind(data, strata_interact)
+    data <- dplyr::select(data, -!!strata_q)
+    names(data)[names(data) == "strata_interact"] <- "old_strata"
+  } else{
   names(data)[names(data) == strata] <- "old_strata"
+  }
+  if (is.null(split) == FALSE){
+  split <- match.arg(split, unique(data[,"old_strata"]))
+    if(split %in% data[,"old_strata"] ==  FALSE){
+      stop(paste(paste("'",split,"'",sep = ""), "does not match any value in 'strata'"))
+    }
+  }
   names(data)[names(data) == split_var] <- "split_variable"
   data$old_strata <- as.character(data$old_strata)
   type <- match.arg(type, c("global quantile", "local quantile", "value", "categorical"))
@@ -65,7 +77,7 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
         }
       }
       if(is.null(split)){
-        if(any(split_at < min(data$old_strata)) | any(split_at > max(data$old_strata))){
+        if(any(split_at < min(data$split_variable)) | any(split_at > max(data$split_variable))){
           warning("value(s) of 'split_at' are outside of the range of values in 'split'")
         }
       }
@@ -82,17 +94,17 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
       data_filtered <- data_filtered %>%
         dplyr::mutate(split_var_updated = ifelse(split_variable < cut_point[1],
                                                  paste(split_var,
-                                                       paste("[",round(min(data$split_var), digits = 2), ",",cut_point[1],"]", sep = ""),
+                                                       paste("[",round(min(data$split_variable), digits = 2), ",",cut_point[1],"]", sep = ""),
                                                        sep = "_"),
                                                  paste(split_var,
-                                                       paste("(",cut_point[1], ",",round(max(data$split_var), digits = 2),"]", sep = ""),
+                                                       paste("(",cut_point[1], ",",round(max(data$split_variable), digits = 2),"]", sep = ""),
                                                        sep = "_")))
     }
     if (length(cut_point) >1){
-      cut_point <- c(round(min(data$split_var), digits = 2),
+      cut_point <- c(round(min(data$split_variable), digits = 2),
                      cut_point,
-                     round(max(data$split_var),digits = 2))
-      data_filtered$split_var_updated <- data_filtered$split_var
+                     round(max(data$split_variable),digits = 2))
+      data_filtered$split_var_updated <- data_filtered$split_variable
       for (i in 2:length(cut_point)) {
         data_filtered <- data_filtered %>%
           mutate(split_var_updated = ifelse(split_variable > cut_point[i-1] & split_variable <= cut_point[i],
@@ -108,12 +120,16 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
   }
   if (type == "categorical"){
     data$split_variable <- as.character(data$split_variable)
-    data_filtered <- data %>%
-      dplyr::filter(old_strata == ifelse(is.null(split),
-                                         old_strata,
-                                         split)) %>%
+    if (is.null(split) == TRUE){
+      data_filtered <- data
+    } else{
+      data_filtered <- dplyr::filter(data, old_strata == split)
+    }
+    data_filtered <- data_filtered %>%
       dplyr::mutate(split_var_updated = ifelse(split_variable %in% split_at,"1","0"))
     new_strata <- interaction(dplyr::select(data_filtered,old_strata,split_var_updated))
+    data_filtered <- cbind(new_strata, data_filtered)
+    small_df <- dplyr::select(data_filtered, -split_var_updated)
   }
   if (is.null(split)){
     output_df <- small_df
