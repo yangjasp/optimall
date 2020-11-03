@@ -62,11 +62,11 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
       stop("'split_var' must be a column of 'data' holding numeric values. If you want to split on a categorical variable, use type = 'categorical'." )
     }
     if (type == "global quantile" | (is.null(split) & type == "local quantile")){
-      cut_point <- round(sort(stats::quantile(data[,"split_variable"],
-                                        split_at)), digits = 2) #Find cut points
+      cut_point <- sort(stats::quantile(data[,"split_variable"],
+                                        split_at)) #Find cut points
     }
     if (type == "local quantile" & is.null(split) == FALSE){
-      cut_point <- round(sort(stats::quantile(data[data$old_strata == split,"split_variable"],split_at)), digits = 2)
+      cut_point <- sort(stats::quantile(data[data$old_strata == split,"split_variable"],split_at))
 
     }
     if (type == "value"){
@@ -92,24 +92,24 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
 
     if (length(cut_point) == 1){
       data_filtered <- data_filtered %>%
-        dplyr::mutate(split_var_updated = ifelse(split_variable < cut_point[1],
+        dplyr::mutate(split_var_updated = ifelse(split_variable <= cut_point[1],
                                                  paste(split_var,
-                                                       paste("[",round(min(data$split_variable), digits = 2), ",",cut_point[1],"]", sep = ""),
+                                                       paste("[",round(min(data$split_variable), digits = 2), ",",round(cut_point[1], digits = 2),"]", sep = ""),
                                                        sep = "_"),
                                                  paste(split_var,
-                                                       paste("(",cut_point[1], ",",round(max(data$split_variable), digits = 2),"]", sep = ""),
+                                                       paste("(", round(cut_point[1], digits = 2), ",",round(max(data$split_variable), digits = 2),"]", sep = ""),
                                                        sep = "_")))
     }
     if (length(cut_point) >1){
-      cut_point <- c(round(min(data$split_variable), digits = 2),
+      cut_point <- c(min(data$split_variable),
                      cut_point,
-                     round(max(data$split_variable),digits = 2))
+                     max(data$split_variable))
       data_filtered$split_var_updated <- data_filtered$split_variable
       for (i in 2:length(cut_point)) {
         data_filtered <- data_filtered %>%
           mutate(split_var_updated = ifelse(split_variable > cut_point[i-1] & split_variable <= cut_point[i],
                                             paste(split_var,
-                                                  paste("(",cut_point[i-1], ",",cut_point[i],"]", sep = ""),
+                                                  paste("(",round(cut_point[i-1], digits = 2), ",",round(cut_point[i], digits = 2),"]", sep = ""),
                                             sep = "_"),
                                             split_var_updated))
       }

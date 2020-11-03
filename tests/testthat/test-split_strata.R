@@ -17,19 +17,19 @@ test_that("strata_split produces a dataframe with the same number of rows as inp
 test_that("splits occur at correct global quantile values",{
   median1 <- strsplit(dplyr::filter(split_strata(data = data_split, strata = "strata", split = "a", split_var = "split_var", split_at = 0.5, type = "global quantile"), split_var < stats::median(split_var), old_strata == "a")$new_strata[1],
            split = "[", fixed = TRUE)[[1]][2] #Extract median from strata name
-  expect_equal(substr(median1,
-               start = 7,
-               stop = nchar(median1) - 1 ),
+  expect_equal(substr(median1, start = 7, stop = nchar(median1) - 1 ),
                as.character(round(stats::median(data_split$split_var), digits = 2)))
+  expect_equal(as.vector(table(dplyr::filter(split_strata(data = data_split, strata = "strata", split = "a", split_var = "split_var", split_at = 0.5, type = "global quantile"), new_strata %in% c("b","c") == FALSE)$new_strata)),
+               as.vector(table(dplyr::filter(data_split, strata == "a")$split_var <= median(data_split$split_var))))
 })
 
 test_that("splits occur at correct local quantile values",{
  median2 <- strsplit(dplyr::filter(split_strata(data = data_split, strata = "strata", split = "a", split_var = "split_var", split_at = 0.5, type = "local quantile"), split_var < stats::median(data_split[data_split$strata == "a",]$split_var), old_strata == "a")$new_strata[1],
                      split = "[", fixed = TRUE)[[1]][2]
- expect_equal(substr(median2,
-                     start = 7,
-                     stop = nchar(median2) - 1 ),
+ expect_equal(substr(median2, start = 7, stop = nchar(median2) - 1 ),
               as.character(round(stats::median(data_split[data_split$strata == "a",]$split_var), digits = 2)))
+ expect_equal(as.vector(table(dplyr::filter(split_strata(data = data_split, strata = "strata", split = "a", split_var = "split_var", split_at = 0.5, type = "local quantile"), new_strata %in% c("b","c") == FALSE)$new_strata)),
+              as.vector(table(dplyr::filter(data_split, strata == "a")$split_var <= median(dplyr::filter(data_split, strata  == "a")$split_var))))
 })
 
 test_that("splits occur at correct categorical split",{
