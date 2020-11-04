@@ -38,7 +38,7 @@ allocate_wave <- function(data, strata, y, wave2a, nsample, method = "iterative"
   method <- match.arg(method, c("simple","iterative"))
  # Find the total sample size and optimally allocate that
   nsampled <- sum(data[,wave2a] == "Y" | data[,wave2a] == 1)
-  output1 <- optimall::optimal_allocation(data = data, strata = strata, y = y, nsample = nsample + nsampled, allow.na = TRUE) #Optimal for total sample size
+  output1 <- optimall::optimum_allocation(data = data, strata = strata, y = y, nsample = nsample + nsampled, allow.na = TRUE) #Optimal for total sample size
 
  #Create groups from strata argument and determine the prior sample size for each
   y <- enquo(y)
@@ -81,7 +81,7 @@ allocate_wave <- function(data, strata, y, wave2a, nsample, method = "iterative"
     open_groups <- dplyr::filter(comp_df, difference > 0)$group
     open_df <- wave1_df %>%
       filter(group %in% open_groups)
-    open_output <- optimall::optimal_allocation(data = open_df, strata = "group",y = "y", nsample = nsample + nsampled - nsampled_in_closed_groups, allow.na = T)
+    open_output <- optimall::optimum_allocation(data = open_df, strata = "group",y = "y", nsample = nsample + nsampled - nsampled_in_closed_groups, allow.na = T)
     names(open_output)[1] <- "group"
     open_output <- dplyr::inner_join(open_output, wave1_summary, by = "group")
     open_output <- dplyr::mutate(open_output, difference =  stratum_size - wave1_size, n_avail = nsample - wave1_size)
@@ -120,7 +120,7 @@ allocate_wave <- function(data, strata, y, wave2a, nsample, method = "iterative"
       dplyr::filter(group %in% open_groups_names)
 
     #Run optimal allocation on this filtered df of open groups
-    outputn <- optimall::optimal_allocation(data = open_df, strata = "group",y = "y", nsample = nsample + nsampled - nsampled_in_closed_groups, allow.na = T)
+    outputn <- optimall::optimum_allocation(data = open_df, strata = "group",y = "y", nsample = nsample + nsampled - nsampled_in_closed_groups, allow.na = T)
 
     #Re-join with (cleaned) input data to  get new differences
     names(outputn)[1] <- "group"
