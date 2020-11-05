@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 )
 
 library(optimall)
+library(DiagrammeR)
 ```
 
 
@@ -34,20 +35,78 @@ When a study population is composed of heterogeneous subpopulations, stratified 
 When used together, these functions can automate most of the sampling workflow. This vignette will introduce the theoretical framework behind the functions before demonstrating how they can be used to work with sampling data in R.
 
 ## Optimal Allocation
-Assuming that the per-unit sampling cost is the same in each stratum and that $S_h$, the standard deviation within each stratum, can be estimated, Neyman (1934) presented the following solution to optimally allocate $n$ samples among $H$ strata:  
+Assuming that the per-unit sampling cost is the same in each stratum and that $S_h$, the standard deviation of the variable of interest within each stratum, can be estimated, Neyman (1934) presented the following solution to optimally allocate $n$ samples among $H$ strata:  
 
 $$n_h = n \frac{N_hS_h}{\sum_{i=1}^H N_iS_i}$$
-This formula, known as Neyman allocation, is widely used as a robust method for minimizing the variance of an estimate. It can be called 
+This formula, known as Neyman allocation, is widely used as a robust method for minimizing the variance of an estimate. It can be called in `optimall`. Neyman allocation offers the advantage of outputting sampling fractions that can later be multiplied by $n$ or taken on their own if $n$ is not known.  
 
-Wright (2014) presents a
+While Neyman allocation has a strong theoretical backing, Wright (2014) points out some limitations that make it sub-optimal in practice. 
 
-`optimall` allows users to select between Neyman allocation, Wright Algorithm I, and Wright Algorithm II in the `method` argument of the `optim
+1. Neyman does not require that the solution to $n_h$ is an integer, and thus it rarely is. When taking a fraction of a sample is not practical, researchers are forced to stray from the theory by rounding the sample sizes in ways that are not always optimal. 
+2. Closely related to the first issue, the rounded results for $n_h$ are not guarunteed to sum to $n$. This is clearly sub-optimal.
+
+Wright offers revised algorithms that solve these issues which can also be implemented in `optimall`. Essentially, his approaches use linear constraints to optimize the allocation of samples over a space of integer values. He makes use of within-stratum variance and population stratum size to generate priority values, which in turn dictate how many samples should be taken from each stratum. To learn more about the specifics of these algorithms, see Wright (2014).
+
+`optimall` allows users to select between Neyman allocation, Wright Algorithm I, and Wright Algorithm II in the `method` argument of the `optimum_allocation` function. `optimum_allocation` defaults to using Wright Algorithm II because it is the only method of the three that requires an unbiased estimate of the variance and always produces the global optimum allocation. This algorithm requires that at least 2 samples are taken from each stratum.  In `optimall`, stratum sampling sizes for both Wright algorithms are also constrained from above at $N_h$, the population stratum size, using the methods for constraints that Wright details in Algorithm III. 
 
 ## Adaptive, Multi-Wave Sampling
+When measuring variables of interest is expensive or difficult, it is often favorable to employ an adaptive, multi-wave sampling design. This approach, which is well-documented in McIsaac and Cook (2014), involves multiple phases of sampling where information from prior waves is used to inform the optimum sampling design of subsequent ones. With the understanding that both Neyman and Wright's optimum allocation methods depend heavily on standard deviation estimates for the variable of interest, the benefit of multi-wave sampling is clear to see. Sample allocations based on prior waves will use better estimates of the variable of interest compared to a single wave, and they will therefore be more optimal. 
+
+In the design described by McIsaac and Cook, a large phase-I sample is first taken to measure the inexpensive covariates and/or outcome. The results of this phase will define strata which are then sampled non-optimally (through proportional or balanced sampling) for measurement of the expensive variable in phase-IIa. The phase-IIa results are used to estimate the standard deviation required to optimally allocate the next wave of samples. This process is iterated until the desired sample size for the variable of interest is achieved. Below is an outline of the workflow, which is facilitated by `optimall`:
+<br />
+<br />
+
+<center>
+
+```{r, fig.align='center', echo=FALSE}
+DiagrammeR::grViz("digraph {
+  graph [layout = dot, rankdir = TB]
+  
+  node [shape = rectangle, fixedsize = true, width = 8.5, height = 1.2, fontname = Helvetica, fontsize  = 20]   
+  rec1 [label = <<b>Phase-I:</b><br/>A large sample of inexpensive variables, <br/> define strata based on results.>]
+  rec2 [label = <<b>Phase-IIa:</b><br/>Initial stratified sample of expensive variable taken without <br/>optimum allocation>]
+  rec3 [label = <<b>Phase-IIb:</b><br/>Second sample of expensive variable with optimum allocation <br/> based on Phase-IIa results>]
+  rec4 [label = <<b>Phase-IIc - Phase-IIfinal:</b><br/>Combine previous waves of Phase-II together and repeat <br/> sampling with re-calculated optimum allocation until desired total <br/> sample size for expensive variable is reached at Phase-IIfinal>]
+  
+  # edge definitions with the node IDs
+  rec1 -> rec2 -> rec3 -> rec4
+
+  }", 
+  height = 250, width = 700)
+```
+
+</center>
+
+<br />
+
+`optimall` allows users to input phase-I data and iteratively allocate samples for subsequent waves with the function `allocate_wave`. Along the way, the user may also want to split or join imbalanced strata. `optimall` makes this easy with the `split_strata` function.
+
+## Example Workflow: Using `optimall` to Work with Healthy Weight Data
+
+#### *Overview*
+This example uses a simulated dataset to demonstrate how `optimall` can be used in an adaptive, multi-wave sampling workflow. The dataset is based on a real study analyzing the association between and the risk of childhood obesity.
 
 
-## Example workflow: using `optimall` to work with Healthy Weight Data
-* Introduce the given, error prone, data. We call this the "phase I" data according to the the notation from McIsaac
+
+Validating electronic health records is an expensive and difficult task. We decide that we can reasonably afford to audit 750 out of the 10,300 child-mother pairs for. 
+
+#### *Phase-I*
+Data for 10,300 mother-child pairs was collected during Phase-I and read into R as a dataframe where each row represents a unique mother-child pair and each column
+
+```{r}
+names(data)
+head(data)
+```
+
+#### *Defining Strata*
+
+#### *Phase-IIa*
+
+#### *Phase-IIb*
+
+#### *
+
+* Introduce the given, error prone, data. We call this the "phase I" data according to the the notation from McIsaac.
 
 * Show how the strata are created and, briefly, why
 
