@@ -17,6 +17,8 @@ knitr::opts_chunk$set(
 
 library(optimall)
 library(DiagrammeR)
+
+phase1 <- read.csv("/Volumes/ShawLab/PCORI Healthy Weight/JasperWork/Phase1SIM.csv")
 ```
 
 
@@ -84,21 +86,34 @@ DiagrammeR::grViz("digraph {
 ## Example Workflow: Using `optimall` to Work with Healthy Weight Data
 
 #### *Overview*
-This example uses a simulated dataset to demonstrate how `optimall` can be used in an adaptive, multi-wave sampling workflow. The dataset is based on a real study analyzing the association between and the risk of childhood obesity.
+This example uses a simulated dataset to demonstrate how `optimall` can be used in an adaptive, multi-wave sampling workflow. The dataset is based on a real study analyzing the association between maternal weight gain during pregancy and the risk of childhood obesity after controlling for a number of clinical and demographic covariates. 
 
-
-
-Validating electronic health records is an expensive and difficult task. We decide that we can reasonably afford to audit 750 out of the 10,300 child-mother pairs for. 
+The data is obtained from electronic health records, which are known to be error-prone. In a perfect world, we would validate every observation in our sample, but auditing electronic health records is an expensive and difficult task. We determine that we can only reasonably afford to validate 750 out of the 10,335 child-mother pairs. To get the most out of these 750 samples, we want to minimize the variance of our corrected estimates. This goal will be best accomplished through an adaptive, multi-wave sampling design.
 
 #### *Phase-I*
-Data for 10,300 mother-child pairs was collected during Phase-I and read into R as a dataframe where each row represents a unique mother-child pair and each column
+Data for 10,335 mother-child pairs was collected during Phase-I and read into R as a dataframe. Each row represents a unique mother-child pair, and columns include ID number, a binary indicator for the outcome variable child obesity, and an estimate of the mother's weight change during pregnancy among other variables of interest. 
 
 ```{r}
-names(data)
-head(data)
+dim(phase1)
+names(phase1)
+head(phase1)
 ```
 
-#### *Defining Strata*
+In this case,  . 
+We decide to split our population into 6 non-overlapping strata. Each stratum is defined by a unique combination of childhood obesity outcome (0/1) and global percentile of maternal weight gain (≤25th, 25th - 75th, >75th). We can accomplish this quickly in `optimall` using the `split_strata` function. 
+
+```{r}
+phase1 <- split_strata(data = phase1, strata = "diab", split = NULL, split_var = "mother_weight_change_est", type = "global quantile", split_at = c(0.25,0.75))
+```
+We now have the same `phase1` data with a new column specifying the strata we have defined. Since we used `"diab"` as the `strata` argument, optimall has changed its name to `"old_strata"`, but we can change it back if we would like. 
+
+```{r}
+dim(phase1)
+table(phase1$new_strata)
+names(phase1)[names(phase1) == "old_strata"] <- "diab"
+```
+
+In subsequent waves, we plan to target audits to records that are more infuential.  
 
 #### *Phase-IIa*
 
