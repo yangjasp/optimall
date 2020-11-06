@@ -42,7 +42,7 @@ sample_strata <- function(data1, strata1, id, wave2a = NULL, data2, strata2, n_a
     if (("Y" %in% data1[,wave2a] == FALSE & 1 %in% data1[,wave2a] == FALSE) | any(is.na(data1[,wave2a]))){
       stop("'wave2a' column must contain '1' (numeric) or 'Y' (string) as indicators that a unit was sampled in a previous wave and cannot contain NAs")
       }
-    if(nsample + sum(data1[,wave2a] == "Y") + sum(data1[,wave2a] == 1) > length(data1[,y])){
+    if(nsample + sum(data1[,wave2a] == "Y") + sum(data1[,wave2a] == 1) > length(data1[,wave2a])){
       stop("Total sample size across waves, taken as nsampled in wave2a + n to allocate in this sample, is larger than the population size.")
     }
   }
@@ -66,6 +66,7 @@ sample_strata <- function(data1, strata1, id, wave2a = NULL, data2, strata2, n_a
   }
   sampled_ids <- unlist(sampled_ids)
   names(data1)[names(data1) == id] <- "id"
+  names(data1)[names(data1) == wave2a] <- "prior_sample_indicator"
   output_df <- data1 %>%
     dplyr::mutate(sample_indicator = ifelse(id %in% sampled_ids, 1, 0))
   return(output_df)
