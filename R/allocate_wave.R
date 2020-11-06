@@ -58,7 +58,7 @@ allocate_wave <- function(data, strata, y, wave2a, nsample, method = "iterative"
   names(output1)[1] <- "group"
   comp_df <- dplyr::inner_join(output1, wave1_summary, by = "group")
   comp_df <- dplyr::mutate(comp_df, difference =  stratum_size - wave1_size,
-                    n_avail = nsample - wave1_size)
+                    n_avail = npop - wave1_size)
 
  #For the simple case in which no strata have been oversampled
   if(all(comp_df$difference >= 0) & all(comp_df$n_avail > comp_df$difference)){
@@ -84,7 +84,7 @@ allocate_wave <- function(data, strata, y, wave2a, nsample, method = "iterative"
     open_output <- optimall::optimum_allocation(data = open_df, strata = "group",y = "y", nsample = nsample + nsampled - nsampled_in_closed_groups, allow.na = T)
     names(open_output)[1] <- "group"
     open_output <- dplyr::inner_join(open_output, wave1_summary, by = "group")
-    open_output <- dplyr::mutate(open_output, difference =  stratum_size - wave1_size, n_avail = nsample - wave1_size)
+    open_output <- dplyr::mutate(open_output, difference =  stratum_size - wave1_size, n_avail = npop - wave1_size)
 
     open_output <- open_output %>%
       dplyr::rename(n_optimal = stratum_size,
@@ -126,7 +126,7 @@ allocate_wave <- function(data, strata, y, wave2a, nsample, method = "iterative"
     names(outputn)[1] <- "group"
     comp_df <- dplyr::inner_join(outputn, wave1_summary, by = "group")
     comp_df <- dplyr::mutate(comp_df, difference =  stratum_size - wave1_size,
-                             n_avail = nsample - wave1_size)
+                             n_avail = npop - wave1_size)
 
     }
     open_output <- comp_df %>%
