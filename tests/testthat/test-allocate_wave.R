@@ -22,5 +22,5 @@ test_that("y must be numeric, as it has to be for optimal_allocation",{
 })
 
 test_that("nsample cannot be larger than npop - n_sampled_prior",{
-  expect_error(allocate_wave(data = data2, strata = "strata", wave2a = "key", y = "y",nsample = 39), "Total sample size across waves, taken as nsampled in wave2a + nsample, is larger than the population size.", fixed = TRUE)
+  expect_error(allocate_wave(data = data, strata = "strata", wave2a = "key", y = "y",nsample = 39), "Total sample size across waves, taken as nsampled in wave2a + nsample, is larger than the population size.", fixed = TRUE)
 })
