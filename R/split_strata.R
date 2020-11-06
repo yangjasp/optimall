@@ -105,9 +105,16 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
                      cut_point,
                      max(data$split_variable))
       data_filtered$split_var_updated <- data_filtered$split_variable
-      for (i in 2:length(cut_point)) {
+      data_filtered <- data_filtered %>%
+        mutate(split_var_updated = ifelse(split_variable <= cut_point[2],
+                                          paste(split_var,
+                                                paste("[",round(cut_point[1], digits = 2), ",",round(cut_point[2], digits = 2),"]", sep = ""),
+                                                sep = "_"),
+                                          "other"
+                                          ))
+      for (i in 3:length(cut_point)) {
         data_filtered <- data_filtered %>%
-          mutate(split_var_updated = ifelse(split_variable > cut_point[i-1] & split_variable <= cut_point[i],
+          mutate(split_var_updated = ifelse(split_variable > cut_point[1] & split_variable > cut_point[i-1] & split_variable <= cut_point[i],
                                             paste(split_var,
                                                   paste("(",round(cut_point[i-1], digits = 2), ",",round(cut_point[i], digits = 2),"]", sep = ""),
                                             sep = "_"),
