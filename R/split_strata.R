@@ -94,16 +94,16 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
       data_filtered <- data_filtered %>%
         dplyr::mutate(split_var_updated = ifelse(split_variable <= cut_point[1],
                                                  paste(split_var,
-                                                       paste("[",round(min(data$split_variable), digits = 2), ",",round(cut_point[1], digits = 2),"]", sep = ""),
+                                                       paste("[",round(min(data_filtered$split_variable), digits = 2), ",",round(cut_point[1], digits = 2),"]", sep = ""),
                                                        sep = "_"),
                                                  paste(split_var,
-                                                       paste("(", round(cut_point[1], digits = 2), ",",round(max(data$split_variable), digits = 2),"]", sep = ""),
+                                                       paste("(", round(cut_point[1], digits = 2), ",",round(max(data_filtered$split_variable), digits = 2),"]", sep = ""),
                                                        sep = "_")))
     }
     if (length(cut_point) >1){
-      cut_point <- c(min(data$split_variable),
+      cut_point <- c(min(data_filtered$split_variable),
                      cut_point,
-                     max(data$split_variable))
+                     max(data_filtered$split_variable))
       data_filtered$split_var_updated <- data_filtered$split_variable
       data_filtered <- data_filtered %>%
         mutate(split_var_updated = ifelse(split_variable <= cut_point[2],
