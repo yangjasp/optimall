@@ -91,16 +91,17 @@ allocate_wave <- function(data, strata, y, wave2a, nsample, method = "iterative"
                     nsample_prior = wave1_size) %>%
       dplyr::mutate(n_to_sample = difference,
                     nsample_total = nsample_prior + n_to_sample) %>%
-      dplyr::select(group, npop, nsample_total, nsample_prior, n_to_sample)
+      dplyr::select("strata" = group, npop, nsample_total, nsample_prior, n_to_sample)
 
     closed_output <- temp %>%
       dplyr::rename(n_optimal = stratum_size,
                     nsample_prior = wave1_size) %>%
       dplyr::mutate(n_to_sample = 0,
                     nsample_total = nsample_prior) %>%
-      dplyr::select(group, npop, nsample_total, nsample_prior, n_to_sample)
+      dplyr::select("strata" = group, npop, nsample_total, nsample_prior, n_to_sample)
 
     output_df <- rbind(closed_output, open_output)
+    output_df <- dplyr::arrange(output_df, strata)
     return(output_df)
   }
   #Now, iterative method
@@ -134,15 +135,16 @@ allocate_wave <- function(data, strata, y, wave2a, nsample, method = "iterative"
                     nsample_prior = wave1_size) %>%
       dplyr::mutate(n_to_sample = difference,
                     nsample_total = nsample_prior + n_to_sample) %>%
-      dplyr::select(group, npop, nsample_total, nsample_prior, n_to_sample)
+      dplyr::select("strata" = group, npop, nsample_total, nsample_prior, n_to_sample)
 
     closed_output <- closed_groups_df %>%
       dplyr::rename(n_optimal = stratum_size,
                     nsample_prior = wave1_size) %>%
       dplyr::mutate(n_to_sample = 0,
                     nsample_total = nsample_prior) %>%
-      dplyr::select(group, npop, nsample_total, nsample_prior, n_to_sample)
+      dplyr::select("strata" = group, npop, nsample_total, nsample_prior, n_to_sample)
     output_df <- rbind(closed_output, open_output)
+    output_df <- dplyr::arrange(output_df, strata)
     return(output_df)
   }
   else {

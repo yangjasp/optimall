@@ -66,7 +66,8 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
                     n_sd = round(n_sd, digits = 2))
     names(output_df)[names(output_df) == "n"] <- "npop"
       if (is.null(nsample)) {
-        return(as.data.frame(output_df))
+        output_df <- dplyr::arrange(output_df, strata)
+        return(output_df)
       }
       else {
         output_df <- output_df %>%
@@ -74,7 +75,8 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
                                              digits = 0),
                         sd = round(sd, digits = 2),
                         n_sd = round(n_sd, digits = 2))
-        return(as.data.frame(output_df))
+        output_df <- dplyr::arrange(output_df, strata)
+        return(output_df)
       }
     }
     else if (method == "WrightI"){
@@ -126,6 +128,7 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
                         n_sd = round(n_sd, digits = 2))
         final_output <- final_output[c("strata","n","sd","n_sd","stratum_fraction","stratum_size")]
         names(final_output)[names(final_output) == "n"] <- "npop"
+        final_output <- dplyr::arrange(final_output, strata)
         return(final_output)
 
       }
@@ -179,6 +182,7 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
                         n_sd = round(n_sd, digits = 2))
         final_output <- final_output[c("strata","n","sd","n_sd","stratum_fraction","stratum_size")]
         names(final_output)[names(final_output) == "n"] <- "npop"
+        final_output <- dplyr::arrange(final_output, strata)
         return(final_output)
 
       }
