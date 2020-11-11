@@ -151,5 +151,8 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
   column_names_other <- names(output_df)[names(output_df) != "old_strata" & names(output_df) != "new_strata"]
   column_names_other <- enquo(column_names_other)
   output_df <- dplyr::select(output_df, new_strata, old_strata, !!column_names_other )
+  if(is.numeric(output_df$new_strata) == FALSE){
+  output_df$new_strata <- as.character(output_df$new_strata)
+  }
   return(output_df)
 }
