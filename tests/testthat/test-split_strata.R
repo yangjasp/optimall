@@ -11,7 +11,7 @@ data_split <- data.frame("strata" = c(rep("a", times = 15), rep("b", times = 15)
 test_that("strata_split produces a dataframe with the same number of rows as input and one more column called 'new_strata' with only the specified strata changed",{
   expect_equal(dim(split_strata(data = data_split, strata = "strata", split = "a", split_var = "split_var", split_at = 0, type = "value")),c(42,4))
   expect_equal(dim(split_strata(data = data_split, strata = "strata", split = NULL, split_var = "split_var", split_at = 0, type = "value")),c(42,4))
-  expect_equal(sort(unique(split_strata(data = data_split, strata = "strata", split = "a", split_var = "split_var", split_at = 0, type = "value")$new_strata)),c(paste("a.split_var_(0,", round(max(data_split$split_var), digits = 2), "]", sep = ""), paste("a.split_var_[", round(min(data_split$split_var), digits = 2), ",0]", sep = ""),  "b","c"))
+  expect_equal(sort(unique(split_strata(data = data_split, strata = "strata", split = "a", split_var = "split_var", split_at = 0, type = "value")$new_strata)),c(paste("a.split_var_(0,", round(max(filter(data_split, strata == "a")$split_var), digits = 2), "]", sep = ""), paste("a.split_var_[", round(min(filter(data_split, strata == "a")$split_var), digits = 2), ",0]", sep = ""),  "b","c"))
 })
 
 test_that("splits occur at correct global quantile values",{
