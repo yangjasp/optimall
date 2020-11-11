@@ -132,8 +132,11 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
     } else{
       data_filtered <- dplyr::filter(data, old_strata == split)
     }
+    split_var_name <- split_var
     data_filtered <- data_filtered %>%
-      dplyr::mutate(split_var_updated = ifelse(split_variable %in% split_at,"1","0"))
+      dplyr::mutate(split_var_updated = ifelse(split_variable %in% split_at,
+                                               paste0(split_var_name,"_1"),
+                                               paste0(split_var_name,"_0")))
     new_strata <- interaction(dplyr::select(data_filtered,old_strata,split_var_updated))
     data_filtered <- cbind(new_strata, data_filtered)
     small_df <- dplyr::select(data_filtered, -split_var_updated)
