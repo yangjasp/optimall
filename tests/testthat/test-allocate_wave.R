@@ -9,7 +9,7 @@ data <- data.frame("strata" = c(rep("a", times = 15), rep("b", times = 15), rep(
 data$key[c(1,16,31)] <- 1 #To make sure no group gets zero in wave2a
 
 test_that("the output of allocate_wave is as expected",{
-  output <- allocate_wave(data = data, strata = "strata", wave2a = "key", y = "y",nsample = 20)
+  output <- allocate_wave(data = data, strata = "strata", wave2a = "key", y = "y",nsample = 20, method = "iterative")
   expect_equal(output$nsample_total, optimum_allocation(data = data, strata = "strata", y = "y", nsample = sum(data$key) + 20)$stratum_size) #Only works if no oversampling in wave2a
   expect_equal(sum(output$n_to_sample), 20)
   expect_equal(sum(output$n_to_sample) + sum(output$nsample_prior), sum(output$nsample_total))
