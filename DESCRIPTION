@@ -14,7 +14,9 @@ LazyData: true
 Depends: 
 	dplyr,
 	stats,
-	tibble
+	tibble,
+	shiny,
+	glue
 Oxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Suggests: 
