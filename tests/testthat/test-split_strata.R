@@ -35,9 +35,9 @@ test_that("splits occur at correct local quantile values",{
 test_that("splits occur at correct categorical split",{
   data_split$split_var2 <- rep(c(rep("alpha", times = 7), rep("beta", times = 7)), times = 3)
   expect_equal(sort(unique(split_strata(data = data_split, strata = "strata", split = "a", split_var = "split_var2", split_at = "alpha", type = "categorical")$new_strata)),
-               c("a.0","a.1", "b","c"))
+               c("a.split_var2_0","a.split_var2_1", "b","c"))
   expect_equal(sort(as.character(unique(split_strata(data = data_split, strata = "strata", split = NULL, split_var = "split_var2", split_at = "alpha", type = "categorical")$new_strata))),
-               c("a.0","a.1", "b.0","b.1","c.0","c.1"))
+               c("a.split_var2_0","a.split_var2_1", "b.split_var2_0","b.split_var2_1","c.split_var2_0","c.split_var2_1"))
 })
 
 test_that("strata_split can define prior strata based on an interaction of multiple columns",{
