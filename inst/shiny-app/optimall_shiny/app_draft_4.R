@@ -159,7 +159,7 @@ server <- function(input, output, session) {
     if(type_vals$func == "optimum_allocation"){
     output_df <- optimall::optimum_allocation(data = output_df, strata = "new_strata", y = input$y, nsample = input$nsample, allow.na = T)
     } else {
-    output_df <- optimall::allocate_wave(data = output_df, strata = "new_strata", y = input$y, nsample = input$nsample, wave2a = input$key)
+    output_df <- optimall::allocate_wave(data = output_df, strata = "new_strata", y = input$y, nsample = input$nsample, wave2a = input$key, method = "simple")
     }
     output_df
   })
