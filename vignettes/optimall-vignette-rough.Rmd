@@ -39,7 +39,7 @@ When a study population is composed of heterogeneous subpopulations, stratified 
 
 * Optimally allocate a fixed number of samples to an ancillary sampling wave based on results from a prior wave. 
 
-When used together, these functions can automate most of the sampling workflow. This vignette will introduce the theoretical framework behind the functions before demonstrating how they can be used to work with sampling data in R.
+When used together, these functions can automate most of the sampling workflow. This vignette will introduce the theoretical framework behind the functions before demonstrating how they can be used to work with sampling data in R. The final section then details how to use `optimall_shiny` to efficiently make decisions about splitting strata.
 
 ## Optimal Allocation
 Assuming that the per-unit sampling cost is the same in each stratum and that $S_h$, the standard deviation of the variable of interest within each stratum, can be estimated, Neyman (1934) presented the following solution to optimally allocate $n$ samples among $H$ strata:  
@@ -277,6 +277,19 @@ head(ids_to_sample2c)
 ```
 
 We have now validated 750 samples!
+
+## Splitting Strata Efficiently with `optimall_shiny`
+
+In many cases, deciding which strata to split and where is a difficult task. `split_strata` makes this job easier, but it is designed more for situations where the strata and split values have already been decided by the user. Running it iteratively to experiment with different splits is possible yet tedious. 
+
+To help users make these difficult decisions, `optimall` includes an R Shiny application that reacts in realtime to user selections of splitting parameters. It can be called using `optimall_shiny()`. See the screenshot below:
+
+![](../inst/shiny-app/optimall_shiny/Screenshots/Screenshot1.png)
+
+Each time the user updates an input, the parameters of the `split_strata` function are updated accordingly, and the resulting dataframe showing the optimum allocation of samples among the new strata is displayed. Once the user is satsfied with a set of inputs, they can `confirm` the split and the underlying data will be updated. The code used to perform the split will also be displayed.
+
+Note that the data in the Shiny App has to be loaded in from a file, and it is thus separate from data being used in the `optimall` workflow. This means that the user has to return to their R session to make the changes determined in the Shiny app. The app, however, makes this easy by printing the code to perform all of the confirmed changes, so making them in R is as easy as copying and pasting. You may have to update the `"data"` argument, though.
+
 
 ## References
 McIsaac MA, Cook RJ. Adaptive sampling in two‐phase designs: a biomarker study for progression in arthritis. Statistics in Medicine. 2015 Sep 20;34(21):2899-912.
