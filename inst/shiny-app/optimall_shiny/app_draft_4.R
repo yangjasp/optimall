@@ -7,10 +7,10 @@ library(glue)
 
 # Splitting Strata with Optimal Allocation
 ui <- fluidPage(
-  
+
   # Application title
   titlePanel("Splitting Strata with Optimum Allocation"),
-  
+
   # Data input and describe its columns
   # radio buttons from test result
   sidebarLayout(
@@ -32,7 +32,7 @@ ui <- fluidPage(
       actionButton("confirm", "Confirm Split"),
       actionButton("reset", "Reset")
     ),
-    
+
     # Show table with output of optimum_allocation
     mainPanel(
       DT::dataTableOutput("datatable"),
@@ -50,18 +50,18 @@ server <- function(input, output, session) {
     values$df_data <- read.csv(input$data$datapath)
   })
   #Render the reactive UI
-  
+
   #Add option for allocate wave and store it as a reactive value
   output$allocation <- renderUI({
     shiny::req(input$data)
-    radioButtons(inputId = "allocation", 
+    radioButtons(inputId = "allocation",
                  label = "Include Information from Previous Wave",
                  list("optimum_allocation","allocate_wave (have some units already been sampled?)"),)
   })
   type_vals <- reactiveValues()
   type_vals$func <- "optimum_allocation"
   observeEvent(input$allocation, {type_vals$func <- input$allocation})
-  
+
   #Now add the choice to select which column specifies the wave.
   output$key <- renderUI({
     shiny::req(input$data)
@@ -72,34 +72,34 @@ server <- function(input, output, session) {
       NULL
     }
   })
-  
+
   output$strata <- renderUI({
     shiny::req(input$data)
-    selectInput(inputId = "strata", 
-                label = "Column Holding Strata", 
+    selectInput(inputId = "strata",
+                label = "Column Holding Strata",
                 choices = names(values$df_data))
   })
   output$split_var <- renderUI({
     shiny::req(input$data)
-    selectInput(inputId = "split_var", 
-                label = "Column Holding Variable to Split On", 
+    selectInput(inputId = "split_var",
+                label = "Column Holding Variable to Split On",
                 choices = names(values$df_data))
   })
   output$y <- renderUI({
     shiny::req(input$data)
-    selectInput(inputId = "y", 
-                label = "Column Holding Variable of Interest", 
+    selectInput(inputId = "y",
+                label = "Column Holding Variable of Interest",
                 choices = names(values$df_data))
-  })  
+  })
   output$strata_to_split <- renderUI({
     shiny::req(input$data)
     selectInput(inputId = "strata_to_split",
                 label = "Name of Strata to Split",
-                choices = c("All", unique(dplyr::select(values$df_data, input$strata))))
+                choices = c("All", sort(unique(dplyr::select(values$df_data, input$strata)[,input$strata]))))
   })
   output$type <- renderUI({
     shiny::req(input$data)
-    radioButtons(inputId = "type", 
+    radioButtons(inputId = "type",
                  label = "Split Type:",
                  list("global quantile","local quantile", "value", "categorical"))
   })
@@ -109,13 +109,13 @@ server <- function(input, output, session) {
   })
   #Change the parameters of split_at based on the type
   type_vals$type <- "global quantile"
-  
+
   observeEvent(input$type, {type_vals$type <- input$type})
   #observe(input$type == "global quantile",{slidertype$type <- "global quantile"})
   #observe(input$type == "local quantile", {slidertype$type <- "local quantile"})
   #observe(input$type == "value", {slidertype$type <- "value"})
   #observe(input$type == "categorical", {slidertype$type <- "categorical"})
-  
+
   output$split_at <- renderUI({
     shiny::req(input$data)
     if(type_vals$type %in% c("global quantile","local quantile")){
@@ -136,8 +136,8 @@ server <- function(input, output, session) {
       checkboxGroupInput(inputId = "split_at", label = "Split At:",
                          choices = c(unique(dplyr::select(values$df_data, input$split_var)[,input$split_var])))
     }
-  })    
-  
+  })
+
   strata_to_split <- reactiveValues(split = NULL)
   observeEvent(input$strata_to_split, {
     shiny::req(input$data)
@@ -147,7 +147,7 @@ server <- function(input, output, session) {
       strata_to_split$split <- input$strata_to_split
     }
   })
-  
+
   #Render the datatable with the optimum_allocation output.
   output$datatable <- DT::renderDataTable({
     shiny::req(input$data)
@@ -159,12 +159,12 @@ server <- function(input, output, session) {
     if(type_vals$func == "optimum_allocation"){
     output_df <- optimall::optimum_allocation(data = output_df, strata = "new_strata", y = input$y, nsample = input$nsample, allow.na = T)
     } else {
-    output_df <- optimall::allocate_wave(data = output_df, strata = "new_strata", y = input$y, nsample = input$nsample, wave2a = input$key) 
+    output_df <- optimall::allocate_wave(data = output_df, strata = "new_strata", y = input$y, nsample = input$nsample, wave2a = input$key)
     }
     output_df
   })
-  
-  
+
+
   #What happens when you confirm your split. 1: output_df updates and 2: code for the split pops up.
   myValues <- reactiveValues()
   observeEvent(input$confirm,{
@@ -182,7 +182,7 @@ server <- function(input, output, session) {
     })
     values$df_data <- temp
   })
-  
+
   #Reset button resets df and clears changes in text
   dfy <- observeEvent(input$reset,{
     output_df <- df()
@@ -191,7 +191,7 @@ server <- function(input, output, session) {
       myValues <- NULL
     })
   })
-}       
+}
 
-# Run the application 
+# Run the application
 shinyApp(ui = ui, server = server)
