@@ -66,7 +66,6 @@ sample_strata <- function(data1, strata1, id, wave2a = NULL, data2, strata2, n_a
   }
   sampled_ids <- unlist(sampled_ids)
   names(data1)[names(data1) == id] <- "id"
-  names(data1)[names(data1) == wave2a] <- "prior_sample_indicator"
   output_df <- data1 %>%
     dplyr::mutate(sample_indicator = ifelse(id %in% sampled_ids, 1, 0))
   return(output_df)
