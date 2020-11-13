@@ -157,11 +157,11 @@ server <- function(input, output, session) {
     shiny::req(input$split_at)
     output_df <- optimall::split_strata(data = values$df_data, strata = input$strata, split = strata_to_split$split ,split_var = input$split_var, type = input$type, split_at = input$split_at)
     if(type_vals$func == "optimum_allocation"){
-    output_df <- optimall::optimum_allocation(data = output_df, strata = "new_strata", y = input$y, nsample = input$nsample, allow.na = T)
+    output_df <- optimall::optimum_allocation(data = output_df, strata = "new_strata", y = input$y, nsample = input$nsample, ndigits = 4,allow.na = T)
     } else {
     output_df <- optimall::allocate_wave(data = output_df, strata = "new_strata", y = input$y, nsample = input$nsample, wave2a = input$key, method = "simple")
     }
-    output_df
+    datatable(output_df, options = list(pageLength = 25))
   })
 
 
