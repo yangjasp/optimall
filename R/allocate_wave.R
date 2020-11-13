@@ -4,21 +4,22 @@
 #'
 #'  If the optimum sample size in a stratum is smaller than the amount it was allocated in previous waves, that strata has been \emph{oversampled}. When oversampling occurs, `allocate_wave` "closes" the oversampled strata and re-allocates the remaining samples optimally among the open strata. Under these circumstances, the total sampling allocation is no longer optimal, but `optimall` will output the \emph{most} optimal allocation possible for the next wave.
 #' @param data A data frame or matrix with one row for each sampling unit, one column specifying each unit's stratum, one column holding the value of the continuous variable for which the variance should be minimized, and one column containing a key specifying if each unit has already been sampled.
-#' @param strata a character string or vector of character strings specifying the name of columns which indicate the stratum that each unit belongs to.
-#' @param y a character string specifying the name of the continuous variable for which the variance should be minimized.
-#' @param wave2a a character string specifying the name of a column that contains a binary (\code{Y}/\code{N} or \code{1}/\code{0}) indicator specifying whether each unit has already been sampled in a previous wave.
+#' @param strata A character string or vector of character strings specifying the name of columns which indicate the stratum that each unit belongs to.
+#' @param y A character string specifying the name of the continuous variable for which the variance should be minimized.
+#' @param wave2a A character string specifying the name of a column that contains a binary (\code{Y}/\code{N} or \code{1}/\code{0}) indicator specifying whether each unit has already been sampled in a previous wave.
 #' @param nsample The desired sample size of the next wave.
-#' @param method a character string specifying the method to be used if at least one group was oversampled. Must be one of:
+#' @param method A character string specifying the method to be used if at least one group was oversampled. Must be one of:
 #' \itemize{
 #'\item \code{"iterative"}, the default, may require a longer runtime but is a more precise method of handling oversampled strata. If there are multiple oversampled strata, this method closes strata and re-calculates optimum allocation one by one.
 #'\item \code{"simple"} closes all oversampled together and re-calculates optimum allocation one the rest of the strata only once.
 #' }
+#' @param detailed A logical value indicating whether the output dataframe should include details about each stratum including the true optimum allocation without previous waves of sampling and stratum standard deviations. Defaults to FALSE because these details are all available in the output of `optimum_allocation`.
 #' @export
 #' @references Wright, T. (2014). A simple method of exact optimal sample allocation under stratification with any mixed constraint patterns. Statistics, 07.
 #' @return Returns a dataframe with one row for each stratum and columns specifying the stratum name, population stratum size (\code{"npop"}), cumulative sample in that strata (\code{"nsampled_total"}), prior number sampled in that strata (\code{"nsampled_prior"}), and the optimally allocated number of units in each strata for the next wave (\code{"n_to_sample"}).
 
 allocate_wave <- function(data, strata, y, wave2a,
-                          nsample, method = "iterative"){
+                          nsample, method = "iterative", detailed = FALSE){
   if (is.matrix(data)) {
     data <- data.frame(data)
     }
@@ -33,6 +34,9 @@ allocate_wave <- function(data, strata, y, wave2a,
   }
   if (wave2a %in% names(data) == FALSE) {
     stop("'wave2a' must be a character string matching a column name of data.")
+  }
+  if (class(detailed) != "logical"){
+    stop("'detailed' must be a logical value.")
   }
   if (length(table(data[,wave2a])) != 2) {
     stop("'wave2a' must be a character string matching a column in 'data' that has a binary indicator for whether each unit was already sampled.")
@@ -70,11 +74,17 @@ allocate_wave <- function(data, strata, y, wave2a,
  #For the simple case in which no strata have been oversampled
   if(all(comp_df$difference >= 0)){
     comp_df <- comp_df %>%
-      dplyr::rename(n_optimal = stratum_size,
+      dplyr::rename(nsample_optimal = stratum_size,
              nsample_prior = wave1_size,
              n_to_sample = difference) %>%
-      dplyr::mutate(nsample_total = nsample_prior + n_to_sample) %>%
-      dplyr::select(group, npop, nsample_total, nsample_prior, n_to_sample)
+      dplyr::mutate(nsample_total = nsample_prior + n_to_sample)
+    if(detailed == FALSE){
+      comp_df <- comp_df %>%
+        dplyr::select("strata" = group, npop, nsample_total, nsample_prior, n_to_sample)
+    } else if(detailed == TRUE){
+      comp_df <- comp_df %>%
+        dplyr::select("strata" = group, npop, nsample_optimal, nsample_total, nsample_prior, n_to_sample, sd)
+    }
     return(comp_df)
   }
 
@@ -94,20 +104,28 @@ allocate_wave <- function(data, strata, y, wave2a,
     open_output <- dplyr::mutate(open_output, difference =  stratum_size - wave1_size, n_avail = npop - wave1_size)
 
     open_output <- open_output %>%
-      dplyr::rename(n_optimal = stratum_size,
+      dplyr::rename(nsample_optimal = stratum_size,
                     nsample_prior = wave1_size) %>%
       dplyr::mutate(n_to_sample = difference,
                     nsample_total = nsample_prior + n_to_sample) %>%
-      dplyr::select("strata" = group, npop, nsample_total, nsample_prior, n_to_sample)
+      dplyr::select("strata" = group, npop, nsample_total, nsample_prior, n_to_sample, "sd1" = sd)
 
     closed_output <- temp %>%
-      dplyr::rename(n_optimal = stratum_size,
+      dplyr::rename(nsample_optimal = stratum_size,
                     nsample_prior = wave1_size) %>%
       dplyr::mutate(n_to_sample = 0,
                     nsample_total = nsample_prior) %>%
       dplyr::select("strata" = group, npop, nsample_total, nsample_prior, n_to_sample)
 
     output_df <- rbind(closed_output, open_output)
+    if(detailed == TRUE){
+      output_df <- dplyr::inner_join(output_df,
+                                     dplyr::select(output1,"nsample_optimal"= stratum_size,
+                                                   sd, "strata" = group),
+                                     by  = "strata")
+      output_df <- dplyr::select(output_df, strata, npop, nsample_optimal,
+                                 nsample_total, nsample_prior, n_to_sample,sd)
+    }
     output_df <- dplyr::arrange(output_df, strata)
     return(output_df)
   }
@@ -138,19 +156,27 @@ allocate_wave <- function(data, strata, y, wave2a,
 
     }
     open_output <- comp_df %>%
-      dplyr::rename(n_optimal = stratum_size,
+      dplyr::rename(nsample_optimal = stratum_size,
                     nsample_prior = wave1_size) %>%
       dplyr::mutate(n_to_sample = difference,
                     nsample_total = nsample_prior + n_to_sample) %>%
       dplyr::select("strata" = group, npop, nsample_total, nsample_prior, n_to_sample)
 
     closed_output <- closed_groups_df %>%
-      dplyr::rename(n_optimal = stratum_size,
+      dplyr::rename(nsample_optimal = stratum_size,
                     nsample_prior = wave1_size) %>%
       dplyr::mutate(n_to_sample = 0,
                     nsample_total = nsample_prior) %>%
       dplyr::select("strata" = group, npop, nsample_total, nsample_prior, n_to_sample)
     output_df <- rbind(closed_output, open_output)
+    if(detailed == TRUE){
+      output_df <- dplyr::inner_join(output_df,
+                                     dplyr::select(output1,"nsample_optimal"= stratum_size,
+                                                   sd, "strata" = group),
+                                     by  = "strata")
+      output_df <- dplyr::select(output_df, strata, npop, nsample_optimal,
+                                 nsample_total, nsample_prior, n_to_sample,sd)
+    }
     output_df <- dplyr::arrange(output_df, strata)
     return(output_df)
   }
