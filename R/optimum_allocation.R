@@ -11,7 +11,7 @@
 #'\item \code{"WrightI"} uses Wright's Algorithm I to determine the optimum sample allocation. It only requires that at least one sample is allocated to each stratum, and can therefore lead to a biased variance estimate. It is not recommended except for in very specific cases.
 #'\item \code{"Neyman"} uses the standard method of Neyman Allocation to determine the optimum sample allocation. Its calculated stratum sample sizes are frequently non-integer values, but the output rounds these to the nearest integer. It is best used when nsample is `NULL` because it will output exact sampling fractions.
 #' }
-#' @param ndigits a numeric value specifying the number of digits to round the stratum fraction to.
+#' @param ndigits a numeric value specifying the number of digits to round the standard deviation and stratum fraction to. Defaults to 2.
 #' @param allow.na logical input specifying whether y should be allowed to have NA values. Defaults to \code{FALSE}.
 #' @examples
 #' optimum_allocation(data = iris, strata = "Species", y = "Sepal.Length",
@@ -63,8 +63,8 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
                        n_sd = sd(y, na.rm = T) * n()) %>%
       dplyr::mutate(stratum_fraction = round(n_sd / sum(n_sd),
                                                     digits = ndigits),
-                    sd = round(sd, digits = 2),
-                    n_sd = round(n_sd, digits = 2))
+                    sd = round(sd, digits = ndigits),
+                    n_sd = round(n_sd, digits = ndigits))
     output_df <- (as.data.frame(output_df))
     names(output_df)[names(output_df) == "n"] <- "npop"
       if (is.null(nsample)) {
@@ -75,8 +75,8 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
         output_df <- output_df %>%
           dplyr::mutate(stratum_size = round(nsample * n_sd / sum(n_sd),
                                              digits = 0),
-                        sd = round(sd, digits = 2),
-                        n_sd = round(n_sd, digits = 2))
+                        sd = round(sd, digits = ndigits),
+                        n_sd = round(n_sd, digits = ndigits))
         output_df <- dplyr::arrange(output_df, strata)
         return(output_df)
       }
@@ -126,8 +126,8 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
         final_output <- final_output %>%
           dplyr::mutate(stratum_fraction = round(stratum_size / nsample,
                                                  digits = ndigits),
-                        sd = round(sd, digits = 2),
-                        n_sd = round(n_sd, digits = 2))
+                        sd = round(sd, digits = ndigits),
+                        n_sd = round(n_sd, digits = ndigits))
         final_output <- final_output[c("strata","n","sd","n_sd","stratum_fraction","stratum_size")]
         names(final_output)[names(final_output) == "n"] <- "npop"
         final_output <- dplyr::arrange(final_output, strata)
@@ -180,8 +180,8 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
         final_output <- final_output %>%
           dplyr::mutate(stratum_fraction = round(stratum_size / nsample,
                                                         digits = ndigits),
-                        sd = round(sd, digits = 2),
-                        n_sd = round(n_sd, digits = 2))
+                        sd = round(sd, digits = ndigits),
+                        n_sd = round(n_sd, digits = ndigits))
         final_output <- final_output[c("strata","n","sd","n_sd","stratum_fraction","stratum_size")]
         names(final_output)[names(final_output) == "n"] <- "npop"
         final_output <- dplyr::arrange(final_output, strata)
