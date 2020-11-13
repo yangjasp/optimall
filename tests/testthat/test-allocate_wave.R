@@ -15,7 +15,19 @@ test_that("the output of allocate_wave is as expected",{
   expect_equal(sum(output$n_to_sample) + sum(output$nsample_prior), sum(output$nsample_total))
 })
 
-test_that("y must be numeric, as it has to be for optimal_allocation",{
+test_that("the output of allocate_wave matches the output of optimum_allocation where it should",{
+  data2 <- data
+  data2$key2 <- c(rep(1, times = 10), rbinom(32, 1, 0.2))
+  output_wave <- allocate_wave(data = data2, strata = "strata", wave2a = "key2", y = "y",nsample = 12, detailed = TRUE)
+  output_opt <- optimum_allocation(data = data2, strata = "strata", y = "y", nsample = sum(data2$key2 == 1) + 12)
+  expect_equal(output_wave$nsample_optimal, output_opt$stratum_size)
+  expect_equal(output_wave$sd, output_opt$sd)
+  expect_equal(sum(output_wave$nsample_total), sum(output_opt$stratum_size))
+  expect_equal(all((output_wave$nsample_prior + output_wave$n_to_sample) == output_wave$nsample_total), TRUE)
+
+})
+
+test_that("y must be numeric, as it has to be for optimum_allocation",{
   data2 <- data
   data2$y <- as.character(data2$y)
   expect_error(allocate_wave(data = data2, strata = "strata", wave2a = "key", y = "y",nsample = 20), "'y' must be numeric.")
