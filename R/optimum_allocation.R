@@ -65,6 +65,7 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
                                                     digits = ndigits),
                     sd = round(sd, digits = 2),
                     n_sd = round(n_sd, digits = 2))
+    output_df <- (as.data.frame(output_df))
     names(output_df)[names(output_df) == "n"] <- "npop"
       if (is.null(nsample)) {
         output_df <- dplyr::arrange(output_df, strata)
