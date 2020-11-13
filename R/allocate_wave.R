@@ -68,7 +68,7 @@ allocate_wave <- function(data, strata, y, wave2a,
                     n_avail = npop - wave1_size)
 
  #For the simple case in which no strata have been oversampled
-  if(all(comp_df$difference >= 0) & all(comp_df$n_avail > comp_df$difference)){
+  if(all(comp_df$difference >= 0)){
     comp_df <- comp_df %>%
       dplyr::rename(n_optimal = stratum_size,
              nsample_prior = wave1_size,
