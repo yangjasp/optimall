@@ -38,7 +38,7 @@ allocate_wave <- function(data, strata, y, wave2a,
     stop("'wave2a' must be a character string matching a column in 'data' that has a binary indicator for whether each unit was already sampled.")
   }
   if (("Y" %in% data[,wave2a] == FALSE & 1 %in% data[,wave2a] == FALSE) | any(is.na(data[,wave2a]))){
-    stop("'wave2a' column must contain '1' (numeric) or 'Y' (string) as indicators that a unit was sampled in a previous wave and cannot contain NAs")
+    stop("'wave2a' column must contain '1' (numeric) or 'Y' (string) as indicators that a unit was sampled in a previous wave and cannot contain NAs. If no units have been sample, use 'optimum_allocation.")
   }
   if(nsample + sum(data[,wave2a] == "Y") + sum(data[,wave2a] == 1) > length(data[,y])){
     stop("Total sample size across waves, taken as nsampled in wave2a + nsample, is larger than the population size.")
@@ -59,9 +59,8 @@ allocate_wave <- function(data, strata, y, wave2a,
   wave1_df <- dplyr::select(wave1_df, 1, !!y, !!key_q ) #Only columns of interest
   names(wave1_df) <- c("group","y","key")
   wave1_summary <- wave1_df %>%
-    dplyr::filter(key == 1 | key  == "Y") %>%
     dplyr::group_by(group) %>%
-    dplyr::summarize(wave1_size = n())
+    dplyr::summarize(wave1_size = sum(key == 1|key == "Y"))
 
   names(output1)[1] <- "group"
   comp_df <- dplyr::inner_join(output1, wave1_summary, by = "group")
