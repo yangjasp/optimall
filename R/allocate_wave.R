@@ -11,7 +11,7 @@
 #' @param method A character string specifying the method to be used if at least one group was oversampled. Must be one of:
 #' \itemize{
 #'\item \code{"iterative"}, the default, may require a longer runtime but is a more precise method of handling oversampled strata. If there are multiple oversampled strata, this method closes strata and re-calculates optimum allocation one by one.
-#'\item \code{"simple"} closes all oversampled together and re-calculates optimum allocation one the rest of the strata only once.
+#'\item \code{"simple"} closes all oversampled together and re-calculates optimum allocation on the rest of the strata only once. In certain cases where many strata have been oversampled in prior waves, it is possible that this method will output a negative value in n_to_sample. When this occurs, the function will print a warning, and it is recommended that the user re-runs the allocation with the 'iterative' method.
 #' }
 #' @param detailed A logical value indicating whether the output dataframe should include details about each stratum including the true optimum allocation without previous waves of sampling and stratum standard deviations. Defaults to FALSE because these details are all available in the output of `optimum_allocation`.
 #' @export
@@ -108,7 +108,7 @@ allocate_wave <- function(data, strata, y, wave2a,
                     nsample_prior = wave1_size) %>%
       dplyr::mutate(n_to_sample = difference,
                     nsample_total = nsample_prior + n_to_sample) %>%
-      dplyr::select("strata" = group, npop, nsample_total, nsample_prior, n_to_sample, "sd1" = sd)
+      dplyr::select("strata" = group, npop, nsample_total, nsample_prior, n_to_sample)
 
     closed_output <- temp %>%
       dplyr::rename(nsample_optimal = stratum_size,
@@ -127,6 +127,10 @@ allocate_wave <- function(data, strata, y, wave2a,
                                  nsample_total, nsample_prior, n_to_sample,sd)
     }
     output_df <- dplyr::arrange(output_df, strata)
+    if (any(output_df$n_to_sample < 0)){
+      warning("The simple method yielded strata with negative n_to_sample values due to many groups being oversampled in prior waves. Try method = 'iterative'.")
+      did_simple_work <- FALSE
+    }
     return(output_df)
   }
   #Now, iterative method
