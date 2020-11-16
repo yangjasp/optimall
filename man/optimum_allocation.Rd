@@ -23,7 +23,7 @@ optimum_allocation(
 
 \item{nsample}{the desired total sample size. Defaults to NULL.}
 
-\item{ndigits}{a numeric value specifying the number of digits to round the stratum fraction to.}
+\item{ndigits}{a numeric value specifying the number of digits to round the standard deviation and stratum fraction to. Defaults to 2.}
 
 \item{method}{a character string specifying the method of optimum sample allocation to use. Must be one of:
 \itemize{

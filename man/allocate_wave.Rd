@@ -4,24 +4,34 @@
 \alias{allocate_wave}
 \title{Adaptive Multi-Wave Sampling}
 \usage{
-allocate_wave(data, strata, y, wave2a, nsample, method = "iterative")
+allocate_wave(
+  data,
+  strata,
+  y,
+  wave2a,
+  nsample,
+  method = "iterative",
+  detailed = FALSE
+)
 }
 \arguments{
 \item{data}{A data frame or matrix with one row for each sampling unit, one column specifying each unit's stratum, one column holding the value of the continuous variable for which the variance should be minimized, and one column containing a key specifying if each unit has already been sampled.}
 
-\item{strata}{a character string or vector of character strings specifying the name of columns which indicate the stratum that each unit belongs to.}
+\item{strata}{A character string or vector of character strings specifying the name of columns which indicate the stratum that each unit belongs to.}
 
-\item{y}{a character string specifying the name of the continuous variable for which the variance should be minimized.}
+\item{y}{A character string specifying the name of the continuous variable for which the variance should be minimized.}
 
-\item{wave2a}{a character string specifying the name of a column that contains a binary (\code{Y}/\code{N} or \code{1}/\code{0}) indicator specifying whether each unit has already been sampled in a previous wave.}
+\item{wave2a}{A character string specifying the name of a column that contains a binary (\code{Y}/\code{N} or \code{1}/\code{0}) indicator specifying whether each unit has already been sampled in a previous wave.}
 
 \item{nsample}{The desired sample size of the next wave.}
 
-\item{method}{a character string specifying the method to be used if at least one group was oversampled. Must be one of:
+\item{method}{A character string specifying the method to be used if at least one group was oversampled. Must be one of:
 \itemize{
 \item \code{"iterative"}, the default, may require a longer runtime but is a more precise method of handling oversampled strata. If there are multiple oversampled strata, this method closes strata and re-calculates optimum allocation one by one.
-\item \code{"simple"} closes all oversampled together and re-calculates optimum allocation one the rest of the strata only once.
+\item \code{"simple"} closes all oversampled together and re-calculates optimum allocation on the rest of the strata only once. In certain cases where many strata have been oversampled in prior waves, it is possible that this method will output a negative value in n_to_sample. When this occurs, the function will print a warning, and it is recommended that the user re-runs the allocation with the 'iterative' method.
 }}
+
+\item{detailed}{A logical value indicating whether the output dataframe should include details about each stratum including the true optimum allocation without previous waves of sampling and stratum standard deviations. Defaults to FALSE because these details are all available in the output of `optimum_allocation`.}
 }
 \value{
 Returns a dataframe with one row for each stratum and columns specifying the stratum name, population stratum size (\code{"npop"}), cumulative sample in that strata (\code{"nsampled_total"}), prior number sampled in that strata (\code{"nsampled_prior"}), and the optimally allocated number of units in each strata for the next wave (\code{"n_to_sample"}).
