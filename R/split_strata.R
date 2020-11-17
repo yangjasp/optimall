@@ -58,6 +58,9 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
   test <- vector()
   for (i in 1:ncol(data)){
     test[i] <- is.unsorted(data[,i])
+    if(is.na(test[i])){
+      test[i] <- TRUE
+    }
     if(test[i]==FALSE){
       break
     }
