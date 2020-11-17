@@ -4,6 +4,7 @@ library(dplyr)
 library(optimall)
 library(stats)
 
+set.seed(4563)
 data_split <- data.frame("strata" = c(rep("a", times = 15), rep("b", times = 15), rep("c", times = 12)),
                    "split_var" = c(rnorm(30, sd = 1), rnorm(12, sd = 2)),
                    "strata2" = rep(c(rep(0, times = 7), rep(1, times = 7)), times = 3))
@@ -40,8 +41,15 @@ test_that("splits occur at correct categorical split",{
                c("a.split_var2_0","a.split_var2_1", "b.split_var2_0","b.split_var2_1","c.split_var2_0","c.split_var2_1"))
 })
 
+test_that("splits work when multiple strata given to the function",{
+  expect_equal(sort(unique(split_strata(data = data_split, strata = "strata", split = c("a","b"), split_var = "split_var", split_at = 0.5, type = "global quantile")$new_strata)), c("a.split_var_(0.03,0.75]", "a.split_var_[-1.71,0.03]", "b.split_var_(0.03,1.79]", "b.split_var_[-1.72,0.03]","c"))
+  expect_equal(sort(unique(split_strata(data = data_split, strata = "strata", split = c("a","b"), split_var = "split_var", split_at = 0.5, type = "local quantile")$new_strata)), c("a.split_var_(0.04,0.75]", "a.split_var_[-1.71,0.04]", "b.split_var_(0.15,1.79]", "b.split_var_[-1.72,0.15]","c"))
+  data_split$split_var2 <- rep(c(rep("alpha", times = 7), rep("beta", times = 7)), times = 3)
+  expect_equal(sort(unique(split_strata(data = data_split, strata = "strata", split = c("a","b"), split_var = "split_var2", split_at = c("alpha"), type = "categorical")$new_strata)), c("a.split_var2_0", "a.split_var2_1", "b.split_var2_0", "b.split_var2_1","c"))
+})
+
 test_that("strata_split can define prior strata based on an interaction of multiple columns",{
-  expect_equal(length(unique(split_strata(data = data_split, strata = c("strata","strata2"), split = "a.0", split_var = "split_var", split_at = 0, type = "value")$new_strata)), 7)
+  expect_equal(length(unique(split_strata(data = data_split, strata = c("strata","strata2"), split = "a.0", split_var = "split_var", split_at = 0.5, type = "global quantile")$new_strata)), 7)
 })
 
 test_that("when type is a quantile, input must be between 0 and 1 or else an error occurs",{
@@ -51,4 +59,11 @@ test_that("when type is a quantile, input must be between 0 and 1 or else an err
 test_that("when a 'value' outside of the range of values is given, a warning comes up",{
   expect_warning(split_strata(data = data_split, strata = "strata", split = "a", split_var = "split_var", split_at = 5, type = "value"), "value(s) of 'split_at' are outside of the range of values in 'split'", fixed =  TRUE)
 })
+
+test_that("order is preserved in dataframe with ids provided",{
+  data_split$id <- seq(1:42)
+  data_split_id <- dplyr::select(data_split, id, strata, split_var)
+  expect_equal(all(split_strata(data = data_split, strata = "strata", split = c("a","b"), split_var = "split_var", split_at = 0.5, type = "local quantile")$split_var == data_split$split_var), TRUE)
+})
+
 
