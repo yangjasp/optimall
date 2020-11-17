@@ -189,7 +189,7 @@ optimum_allocation(data = full_data, strata = "new_strata", y = "infl",
                    nsample = 500, allow.na = T)
 ```
 
-In this case, we are able to achieve the estimated optimum allocation for 500 samples, even after our balanced stratified sampling in Phase-IIa. The `optimum allocation` output reveals that 42 samples in stratum 6 is optimal for 500 samples. We sampled exactly 42 in wave2a so we do not have to sample any from this stratum in the next wave and are still on track to allocate the 500 optimally. In other cases when `"n_to_sample" = 0` for some strata, we may not be so lucky. If the optimum sample size in a stratum is smaller than the amount it was allocated in previous waves, we say that that strata has been oversampled. When oversampling occurs, `allocate_wave` "closes" the oversampled strata and re-allocates the remaining samples optimally among the open strata. Under these circumstances, the total sampling allocation is no longer optimal, but `optimall` will output the most optimal allocation possible for the next wave.
+In this case, we are able to achieve the estimated optimum allocation for 500 samples, even after our balanced stratified sampling in Phase-IIa. The `optimum_allocation` output reveals that 42 samples in stratum 6 is optimal for 500 samples. We sampled exactly 42 in wave2a so we do not have to sample any from this stratum in the next wave and are still on track to allocate the 500 optimally. In other cases when `"n_to_sample" = 0` for some strata, we may not be so lucky. If the optimum sample size in a stratum is smaller than the amount it was allocated in previous waves, we say that that strata has been oversampled. When oversampling occurs, `allocate_wave` "closes" the oversampled strata and re-allocates the remaining samples optimally among the open strata. Under these circumstances, the total sampling allocation is no longer optimal, but `optimall` will output the most optimal allocation possible for the next wave.
 
 These results are evidence that our strata are relatively imbalanced. We decide to split the largest ones at local, within-stratum percentiles of estimated mother weight change using `split_strata`. We will split stratum 1 at the 1/3 and 2/3 percentiles, and stratum 2 at the median. 
 
@@ -217,7 +217,7 @@ phase2b_all
 set.seed(2342)
 ids_to_sample2b <- sample_strata(data1 = full_data, strata1 = "new_strata", id = "id", 
                                  wave2a = "sample_indicator", data2 = phase2b_all,
-                                 strata2 = "group", n_allocated = "n_to_sample")
+                                 strata2 = "strata", n_allocated = "n_to_sample")
 ids_to_sample2b <- ids_to_sample2b[ids_to_sample2b$sample_indicator == 1,"id"]
 head(ids_to_sample2b)
 ```
@@ -264,14 +264,14 @@ With these results in, we can move onto our final wave.
 
 After auditing the 248 additional samples in Phase-IIb, we only have 250 left to validate until we reach our goal of 750. We will combine what we have learned in the previous waves of Phase-II to optimally assign these final 250 samples. 
 
-The results from Phase-IIb are now part of full_data and can be used to allocate the final wave. Following the same steps as in Phase-IIb, we use `allocate_wave` to find the optimal sample sizes in each stratum before determining which ids to sample using `sample_strata`
+The results from Phase-IIb are now part of full_data and can be used to allocate the final wave. Following the same steps as in Phase-IIb, we use `allocate_wave` to find the optimal sample sizes in each stratum before determining which ids to sample using `sample_strata`.
 
 ```{r}
 phase2c_all <- allocate_wave(data = full_data, strata = "new_strata",
                              y = "infl",wave2a = "sample_indicator", nsample = 250)
 phase2c_all
 set.seed(9156)
-ids_to_sample2c <- sample_strata(data1 = full_data, strata1 = "new_strata", id = "id", wave2a = "sample_indicator", data2 = phase2b_all, strata2 = "group", n_allocated = "n_to_sample")
+ids_to_sample2c <- sample_strata(data1 = full_data, strata1 = "new_strata", id = "id", wave2a = "sample_indicator", data2 = phase2b_all, strata2 = "strata", n_allocated = "n_to_sample")
 ids_to_sample2c <- ids_to_sample2c[ids_to_sample2c$sample_indicator == 1,"id"]
 head(ids_to_sample2c)
 ```
