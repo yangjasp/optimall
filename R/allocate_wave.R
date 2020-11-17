@@ -128,10 +128,13 @@ allocate_wave <- function(data, strata, y, wave2a,
     }
     output_df <- dplyr::arrange(output_df, strata)
     if (any(output_df$n_to_sample < 0)){
-      warning("The simple method yielded strata with negative n_to_sample values due to many groups being oversampled in prior waves. Try method = 'iterative'.")
+      warning("The simple method yielded strata with negative n_to_sample values due to many groups being oversampled in prior waves. Switching to method = 'iterative'.")
       did_simple_work <- FALSE
+      method <- "iterative"
+      rm(output_df, closed_output, open_output, closed_groups, open_groups)
+    } else{
+      return(output_df)
     }
-    return(output_df)
   }
   #Now, iterative method
 
