@@ -53,6 +53,21 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
   } else if(is.null(split) == TRUE){
     split <- sort(unique(data[,"old_strata"]))
   }
+
+  #Check for a column that is sorted to preserve order later.
+  test <- vector()
+  for (i in 1:ncol(data)){
+    test[i] <- is.unsorted(data[,i])
+    if(test[i]==FALSE){
+      break
+    }
+  }
+  if(any(test == FALSE)){
+    sort_by <- names(data)[which(test == FALSE)]
+  } else {
+    sort_by <- NULL
+  }
+
   names(data)[names(data) == split_var] <- "split_variable"
   data$old_strata <- as.character(data$old_strata)
   type <- match.arg(type, c("global quantile", "local quantile", "value", "categorical"))
@@ -248,7 +263,10 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
   column_names_other <- enquo(column_names_other)
   output_df <- dplyr::select(output_df, new_strata, old_strata, !!column_names_other )
   if(is.numeric(output_df$new_strata) == FALSE){
-  output_df$new_strata <- as.character(output_df$new_strata)
+    output_df$new_strata <- as.character(output_df$new_strata)
+  }
+  if(is.null(sort_by) == FALSE){
+    output_df <- dplyr::arrange(output_df, !!sym(sort_by))
   }
   return(output_df)
 }
