@@ -18,7 +18,7 @@ split_strata(
 
 \item{strata}{a character string specifying the name of the column that defines each unit's current strata.}
 
-\item{split}{the name of the stratum to be split, exactly as it appears in `strata`. Defaults to NULL, which indicates that all strata in \code{strata} will be split.}
+\item{split}{the name of the strata to be split, exactly as they appear in `strata`. Defaults to NULL, which indicates that all strata in \code{strata} will be split.}
 
 \item{type}{a character string specifying how the function should interpret the \code{split_at} argument. Must be one of:
 \itemize{
