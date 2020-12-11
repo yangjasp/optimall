@@ -26,14 +26,14 @@ merge_strata <- function(data, strata, merge, name = NULL){
     data <- dplyr::select(data, -old_strata) #fixes error from assigning duplicate names
   }
   if(length(strata) != 1){
-    stop("'strata' should specify only one column. To create strata from multiple columns, use 'split_strata'")
+    stop("'strata' should specify only one column. To create strata from multiple columns, use 'split_strata'.")
   }
   if(is.null(merge) == TRUE){
     stop("'merge' is NULL. Expecting names of strata to merge.")
   }
   names(data)[names(data) == strata] <- "old_strata"
   if(all(merge %in% data$old_strata) == F){
-    stop("names in 'merge' must each exactly match at least one value of strata names in 'strata'")
+    stop("names in 'merge' must each exactly match at least one value of strata names in 'strata'.")
   }
   if(is.null(name)){
     new_strata <- ifelse(data$old_strata %in% merge,
@@ -45,7 +45,7 @@ merge_strata <- function(data, strata, merge, name = NULL){
                               name,
                               as.character(data$old_strata))
   }
-  data <- as.dataframe(cbind(new_strata,data))
+  data <- as.data.frame(cbind(new_strata,data))
 
 }
 
