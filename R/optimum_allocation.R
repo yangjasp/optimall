@@ -155,13 +155,13 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
         }
         priority_array <- list()
         for (i in 1:n_strata){
-          priority_array[[i]] <- c(rep(output_df[i,"n_sd"],
-                                       times = min(output_df[i,"n"] - 2,n_minus_2H)),
-                                   rep(NULL,
-                                       times = ifelse(n_minus_2H > (output_df[i,"n"] - 2),
-                                                      n_minus_2H - (output_df[i,"n"] - 2),
-                                                      0)))
-          #All rows are same length, but zeroes so that n_sample won't be larger than n_strata
+            priority_array[[i]] <- c(rep(output_df[i,"n_sd"],
+                                         times = min(output_df[i,"n"] - 2,n_minus_2H)),
+                                     rep(output_df[i,"n_sd"]*0,
+                                         times = ifelse(n_minus_2H > (output_df[i,"n"] - 2),
+                                                        n_minus_2H - (output_df[i,"n"] - 2),
+                                                        0)))
+          #All rows are same length, but zeroes so that n_sample won't be larger than n_strata. Zero instead of NULL so entries in list aren't empty when n=2.
           names(priority_array)[[i]] <- paste0("n_sd",as.character(i))
         }
         suppressMessages(Wright_output <- bind_rows(priority_array))
