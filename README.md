@@ -18,9 +18,7 @@ an adaptive, multi-phase approach. Its main functions allow users to:
     sampling wave based on results from a prior wave.
 
 When used together, these functions can automate most of the sampling
-workflow. This vignette will introduce the theoretical framework behind
-the functions before demonstrating how they can be used to work with
-sampling data in R.
+workflow.
 
 ## Installation
 

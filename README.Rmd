@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 
 * Optimally allocate a fixed number of samples to an ancillary sampling wave based on results from a prior wave. 
 
-When used together, these functions can automate most of the sampling workflow. This vignette will introduce the theoretical framework behind the functions before demonstrating how they can be used to work with sampling data in R.
+When used together, these functions can automate most of the sampling workflow. 
 
 ## Installation
 
