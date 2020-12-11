@@ -104,13 +104,14 @@ names(phase1)
 head(phase1)
 ```
 
-We decide to split our population into 6 non-overlapping strata. Each stratum is defined by a unique combination of childhood obesity outcome (0/1) and global percentile of maternal weight gain (≤25th, 25th - 75th, >75th). We can accomplish this quickly in `optimall` using the `split_strata` function. 
+We decide to split our population into 6 non-overlapping strata. Each stratum will be defined by a unique combination of childhood obesity outcome (0/1) and global percentile of maternal weight gain (≤25th, 25th - 75th, >75th). We can accomplish this quickly in `optimall` using the `split_strata` function. 
 
 ```{r}
 phase1 <- split_strata(data = phase1, strata = "event", split = NULL, 
-                       split_var = "mother_weight_change_est", type = "global quantile", split_at = c(0.25,0.75))
+                       split_var = "mother_weight_change_est", type = "global quantile", 
+                       split_at = c(0.25,0.75))
 ```
-We now have the same `phase1` data with a new column specifying the strata we have defined. Since we used `"event"` as the `strata` argument, optimall has changed its name to `"old_strata"`, but we can change it back if we would like. 
+We now have the same `phase1` data with a new column specifying the strata we have defined. Note that because we used `"event"` as the `strata` argument, optimall has changed its name to `"old_strata"`, but we can change it back if we would like. 
 
 ```{r}
 dim(phase1)
