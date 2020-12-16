@@ -45,5 +45,6 @@ test_that("'nsample' argument of optimum_allocation can't be less than or equal 
 
 test_that("multiple strings in  the 'strata' argument lead to the creation of new strata based on their interaction",{
   data$strata2 <- rbinom(42, 1, 0.5)
-  expect_equal(as.character(optimum_allocation(data = data, strata = c("strata","strata2"), y = "y", nsample = 30)$strata), c("a.0","b.0","c.0","a.1","b.1","c.1"))
+  names(data)[names(data)== "strata"] <- "strata3"
+  expect_equal(as.character(optimum_allocation(data = data, strata = c("strata3","strata2"), y = "y", nsample = 30)$strata), c("a.0","b.0","c.0","a.1","b.1","c.1"))
 })
