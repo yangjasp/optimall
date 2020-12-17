@@ -1,6 +1,6 @@
 #' Adaptive Multi-Wave Sampling
 #'
-#' Determines the optimal sampling allocation for a new sampling wave based on results from previous waves. Using Algorithm II from Wright (2014), `allocate_wave` calculates the optimum allocation for the \emph{total} number of samples across waves, determines how many were allocated to each strata in previous waves, and allocates the remaining samples to make up the difference.
+#' Determines the optimum sampling allocation for a new sampling wave based on results from previous waves. Using Algorithm II from Wright (2014), `allocate_wave` calculates the optimum allocation for the \emph{total} number of samples across waves, determines how many were allocated to each strata in previous waves, and allocates the remaining samples to make up the difference.
 #'
 #'  If the optimum sample size in a stratum is smaller than the amount it was allocated in previous waves, that strata has been \emph{oversampled}. When oversampling occurs, `allocate_wave` "closes" the oversampled strata and re-allocates the remaining samples optimally among the open strata. Under these circumstances, the total sampling allocation is no longer optimal, but `optimall` will output the \emph{most} optimal allocation possible for the next wave.
 #' @param data A data frame or matrix with one row for each sampling unit, one column specifying each unit's stratum, one column holding the value of the continuous variable for which the variance should be minimized, and one column containing a key specifying if each unit has already been sampled.
@@ -10,10 +10,16 @@
 #' @param nsample The desired sample size of the next wave.
 #' @param method A character string specifying the method to be used if at least one group was oversampled. Must be one of:
 #' \itemize{
-#'\item \code{"iterative"}, the default, may require a longer runtime but is a more precise method of handling oversampled strata. If there are multiple oversampled strata, this method closes strata and re-calculates optimum allocation one by one.
+#'\item \code{"iterative"}, the default, will require a longer runtime but is a more precise method of handling oversampled strata. If there are multiple oversampled strata, this method closes strata and re-calculates optimum allocation one by one.
 #'\item \code{"simple"} closes all oversampled together and re-calculates optimum allocation on the rest of the strata only once. In certain cases where many strata have been oversampled in prior waves, it is possible that this method will output a negative value in n_to_sample. When this occurs, the function will print a warning, and it is recommended that the user re-runs the allocation with the 'iterative' method.
 #' }
 #' @param detailed A logical value indicating whether the output dataframe should include details about each stratum including the true optimum allocation without previous waves of sampling and stratum standard deviations. Defaults to FALSE because these details are all available in the output of `optimum_allocation`.
+#' @examples
+#' \dontrun{
+#' x <- allocate_wave(data = iris, strata = "Species",
+#' y = "Sepal.Width", wave2a = "BinaryIndAlreadySampled",
+#' nsample = 20, method = "simple")
+#' }
 #' @export
 #' @references Wright, T. (2014). A simple method of exact optimal sample allocation under stratification with any mixed constraint patterns. Statistics, 07.
 #' @return Returns a dataframe with one row for each stratum and columns specifying the stratum name, population stratum size (\code{"npop"}), cumulative sample in that strata (\code{"nsampled_total"}), prior number sampled in that strata (\code{"nsampled_prior"}), and the optimally allocated number of units in each strata for the next wave (\code{"n_to_sample"}).

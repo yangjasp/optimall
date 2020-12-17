@@ -18,7 +18,7 @@ split_strata(
 
 \item{strata}{a character string specifying the name of the column that defines each unit's current strata.}
 
-\item{split}{the name of the strata to be split, exactly as they appear in `strata`. Defaults to NULL, which indicates that all strata in \code{strata} will be split.}
+\item{split}{the name of the stratum or strata to be split, exactly as they appear in `strata`. Defaults to NULL, which indicates that all strata in \code{strata} will be split.}
 
 \item{type}{a character string specifying how the function should interpret the \code{split_at} argument. Must be one of:
 \itemize{
@@ -28,14 +28,27 @@ split_strata(
 \item \code{"categorical"} splits the strata into two new strata, one that contains each unit where \code{split_var} matches an input of \code{split_at}, and a second that contains every other unit.
 }}
 
-\item{split_at}{the percentile, value, or name(s) which \code{split_var} should be split at. The interpretation of this input depends on \code{type}. For \code{"quantile"} types, input must be between \code{0} and \code{1}. Defaults to \code{0.5} (median).}
+\item{split_at}{the percentile, value, or name(s) which \code{split_var} should be split at. The interpretation of this input depends on \code{type}. For \code{"quantile"} types, input must be between \code{0} and \code{1}. Defaults to \code{0.5} (median). For \code{"categorical"} type, the input should be a vector of values or names in \code{split_var} that define the new stratum.}
 }
 \value{
 Returns the input dataframe with a new column named 'new_strata' that holds the name of the stratum that each sample belongs to after the split. The column containing the previous strata names is retained and given the name "old_strata".
 }
 \description{
-Splits pre-defined sampling strata into smaller ones based on values of a continuous or categorical variable.
+Splits pre-defined sampling strata based on values of a continuous or categorical variable.
 }
 \examples{
-x <- split_strata(iris, "Sepal.Length", strata = c("Species"),split = "setosa", split_var = "Sepal.Width", split_at = c(0.5), type = "global quantile")
+x <- split_strata(iris, "Sepal.Length", strata = c("Species"),
+split = "setosa", split_var = "Sepal.Width",
+split_at = c(0.5), type = "global quantile")
+
+#You can split at more than one quantile in one call.
+#The above call splits the "setosa" stratum into three of equal size
+x <- split_strata(iris, "Sepal.Length", strata = c("Species"),
+split = "setosa", split_var = "Sepal.Width", split_at = c(0.33,0.66),
+type = "local quantile")
+
+#Manually select split values with type = "value"
+x <- split_strata(iris, "Sepal.Length", strata = c("Species"),
+split = "setosa", split_var = "Sepal.Width",
+split_at = c(3.1,3.8), type = "value")
 }
