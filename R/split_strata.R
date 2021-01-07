@@ -1,9 +1,11 @@
 #' Split Strata
 #'
 #' Splits pre-defined sampling strata based on values of a continuous or categorical variable.
+#'
+#' The names of the newly created strata for a split generated from a continuous value are the `split_var` column name with the range of values defining that stratum by appended to the old strata name. For a categorical split, the new strata names are the `split_var` column with a 1 (if the unit is inside `split_at`) or 0 (if the unit is outside `split_at`) appended to the old strata name. If the `split_var` column name is long, the user can specify a value for `trunc` to prevent the new strata names from being inconveniently long.
 #' @param data a dataframe or matrix with one row for each sampling unit, one column specifying each unit's current stratum, one column containing the continuous or categorical values that will define the split, and any other relevant columns.
 #' @param strata a character string specifying the name of the column that defines each unit's current strata.
-#' @param split the name of the stratum or strata to be split, exactly as they appear in `strata`. Defaults to NULL, which indicates that all strata in \code{strata} will be split.
+#' @param split the name of the stratum or strata to be split, exactly as they appear in \code{strata}. Defaults to NULL, which indicates that all strata in \code{strata} will be split.
 #' @param split_at the percentile, value, or name(s) which \code{split_var} should be split at. The interpretation of this input depends on \code{type}. For \code{"quantile"} types, input must be between \code{0} and \code{1}. Defaults to \code{0.5} (median). For \code{"categorical"} type, the input should be a vector of values or names in \code{split_var} that define the new stratum.
 #' @param type a character string specifying how the function should interpret the \code{split_at} argument. Must be one of:
 #'\itemize{
@@ -12,6 +14,7 @@
 #'\item \code{"value"} splits the strata at the values specified in \code{split_at} along \code{split_var} column.
 #'\item \code{"categorical"} splits the strata into two new strata, one that contains each unit where \code{split_var} matches an input of \code{split_at}, and a second that contains every other unit.
 #'}
+#' @param trunc A numeric or character value specifying how the name of the \code{split_var} should be truncated when naming the new strata. If numeric, the new strata name will only include the first 'n' characters of the \code{split_var} name. If character, the specified string will be used to name the new strata instead of the \code{split_var} name. Defaults to \code{NULL}, which creates the new strata name using the entire name of the \code{split_var} column.
 #' @examples
 #' x <- split_strata(iris, "Sepal.Length", strata = c("Species"),
 #' split = "setosa", split_var = "Sepal.Width",
@@ -27,11 +30,21 @@
 #' x <- split_strata(iris, "Sepal.Length", strata = c("Species"),
 #' split = "setosa", split_var = "Sepal.Width",
 #' split_at = c(3.1,3.8), type = "value")
+#'
+#' #Perform a categorical split.
+#' iris$strata <- rep(rep(1, times=25), rep(0, times = 25), times = 6)
+#' x <- split_strata(iris, "Sepal.Length", strata = "strata"),
+#' split = NULL, split_var = "Species",
+#' split_at = c("virginica","versicolor"), type = "categorical")
+#' #Splits each initial strata 1 and 2 into one stratum with "virginia"
+#' #and "versicolor" species and one stratum with all of the other species #' #not specified in the split_at argument.
+#'
+#'
 #' @export
 #' @return Returns the input dataframe with a new column named 'new_strata' that holds the name of the stratum that each sample belongs to after the split. The column containing the previous strata names is retained and given the name "old_strata".
 
 
-split_strata <- function(data, strata, split = NULL, split_var, type = "global quantile", split_at = .5 ){
+split_strata <- function(data, strata, split = NULL, split_var, type = "global quantile", split_at = .5, trunc = NULL){
   if(is.matrix(data)){
     data <- as.data.frame(data)
   }
@@ -90,6 +103,27 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
   if(type %in% c("global quantile","local quantile", "value","categorical") == FALSE){
     stop("'type' must be one of 'global quantile', 'local quantile', 'value', 'categorical'")
   }
+  if(length(trunc) > 1){
+    stop("'trunc' must be a single numeric or character value specifying how the name of 'split_var' should be used in the new strata names")
+  }
+
+  #Create new_name to use for new strata names.
+  if(is.null(trunc) == FALSE){
+    if(is.numeric(trunc) & trunc > 0){
+      new_name <- substr(split_var,1,trunc)
+    } else if(is.numeric(trunc) & trunc < 0){
+      new_name <- substr(split_var,nchar(split_var) + trunc + 1, nchar(split_var))
+    } else if(is.character(trunc)){
+      new_name <- trunc
+    } else {
+      stop("'trunc' must be a single numeric or character value specifying how the name of 'split_var' should be used in the new strata names")
+    }
+  } else if(is.null(trunc) ==TRUE){
+    new_name <- split_var
+  } else {
+      stop("'trunc' must be a single numeric or character value specifying how the name of 'split_var' should be used in the new strata names")
+    }
+
   if(type %in% c("global quantile","local quantile", "value") & length(split) <= 1){
     if (is.numeric(data$split_variable) == F){
       stop("'split_var' must be a column of 'data' holding numeric values. If you want to split on a categorical variable, use type = 'categorical'." )
@@ -126,10 +160,10 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
     if (length(cut_point) == 1){
       data_filtered <- data_filtered %>%
         dplyr::mutate(split_var_updated = ifelse(split_variable <= cut_point[1],
-                                                 paste(split_var,
+                                                 paste(new_name,
                                                        paste("[",round(min(data_filtered$split_variable), digits = 2), ",",round(cut_point[1], digits = 2),"]", sep = ""),
                                                        sep = "_"),
-                                                 paste(split_var,
+                                                 paste(new_name,
                                                        paste("(", round(cut_point[1], digits = 2), ",",round(max(data_filtered$split_variable), digits = 2),"]", sep = ""),
                                                        sep = "_")))
     }
@@ -140,7 +174,7 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
       data_filtered$split_var_updated <- data_filtered$split_variable
       data_filtered <- data_filtered %>%
         mutate(split_var_updated = ifelse(split_variable <= cut_point[2],
-                                          paste(split_var,
+                                          paste(new_name,
                                                 paste("[",round(cut_point[1], digits = 2), ",",round(cut_point[2], digits = 2),"]", sep = ""),
                                                 sep = "_"),
                                           "other"
@@ -148,7 +182,7 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
       for (i in 3:length(cut_point)) {
         data_filtered <- data_filtered %>%
           mutate(split_var_updated = ifelse(split_variable > cut_point[1] & split_variable > cut_point[i-1] & split_variable <= cut_point[i],
-                                            paste(split_var,
+                                            paste(new_name,
                                                   paste("(",round(cut_point[i-1], digits = 2), ",",round(cut_point[i], digits = 2),"]", sep = ""),
                                             sep = "_"),
                                             split_var_updated))
@@ -203,10 +237,10 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
         cut_point <- cut_point_list[[j]]
         data_filtered <- data_filtered %>%
           dplyr::mutate(split_var_updated = ifelse(split_variable <= cut_point[1],
-                                                   paste(split_var,
+                                                   paste(new_name,
                                                          paste("[",round(min(data_filtered$split_variable), digits = 2), ",",round(cut_point[1], digits = 2),"]", sep = ""),
                                                         sep = "_"),
-                                                   paste(split_var,
+                                                   paste(new_name,
                                                          paste("(", round(cut_point[1], digits = 2), ",",round(max(data_filtered$split_variable), digits = 2),"]", sep = ""),
                                                          sep = "_")))
 
@@ -220,7 +254,7 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
         data_filtered$split_var_updated <- data_filtered$split_variable
         data_filtered <- data_filtered %>%
           mutate(split_var_updated = ifelse(split_variable <= cut_point[2],
-                                            paste(split_var,
+                                            paste(new_name,
                                                   paste("[",round(cut_point[1], digits = 2), ",",round(cut_point[2], digits = 2),"]", sep = ""),
                                                   sep = "_"),
                                             "other"
@@ -228,7 +262,7 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
         for (i in 3:length(cut_point)) {
           data_filtered <- data_filtered %>%
             mutate(split_var_updated = ifelse(split_variable > cut_point[1] & split_variable > cut_point[i-1] & split_variable <= cut_point[i],
-                                              paste(split_var,
+                                              paste(new_name,
                                                     paste("(",round(cut_point[i-1], digits = 2), ",",round(cut_point[i], digits = 2),"]", sep = ""),
                                                     sep = "_"),
                                               split_var_updated))
@@ -250,11 +284,10 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
     } else{
       data_filtered <- dplyr::filter(data, old_strata %in% split)
     }
-    split_var_name <- split_var
     data_filtered <- data_filtered %>%
       dplyr::mutate(split_var_updated = ifelse(split_variable %in% split_at,
-                                               paste0(split_var_name,"_1"),
-                                               paste0(split_var_name,"_0")))
+                                               paste0(new_name,"_1"),
+                                               paste0(new_name,"_0")))
     new_strata <- interaction(dplyr::select(data_filtered,old_strata,split_var_updated))
     data_filtered <- cbind(new_strata, data_filtered)
     small_df <- dplyr::select(data_filtered, -split_var_updated)
