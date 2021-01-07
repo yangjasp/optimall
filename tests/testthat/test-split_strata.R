@@ -66,4 +66,12 @@ test_that("order is preserved in dataframe with ids provided",{
   expect_equal(all(split_strata(data = data_split, strata = "strata", split = c("a","b"), split_var = "split_var", split_at = 0.5, type = "local quantile")$split_var == data_split$split_var), TRUE)
 })
 
+test_that("truncating the new strata name works properly",{
+  expect_equal(sort(unique(split_strata(data = data_split, strata = "strata",split = "a",split_var = "split_var", split_at = 0,type = "value",trunc = "spl")$new_strata)),c(paste("a.spl_(0,", round(max(filter(data_split, strata == "a")$split_var), digits = 2), "]", sep = ""), paste("a.spl_[", round(min(filter(data_split, strata == "a")$split_var), digits = 2), ",0]", sep = ""),  "b","c"))
+  expect_equal(sort(unique(split_strata(data = data_split, strata = "strata",split = "a",split_var = "split_var", split_at = 0,type = "value",trunc = 4)$new_strata)),c(paste("a.spli_(0,", round(max(filter(data_split, strata == "a")$split_var), digits = 2), "]", sep = ""), paste("a.spli_[", round(min(filter(data_split, strata == "a")$split_var), digits = 2), ",0]", sep = ""),  "b","c"))
+  expect_equal(sort(unique(split_strata(data = data_split, strata = "strata",split = "a",split_var = "split_var", split_at = 0,type = "value",trunc = -2)$new_strata)),c(paste("a.ar_(0,", round(max(filter(data_split, strata == "a")$split_var), digits = 2), "]", sep = ""), paste("a.ar_[", round(min(filter(data_split, strata == "a")$split_var), digits = 2), ",0]", sep = ""),  "b","c"))
+  expect_equal(sort(unique(split_strata(data = data_split, strata = "strata",split = "a",split_var = "split_var", split_at = 0,type = "value",trunc = 50)$new_strata)),c(paste("a.split_var_(0,", round(max(filter(data_split, strata == "a")$split_var), digits = 2), "]", sep = ""), paste("a.split_var_[", round(min(filter(data_split, strata == "a")$split_var), digits = 2), ",0]", sep = ""),  "b","c"))
+  expect_error(split_strata(data = data_split, strata = "strata",split = "a",split_var = "split_var", split_at = 0,type = "value",trunc = c("split","spli")), "'trunc' must be a single numeric or character value specifying how the name of 'split_var' should be used in the new strata names",fixed = TRUE)
+})
+
 
