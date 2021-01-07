@@ -11,12 +11,12 @@ merge_strata(data, strata, merge, name = NULL)
 
 \item{strata}{a character string specifying the name of the column that defines each unit's current strata.}
 
-\item{merge}{the names of the strata to be merged, exactly as they appear in `strata`.}
+\item{merge}{the names of the strata to be merged, exactly as they appear in \code{strata}.}
 
 \item{name}{a character name for the new stratum. Defaults to NULL, which pastes the old strata names together to create the new stratum name.}
 }
 \value{
-Returns the input dataframe with a new column named 'new_strata' that holds the name of the stratum that each sample belongs to after the merge. The column containing the previous strata names is retained and given the name "old_strata".
+Returns the input dataframe with a new column named 'new_strata' that holds the name of the stratum that each sample belongs to after the merge. The column containing the previous strata names is retained and given the name 'old_strata'.
 }
 \description{
 Merges multiple pre-defined sampling strata into a single strata.

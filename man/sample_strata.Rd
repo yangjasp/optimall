@@ -13,17 +13,17 @@ sample_strata(data1, strata1, id, wave2a = NULL, data2, strata2, n_allocated)
 
 \item{id}{a character string specifying the name of the column in `data1` which uniquely identifies each unit.}
 
-\item{wave2a}{a character sting specifying the name of the column in `data1` which indicates (1/0 or Y/N) whether a unit has already been sampled in a prior wave. Defaults to NULL which means that none have been sampled yet.}
+\item{wave2a}{a character sting specifying the name of the column in \code{data1} which indicates (1/0 or Y/N) whether a unit has already been sampled in a prior wave. Defaults to NULL which means that none have been sampled yet.}
 
 \item{data2}{a dataframe or matrix with one row for each stratum that subdivides the population, one column specifying the stratum name, and one column indicating the number of samples allocated to each stratum.}
 
-\item{strata2}{a character string specifying the name of the column in `data2` which indicates the stratum. Defaults to "strata".}
+\item{strata2}{a character string specifying the name of the column in \code{data2} which indicates the stratum. Defaults to "strata".}
 
-\item{n_allocated}{a character string specifying the name of the column in `data2` which indicates the n allocated to each stratum. Defaults to "n_to_sample".}
+\item{n_allocated}{a character string specifying the name of the column in \code{data2} which indicates the n allocated to each stratum. Defaults to "n_to_sample".}
 }
 \value{
-returns a `data1` as a dataframe with a new column named "sample_indicator" containing a binary (1/0) indicator of whether each unit should be sampled.
+returns a {data1} as a dataframe with a new column named "sample_indicator" containing a binary (1/0) indicator of whether each unit should be sampled.
 }
 \description{
-Given one dataframe indicating which stratum each population unit belongs to and a second specifying the n allocated to each stratum, `sample_strata` selects the units to sample by selecting a random sample of the desired size within each stratum. The second dataframe specifying the n allocated to each stratum is often the output of `allocate_wave` or `optimum_allocation`.
+Given one dataframe indicating which stratum each population unit belongs to and a second specifying the n allocated to each stratum, \code{sample_strata} selects the units to sample by selecting a random sample of the desired size within each stratum. The second dataframe specifying the n allocated to each stratum is often the output of \code{allocate_wave} or \code{optimum_allocation}.
 }
