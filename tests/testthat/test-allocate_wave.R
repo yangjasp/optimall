@@ -15,6 +15,18 @@ test_that("the output of allocate_wave is as expected",{
   expect_equal(sum(output$n_to_sample) + sum(output$nsample_prior), sum(output$nsample_total))
 })
 
+test_that("If there is oversampling, allocate_wave does keeps strata at least as large as they were in prior samples and total sample sizes add up properly",{
+  data$key <- c(rep(1,times = 13),0,0, rep(0,times = 10),rep(1, times = 5),rep(0,times = 8),rep(1,times = 4)) #total of 42. stratum a has been oversampled. Total prior nsample is 22.
+  output_over <- allocate_wave(data = data, strata = "strata", wave2a = "key", y = "y",nsample = 8)
+  expect_equal(sum(output_over$nsample_total),30)
+  expect_equal(any(output_over$nsample_total < c(13,5,4)),FALSE)
+  expect_equal(output_over$n_to_sample + output_over$nsample_prior, output_over$nsample_total)
+  output_over_simple <- allocate_wave(data = data, strata = "strata", wave2a = "key", y = "y",nsample = 8,method = "simple") #and for simple method
+  expect_equal(sum(output_over_simple$nsample_total),30)
+  expect_equal(any(output_over_simple$nsample_total < c(13,5,4)),FALSE)
+  expect_equal(output_over_simple$n_to_sample + output_over_simple$nsample_prior, output_over_simple$nsample_total)
+})
+
 test_that("the output of allocate_wave matches the output of optimum_allocation where it should",{
   data2 <- data
   data2$key2 <- c(rep(1, times = 10), rbinom(32, 1, 0.2))

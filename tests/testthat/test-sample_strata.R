@@ -30,3 +30,13 @@ test_that("same thing with new seed yields different sample",{
   sampled_data2 <- sample_strata(data1 = data, strata1 = "strata", id = "id", data2 = df, wave2a = "key",strata2 = "strata", n_allocated = "n_to_sample" )
   expect_equal(length(setdiff(sampled_data[sampled_data$sample_indicator ==1,]$id, sampled_data2[sampled_data2$sample_indicator ==1,]$id)) > 0, TRUE)
 })
+
+test_that("works if wave2a is NULL",{
+  data2 <- data
+  data2$key <- rep(0, times = 42)
+  df2 <- optimum_allocation(data = data2, strata = "strata", y = "y", nsample = 15)
+  set.seed(384)
+  sampled_data2 <- sample_strata(data1 = data2, strata1 = "strata", id = "id", data2 = df2, wave2a = NULL,strata2 = "strata", n_allocated = "stratum_size" )
+  expect_equal(sum(sampled_data2$sample_indicator == 1), 15)
+  expect_equal(sort(as.vector(table(sampled_data2[sampled_data2$sample_indicator== 1,]$strata))), sort(df2$stratum_size))
+})

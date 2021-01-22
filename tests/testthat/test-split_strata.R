@@ -33,6 +33,24 @@ test_that("splits occur at correct local quantile values",{
               as.vector(table(dplyr::filter(data_split, strata == "a")$split_var <= median(dplyr::filter(data_split, strata  == "a")$split_var))))
 })
 
+test_that("splits occur at correct local quantile values if multiple split points are provided",{
+  cutpts <- strsplit(dplyr::filter(split_strata(data = data_split, strata = "strata", split = "a", split_var = "split_var", split_at = c(0.1,0.9), type = "local quantile"), split_var < stats::median(split_var), old_strata == "a")$new_strata[1],
+                     split = "(", fixed = TRUE)[[1]][2] #Extract cut points from strata name
+  expect_equal(substr(cutpts, start = 7, stop = nchar(cutpts) - 1 ),
+               as.character(round(stats::quantile(dplyr::filter(data_split, strata == "a")$split_var,0.9), digits = 2)))
+  expect_equal(substr(cutpts, start = 1, stop = 5),
+               as.character(round(stats::quantile(dplyr::filter(data_split, strata == "a")$split_var,0.1), digits = 2)))
+
+  splitpts <- quantile(dplyr::filter(data_split, strata == "a")$split_var,c(0.1,0.9))
+  expected_sizes <- data_split %>%
+    dplyr::filter(strata == "a")%>%
+    dplyr::mutate(size = dplyr::case_when(split_var <= splitpts[1] ~ "0",
+                                          split_var <= splitpts[2] ~ "1",
+                                          split_var > splitpts[2] ~ "2"))
+  expect_equal(sort(as.vector(table(dplyr::filter(split_strata(data = data_split, strata = "strata", split = "a", split_var = "split_var", split_at = c(0.1,0.9), type = "local quantile"), new_strata %in% c("b","c") == FALSE)$new_strata)),decreasing = T),
+               sort(as.vector(table(expected_sizes$size)),decreasing = T)) #size of each new strata is as expected.
+})
+
 test_that("splits occur at correct categorical split",{
   data_split$split_var2 <- rep(c(rep("alpha", times = 7), rep("beta", times = 7)), times = 3)
   expect_equal(sort(unique(split_strata(data = data_split, strata = "strata", split = "a", split_var = "split_var2", split_at = "alpha", type = "categorical")$new_strata)),
