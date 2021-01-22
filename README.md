@@ -71,6 +71,10 @@ vignettes.
 
 ## References
 
+> McIsaac MA, Cook RJ. Adaptive sampling in two‐phase designs: a
+> biomarker study for progression in arthritis. Statistics in Medicine.
+> 2015 Sep 20;34(21):2899-912.
+
 > Wright, T. (2014). A simple method of exact optimal sample allocation
 > under stratification with any mixed constraint patterns. Statistics,
 > 07.
