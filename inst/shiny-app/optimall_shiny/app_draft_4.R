@@ -164,9 +164,12 @@ server <- function(input, output, session) {
     datatable(output_df, options = list(pageLength = 25))
   })
 
+  #New 1/21: Make reactiveVal that says where to start list of code commands.
+  startVal <- reactiveVal()
+  startVal(1)
 
   #What happens when you confirm your split. 1: output_df updates and 2: code for the split pops up.
-  myValues <- reactiveValues()
+  myValues <- reactiveValues(dList = NULL)
   observeEvent(input$confirm,{
     temp <- optimall::split_strata(data = values$df_data, strata = input$strata, split = strata_to_split$split ,split_var = input$split_var, type = input$type, split_at = input$split_at)
     if(type_vals$type != "categorical"|
@@ -178,15 +181,17 @@ server <- function(input, output, session) {
       myValues$dList <- c(isolate(myValues$dList), isolate(paste0("split_strata(data = 'df_name', strata = '",input$strata,"', split = ",ifelse(is.null(strata_to_split$split), "NULL", paste0("'",strata_to_split$split,"'")),", split_var = '",input$split_var,"', type = '",input$type,"', split_at = ",split_cat_text,")")))
     }
     output$list<-renderPrint({
-      myValues$dList
+      c(myValues$dList[startVal():length(myValues$dList)])
     })
     values$df_data <- temp
   })
 
-  #Reset button resets df and clears changes in text
-  dfy <- observeEvent(input$reset,{
-    output_df <- df()
-    myValues$dlist <- reactiveValues()
+  #Reset button resets df, clears changes in text, and updates startVal
+  #So code from before reset will no longer appear.
+  observeEvent(input$reset,{
+    output_df <- NULL
+    values$df_data <- read.csv(input$data$datapath)
+    startVal((length(myValues$dList)) + 1)
     output$list <- renderPrint({
       myValues <- NULL
     })
