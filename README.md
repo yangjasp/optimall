@@ -68,3 +68,9 @@ optimum_allocation(data = data, strata = "new_strata",
 `optimall` offers more functions that streamline adaptive, multi-wave
 sampling workflows. For a more detailed description, see package
 vignettes.
+
+## References
+
+> Wright, T. (2014). A simple method of exact optimal sample allocation
+> under stratification with any mixed constraint patterns. Statistics,
+> 07.
