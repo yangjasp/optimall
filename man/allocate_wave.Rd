@@ -37,10 +37,23 @@ allocate_wave(
 Returns a dataframe with one row for each stratum and columns specifying the stratum name, population stratum size (\code{"npop"}), cumulative sample in that strata (\code{"nsampled_total"}), prior number sampled in that strata (\code{"nsampled_prior"}), and the optimally allocated number of units in each strata for the next wave (\code{"n_to_sample"}).
 }
 \description{
-Determines the optimum sampling allocation for a new sampling wave based on results from previous waves. Using Algorithm II from Wright (2014), \code{allocate_wave} calculates the optimum allocation for the \emph{total} number of samples across waves, determines how many were allocated to each strata in previous waves, and allocates the remaining samples to make up the difference.
+Determines the optimum sampling allocation for a new sampling
+wave based on results from previous waves. Using Algorithm II
+from Wright (2014), \code{allocate_wave} calculates the
+optimum allocation for the \emph{total} number of samples
+across waves, determines how many were allocated to each strata
+in previous waves, and allocates the remaining samples to make
+up the difference.
 }
 \details{
-If the optimum sample size in a stratum is smaller than the amount it was allocated in previous waves, that strata has been \emph{oversampled}. When oversampling occurs, \code{allocate_wave} "closes" the oversampled strata and re-allocates the remaining samples optimally among the open strata. Under these circumstances, the total sampling allocation is no longer optimal, but \code{optimall} will output the \emph{most} optimal allocation possible for the next wave.
+If the optimum sample size in a stratum is smaller than the
+amount it was allocated in previous waves, that strata has been
+\emph{oversampled}. When oversampling occurs,
+\code{allocate_wave} "closes" the oversampled strata and
+re-allocates the remaining samples optimally among the open
+strata. Under these circumstances, the total sampling
+allocation is no longer optimal, but \code{optimall} will
+output the \emph{most} optimal allocation possible for the next wave.
 }
 \examples{
 \dontrun{

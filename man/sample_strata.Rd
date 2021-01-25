@@ -9,9 +9,9 @@ sample_strata(data1, strata1, id, wave2a = NULL, data2, strata2, n_allocated)
 \arguments{
 \item{data1}{A data frame or matrix with one row for each sampling unit in the population, one column specifying each unit's stratum, and one column with a unique identifier for each unit.}
 
-\item{strata1}{a character string specifying the name of column in `data1` which indicates the stratum that each unit belongs to.}
+\item{strata1}{a character string specifying the name of column in \code{data1} which indicates the stratum that each unit belongs to.}
 
-\item{id}{a character string specifying the name of the column in `data1` which uniquely identifies each unit.}
+\item{id}{a character string specifying the name of the column in \code{data1} which uniquely identifies each unit.}
 
 \item{wave2a}{a character sting specifying the name of the column in \code{data1} which indicates (1/0 or Y/N) whether a unit has already been sampled in a prior wave. Defaults to NULL which means that none have been sampled yet.}
 

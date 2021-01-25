@@ -42,7 +42,7 @@ Returns the input dataframe with a new column named 'new_strata' that holds the 
 Splits pre-defined sampling strata based on values of a continuous or categorical variable.
 }
 \details{
-The names of the newly created strata for a split generated from a continuous value are the `split_var` column name with the range of values defining that stratum by appended to the old strata name. For a categorical split, the new strata names are the `split_var` column with a 1 (if the unit is inside `split_at`) or 0 (if the unit is outside `split_at`) appended to the old strata name. If the `split_var` column name is long, the user can specify a value for `trunc` to prevent the new strata names from being inconveniently long.
+The names of the newly created strata for a split generated from a continuous value are the \code{split_var} column name with the range of values defining that stratum by appended to the old strata name. For a categorical split, the new strata names are the \code{split_var} column with a 1 (if the unit is inside \code{split_at}) or 0 (if the unit is outside \code{split_at}) appended to the old strata name. If the \code{split_var} column name is long, the user can specify a value for \code{trunc} to prevent the new strata names from being inconveniently long.
 }
 \examples{
 x <- split_strata(iris, "Sepal.Length", strata = c("Species"),
