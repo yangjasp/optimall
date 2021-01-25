@@ -6,6 +6,7 @@
 #' @param data a dataframe or matrix with one row for each sampling unit, one column specifying each unit's current stratum, one column containing the continuous or categorical values that will define the split, and any other relevant columns.
 #' @param strata a character string specifying the name of the column that defines each unit's current strata.
 #' @param split the name of the stratum or strata to be split, exactly as they appear in \code{strata}. Defaults to NULL, which indicates that all strata in \code{strata} will be split.
+#' @param split_var a character string specifying the name of the column that should be used to define the strata splits.
 #' @param split_at the percentile, value, or name(s) which \code{split_var} should be split at. The interpretation of this input depends on \code{type}. For \code{"quantile"} types, input must be between \code{0} and \code{1}. Defaults to \code{0.5} (median). For \code{"categorical"} type, the input should be a vector of values or names in \code{split_var} that define the new stratum.
 #' @param type a character string specifying how the function should interpret the \code{split_at} argument. Must be one of:
 #'\itemize{
@@ -27,24 +28,28 @@
 #' type = "local quantile")
 #'
 #' #Manually select split values with type = "value"
-#' x <- split_strata(iris, "Sepal.Length", strata = c("Species"),
+#' x <- split_strata(iris, "Sepal.Length", strata = "Species",
 #' split = "setosa", split_var = "Sepal.Width",
 #' split_at = c(3.1,3.8), type = "value")
 #'
 #' #Perform a categorical split.
-#' iris$strata <- rep(rep(1, times=25), rep(0, times = 25), times = 6)
-#' x <- split_strata(iris, "Sepal.Length", strata = "strata"),
+#' iris$strata <- rep(c(rep(1, times=25), rep(0, times = 25)), times = 3)
+#' x <- split_strata(iris, "Sepal.Length", strata = "strata",
 #' split = NULL, split_var = "Species",
 #' split_at = c("virginica","versicolor"), type = "categorical")
 #' #Splits each initial strata 1 and 2 into one stratum with "virginia"
-#' #and "versicolor" species and one stratum with all of the other species #' #not specified in the split_at argument.
+#' #and "versicolor" species and one stratum with all of the other species
+#' #not specified in the split_at argument.
 #'
 #'
 #' @export
 #' @return Returns the input dataframe with a new column named 'new_strata' that holds the name of the stratum that each sample belongs to after the split. The column containing the previous strata names is retained and given the name "old_strata".
+#' @importFrom magrittr %>%
 
 
 split_strata <- function(data, strata, split = NULL, split_var, type = "global quantile", split_at = .5, trunc = NULL){
+  old_strata <- split_variable <- split_var_updated <- NULL
+  #bind global vars as necessary
   if(is.matrix(data)){
     data <- as.data.frame(data)
   }
@@ -173,7 +178,7 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
                      max(data_filtered$split_variable))
       data_filtered$split_var_updated <- data_filtered$split_variable
       data_filtered <- data_filtered %>%
-        mutate(split_var_updated = ifelse(split_variable <= cut_point[2],
+        dplyr::mutate(split_var_updated = ifelse(split_variable <= cut_point[2],
                                           paste(new_name,
                                                 paste("[",round(cut_point[1], digits = 2), ",",round(cut_point[2], digits = 2),"]", sep = ""),
                                                 sep = "_"),
@@ -181,7 +186,7 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
                                           ))
       for (i in 3:length(cut_point)) {
         data_filtered <- data_filtered %>%
-          mutate(split_var_updated = ifelse(split_variable > cut_point[1] & split_variable > cut_point[i-1] & split_variable <= cut_point[i],
+          dplyr::mutate(split_var_updated = ifelse(split_variable > cut_point[1] & split_variable > cut_point[i-1] & split_variable <= cut_point[i],
                                             paste(new_name,
                                                   paste("(",round(cut_point[i-1], digits = 2), ",",round(cut_point[i], digits = 2),"]", sep = ""),
                                             sep = "_"),
@@ -253,7 +258,7 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
                        max(data_filtered$split_variable))
         data_filtered$split_var_updated <- data_filtered$split_variable
         data_filtered <- data_filtered %>%
-          mutate(split_var_updated = ifelse(split_variable <= cut_point[2],
+          dplyr::mutate(split_var_updated = ifelse(split_variable <= cut_point[2],
                                             paste(new_name,
                                                   paste("[",round(cut_point[1], digits = 2), ",",round(cut_point[2], digits = 2),"]", sep = ""),
                                                   sep = "_"),
@@ -261,7 +266,7 @@ split_strata <- function(data, strata, split = NULL, split_var, type = "global q
           ))
         for (i in 3:length(cut_point)) {
           data_filtered <- data_filtered %>%
-            mutate(split_var_updated = ifelse(split_variable > cut_point[1] & split_variable > cut_point[i-1] & split_variable <= cut_point[i],
+            dplyr::mutate(split_var_updated = ifelse(split_variable > cut_point[1] & split_variable > cut_point[i-1] & split_variable <= cut_point[i],
                                               paste(new_name,
                                                     paste("(",round(cut_point[i-1], digits = 2), ",",round(cut_point[i], digits = 2),"]", sep = ""),
                                                     sep = "_"),
