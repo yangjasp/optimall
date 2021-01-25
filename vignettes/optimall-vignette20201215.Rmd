@@ -19,11 +19,19 @@ library(optimall)
 library(DiagrammeR)
 library(survey)
 library(survival)
+library(datasets)
+library(dplyr)
+library(here)
 
-phase1 <- read.csv("/Volumes/ShawLab/PCORI Healthy Weight/JasperWork/Phase1SIM.csv")
+load(here::here("data/Example_SimPhase1.rda"))
+load(here::here("data/Example_SimPhase2a.rda"))
+load(here::here("data/Example_SimPhase2b.rda"))
+
+
+phase1 <- Example_SimPhase1
 phase1$id <- seq(1:10335)
-phase2a <- read.csv("/Volumes/ShawLab/PCORI Healthy Weight/JasperWork/Phase2aSIM.csv")
-phase2b <- read.csv("/Volumes/ShawLab/PCORI Healthy Weight/JasperWork/Phase2bSIM.csv")
+phase2a <- Example_SimPhase2a
+phase2b <- Example_SimPhase2b
 ```
 
 
@@ -59,7 +67,6 @@ Wright offers revised algorithms that solve these issues which can also be imple
 Below is an example of how `optimum_allocation` could be called to optimally allocate 20 samples among `Species` in the `iris` dataset, minimizing the variance of `Sepal.Width`.
 
 ```{r Example 1}
-library(datasets)
 data <- datasets::iris
 optimum_allocation(data = data, strata = "Species", y = "Sepal.Width", nsample = 20, method = "WrightII")
 ```
@@ -159,8 +166,8 @@ phase2a$id <- ids_to_sample2a
 full_data <- dplyr::left_join(phase1, phase2a, by = "id")
 
 #We need to calculate the influence function and add it to the data
-design <- twophase(id=list(~1,~1),strata=list(NULL,~new_strata),subset=~sample_indicator,data=full_data,method="simple")
-fit<-svycoxph(Surv(child_age,event)~ mat_age+ mat_obesity+ wgt_change_validated + relevel(as.factor(mat_race),ref="White")+delivery_method+ nchildren,design=design)
+design <- survey::twophase(id=list(~1,~1),strata=list(NULL,~new_strata),subset=~sample_indicator,data=full_data,method="simple")
+fit<-survey::svycoxph(survival::Surv(child_age,event)~ mat_age+ mat_obesity+ wgt_change_validated + relevel(as.factor(mat_race),ref="White")+delivery_method+ nchildren,design=design)
 summary(fit)
 
 #Get influence function and add it back to data
