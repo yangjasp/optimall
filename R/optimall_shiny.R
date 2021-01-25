@@ -6,6 +6,6 @@ optimall_shiny <- function() {
   appDir <- system.file("shiny-app", "optimall_shiny", "app_draft_4.R", package = "optimall")
   if (appDir == "") {
     stop("Could not find example directory. Try re-installing `optimall`.", call. = FALSE)
-    }
+  }
   shiny::runApp(appDir, display.mode = "normal")
 }
