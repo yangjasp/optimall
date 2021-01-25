@@ -7,12 +7,13 @@
 #' @param name a character name for the new stratum. Defaults to NULL, which pastes the old strata names together to create the new stratum name.
 
 #' @examples
-#' x <- merge_strata(iris, "Species", strata = c("virginica","versicolor"), name = "v_species")
+#' x <- merge_strata(iris, strata = "Species", merge = c("virginica","versicolor"), name = "v_species")
 #' @export
 #' @return Returns the input dataframe with a new column named 'new_strata' that holds the name of the stratum that each sample belongs to after the merge. The column containing the previous strata names is retained and given the name 'old_strata'.
 
 
 merge_strata <- function(data, strata, merge, name = NULL){
+  old_strata <- NULL #bind global vars as necessary
   if(is.matrix(data)){
     data <- as.data.frame(data)
   }

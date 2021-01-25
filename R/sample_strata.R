@@ -10,6 +10,7 @@
 #' @param n_allocated a character string specifying the name of the column in \code{data2} which indicates the n allocated to each stratum. Defaults to "n_to_sample".
 #' @export
 #' @return returns a {data1} as a dataframe with a new column named "sample_indicator" containing a binary (1/0) indicator of whether each unit should be sampled.
+#' @importFrom magrittr %>%
 
 sample_strata <- function(data1, strata1, id, wave2a = NULL, data2, strata2, n_allocated){
   if(is.matrix(data1)|is.matrix(data2)){

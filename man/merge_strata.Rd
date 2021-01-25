@@ -22,5 +22,5 @@ Returns the input dataframe with a new column named 'new_strata' that holds the 
 Merges multiple pre-defined sampling strata into a single strata.
 }
 \examples{
-x <- merge_strata(iris, "Species", strata = c("virginica","versicolor"), name = "v_species")
+x <- merge_strata(iris, strata = "Species", merge = c("virginica","versicolor"), name = "v_species")
 }

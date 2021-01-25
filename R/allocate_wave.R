@@ -23,9 +23,15 @@
 #' @export
 #' @references Wright, T. (2014). A simple method of exact optimal sample allocation under stratification with any mixed constraint patterns. Statistics, 07.
 #' @return Returns a dataframe with one row for each stratum and columns specifying the stratum name, population stratum size (\code{"npop"}), cumulative sample in that strata (\code{"nsampled_total"}), prior number sampled in that strata (\code{"nsampled_prior"}), and the optimally allocated number of units in each strata for the next wave (\code{"n_to_sample"}).
+#' @importFrom rlang enquo
+#' @importFrom rlang sym
+#' @importFrom magrittr %>%
 
 allocate_wave <- function(data, strata, y, wave2a,
                           nsample, method = "iterative", detailed = FALSE){
+  key <- stratum_size <- wave1_size <- npop <- difference <-
+    nsample_prior <- n_to_sample <- nsample_total <-
+    nsample_optimal <- sd <- NULL #bind global vars as necessary
   if (is.matrix(data)) {
     data <- data.frame(data)
     }
@@ -103,7 +109,7 @@ allocate_wave <- function(data, strata, y, wave2a,
 
     open_groups <- dplyr::filter(comp_df, difference > 0)$group
     open_df <- wave1_df %>%
-      filter(group %in% open_groups)
+      dplyr::filter(group %in% open_groups)
     open_output <- optimall::optimum_allocation(data = open_df, strata = "group",y = "y", nsample = nsample + nsampled - nsampled_in_closed_groups, allow.na = T)
     names(open_output)[1] <- "group"
     open_output <- dplyr::inner_join(open_output, wave1_summary, by = "group")

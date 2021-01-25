@@ -19,9 +19,11 @@
 #' @export
 #' @references Wright, T. (2014). A simple method of exact optimal sample allocation under stratification with any mixed constraint patterns. Statistics, 07.
 #' @return Returns a data frame with the n allocated to each strata or the sampling fractions if nsample is NULL.
+#' @importFrom magrittr %>%
 
 optimum_allocation <- function(data, strata, y, nsample = NULL,
                                ndigits = 2, method = "WrightII", allow.na = FALSE) {
+  n_sd <- sd <- NULL #bind local vars as necessary
   if (is.matrix(data) | tibble::is_tibble(data)) {
     data <- data.frame(data)
   }
@@ -58,9 +60,9 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
   if (method == "Neyman"){
     output_df <- output_df %>%
       dplyr::group_by(strata) %>%
-      dplyr::summarize(n = n(),
-                       sd = sd(y, na.rm = T),
-                       n_sd = sd(y, na.rm = T) * n()) %>%
+      dplyr::summarize(n = dplyr::n(),
+                       sd = stats::sd(y, na.rm = T),
+                       n_sd = stats::sd(y, na.rm = T) * dplyr::n()) %>%
       dplyr::mutate(stratum_fraction = round(n_sd / sum(n_sd),
                                                     digits = ndigits),
                     sd = round(sd, digits = ndigits),
@@ -93,9 +95,9 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
         }
         output_df <- output_df %>%
           dplyr::group_by(strata) %>%
-          dplyr::summarize(n = n(),
-                           sd = sd(y, na.rm = T),
-                           n_sd = sd(y, na.rm = T) * n())
+          dplyr::summarize(n = dplyr::n(),
+                           sd = stats::sd(y, na.rm = T),
+                           n_sd = stats::sd(y, na.rm = T) * dplyr::n())
         if (nsample > sum(output_df$n)){
           stop("'nsample' is larger than population size")
         }
@@ -110,7 +112,7 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
           #All rows are same length, but zeroes so that n_sample won't be larger than n_strata
           names(priority_array)[[i]] <- paste0("n_sd",as.character(i))
         }
-        suppressMessages(Wright_output <- bind_rows(priority_array))
+        suppressMessages(Wright_output <- dplyr::bind_rows(priority_array))
         Wright_output[is.na(Wright_output)] <- 0
         mult_vec <- vector()
         for (i in 1:(n_minus_H+1)){
@@ -147,9 +149,9 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
         }
         output_df <- output_df %>%
           dplyr::group_by(strata) %>%
-          dplyr::summarize(n = n(),
-                           sd = sd(y, na.rm = T),
-                           n_sd = sd(y, na.rm = T) * n())
+          dplyr::summarize(n = dplyr::n(),
+                           sd = stats::sd(y, na.rm = T),
+                           n_sd = stats::sd(y, na.rm = T) * dplyr::n())
         if (nsample > sum(output_df$n)){
           stop("'nsample' is larger than population size")
         }
@@ -164,7 +166,7 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
           #All rows are same length, but zeroes so that n_sample won't be larger than n_strata. Zero instead of NULL so entries in list aren't empty when n=2.
           names(priority_array)[[i]] <- paste0("n_sd",as.character(i))
         }
-        suppressMessages(Wright_output <- bind_rows(priority_array))
+        suppressMessages(Wright_output <- dplyr::bind_rows(priority_array))
         Wright_output[is.na(Wright_output)] <- 0
         mult_vec <- vector()
         for (i in 2:(n_minus_2H+1)){
