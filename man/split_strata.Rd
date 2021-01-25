@@ -21,6 +21,8 @@ split_strata(
 
 \item{split}{the name of the stratum or strata to be split, exactly as they appear in \code{strata}. Defaults to NULL, which indicates that all strata in \code{strata} will be split.}
 
+\item{split_var}{a character string specifying the name of the column that should be used to define the strata splits.}
+
 \item{type}{a character string specifying how the function should interpret the \code{split_at} argument. Must be one of:
 \itemize{
 \item \code{"global quantile"}, the default, splits the strata at the quantiles specified in \code{split_at} defined along the entire, unfiltered \code{split_var} column .
@@ -54,17 +56,18 @@ split = "setosa", split_var = "Sepal.Width", split_at = c(0.33,0.66),
 type = "local quantile")
 
 #Manually select split values with type = "value"
-x <- split_strata(iris, "Sepal.Length", strata = c("Species"),
+x <- split_strata(iris, "Sepal.Length", strata = "Species",
 split = "setosa", split_var = "Sepal.Width",
 split_at = c(3.1,3.8), type = "value")
 
 #Perform a categorical split.
-iris$strata <- rep(rep(1, times=25), rep(0, times = 25), times = 6)
-x <- split_strata(iris, "Sepal.Length", strata = "strata"),
+iris$strata <- rep(c(rep(1, times=25), rep(0, times = 25)), times = 3)
+x <- split_strata(iris, "Sepal.Length", strata = "strata",
 split = NULL, split_var = "Species",
 split_at = c("virginica","versicolor"), type = "categorical")
 #Splits each initial strata 1 and 2 into one stratum with "virginia"
-#and "versicolor" species and one stratum with all of the other species #' #not specified in the split_at argument.
+#and "versicolor" species and one stratum with all of the other species
+#not specified in the split_at argument.
 
 
 }
