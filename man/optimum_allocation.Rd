@@ -41,8 +41,10 @@ Returns a data frame with the n allocated to each strata or the sampling fractio
 Determines the optimum sampling fraction and sample size for each stratum in a stratified random sample according to Neyman Allocation or Exact Optimum Sample Allocation (Wright 2014).
 }
 \examples{
-optimum_allocation(data = iris, strata = "Species", y = "Sepal.Length",
-nsample = 100, method = "WrightII")
+optimum_allocation(
+  data = iris, strata = "Species", y = "Sepal.Length",
+  nsample = 100, method = "WrightII"
+)
 }
 \references{
 Wright, T. (2014). A simple method of exact optimal sample allocation under stratification with any mixed constraint patterns. Statistics, 07.

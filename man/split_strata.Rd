@@ -45,29 +45,35 @@ Splits pre-defined sampling strata based on values of a continuous or categorica
 The names of the newly created strata for a split generated from a continuous value are the \code{split_var} column name with the range of values defining that stratum by appended to the old strata name. For a categorical split, the new strata names are the \code{split_var} column with a 1 (if the unit is inside \code{split_at}) or 0 (if the unit is outside \code{split_at}) appended to the old strata name. If the \code{split_var} column name is long, the user can specify a value for \code{trunc} to prevent the new strata names from being inconveniently long.
 }
 \examples{
-x <- split_strata(iris, "Sepal.Length", strata = c("Species"),
-split = "setosa", split_var = "Sepal.Width",
-split_at = c(0.5), type = "global quantile")
+x <- split_strata(iris, "Sepal.Length",
+  strata = c("Species"),
+  split = "setosa", split_var = "Sepal.Width",
+  split_at = c(0.5), type = "global quantile"
+)
 
-#You can split at more than one quantile in one call.
-#The above call splits the "setosa" stratum into three of equal size
-x <- split_strata(iris, "Sepal.Length", strata = c("Species"),
-split = "setosa", split_var = "Sepal.Width", split_at = c(0.33,0.66),
-type = "local quantile")
+# You can split at more than one quantile in one call.
+# The above call splits the "setosa" stratum into three of equal size
+x <- split_strata(iris, "Sepal.Length",
+  strata = c("Species"),
+  split = "setosa", split_var = "Sepal.Width", split_at = c(0.33, 0.66),
+  type = "local quantile"
+)
 
-#Manually select split values with type = "value"
-x <- split_strata(iris, "Sepal.Length", strata = "Species",
-split = "setosa", split_var = "Sepal.Width",
-split_at = c(3.1,3.8), type = "value")
+# Manually select split values with type = "value"
+x <- split_strata(iris, "Sepal.Length",
+  strata = "Species",
+  split = "setosa", split_var = "Sepal.Width",
+  split_at = c(3.1, 3.8), type = "value"
+)
 
-#Perform a categorical split.
-iris$strata <- rep(c(rep(1, times=25), rep(0, times = 25)), times = 3)
-x <- split_strata(iris, "Sepal.Length", strata = "strata",
-split = NULL, split_var = "Species",
-split_at = c("virginica","versicolor"), type = "categorical")
-#Splits each initial strata 1 and 2 into one stratum with "virginia"
-#and "versicolor" species and one stratum with all of the other species
-#not specified in the split_at argument.
-
-
+# Perform a categorical split.
+iris$strata <- rep(c(rep(1, times = 25), rep(0, times = 25)), times = 3)
+x <- split_strata(iris, "Sepal.Length",
+  strata = "strata",
+  split = NULL, split_var = "Species",
+  split_at = c("virginica", "versicolor"), type = "categorical"
+)
+# Splits each initial strata 1 and 2 into one stratum with "virginia"
+# and "versicolor" species and one stratum with all of the other species
+# not specified in the split_at argument.
 }
