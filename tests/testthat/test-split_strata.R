@@ -14,7 +14,7 @@ data_split <- data.frame("strata" = c(rep("a", times = 15),
                                      rep(1, times = 7)),
                                    times = 3))
 
-test_that("strata_split produces a dataframe with the same number of
+test_that("split_strata produces a dataframe with the same number of
           rows as input and one more column called 'new_strata' with
           only the specified strata changed",{
   expect_equal(dim(split_strata(data = data_split, strata = "strata",
@@ -156,7 +156,51 @@ test_that("splits work when multiple strata given to the function",{
       "b.split_var_(0.15,1.79]", "b.split_var_[-1.72,0.15]","c"))
   data_split$split_var2 <- rep(c(rep("alpha", times = 7),
                                  rep("beta", times = 7)), times = 3)
-  expect_equal(sort(unique(split_strata(data = data_split, strata = "strata", split = c("a","b"), split_var = "split_var2", split_at = c("alpha"), type = "categorical")$new_strata)), c("a.split_var2_0", "a.split_var2_1", "b.split_var2_0", "b.split_var2_1","c"))
+  expect_equal(sort(unique(split_strata(data = data_split,
+                                        strata = "strata",
+                                        split = c("a","b"),
+                                        split_var = "split_var2",
+                                        split_at = c("alpha"),
+                                        type = "categorical")$new_strata)),
+               c("a.split_var2_0", "a.split_var2_1",
+                 "b.split_var2_0", "b.split_var2_1","c"))
+})
+
+
+test_that("splits also work when multiple strata and multiple split_at
+          values are given to the function",{
+  expect_equal(sort(unique(
+    split_strata(data = data_split, strata = "strata",
+                 split = c("a","b"), split_var = "split_var",
+                 split_at = c(0.3,0.6),
+                 type = "global quantile")$new_strata)),
+    c("a.split_var_(-0.51,0.16]", "a.split_var_(0.16,0.75]",
+      "a.split_var_[-1.71,-0.51]", "b.split_var_(-0.51,0.16]",
+      "b.split_var_(0.16,1.79]", "b.split_var_[-1.72,-0.51]","c"))
+  expect_equal(as.vector(table(split_strata(data = data_split,
+                                            strata = "strata",
+                                            split = c("a","b"),
+                                            split_var = "split_var",
+                                            split_at = c(0.3,0.6),
+                                            type =
+                                              "global quantile")$new_strata)),
+               c(6,6,3,3,7,5,12))
+  expect_equal(sort(unique(
+    split_strata(data = data_split, strata = "strata",
+                 split = c("a","b"), split_var = "split_var",
+                 split_at = c(0.3,0.6),
+                 type = "local quantile")$new_strata)),
+    c("a.split_var_(0.01,0.16]", "a.split_var_(0.16,0.75]",
+      "a.split_var_[-1.71,0.01]", "b.split_var_(-0.53,0.2]",
+      "b.split_var_(0.2,1.79]", "b.split_var_[-1.72,-0.53]","c"))
+  expect_equal(as.vector(table(split_strata(data = data_split,
+                                            strata = "strata",
+                                            split = c("a","b"),
+                                            split_var = "split_var",
+                                            split_at = c(0.3,0.6),
+                                            type =
+                                              "local quantile")$new_strata)),
+               c(4,6,5,4,6,5,12))
 })
 
 test_that("strata_split can define prior strata based on an interaction of multiple columns",{
@@ -244,5 +288,4 @@ test_that("truncating the new strata name works properly",{
                "'trunc' must be a single numeric or character",
                fixed = TRUE)
 })
-
 
