@@ -1,30 +1,63 @@
 #' Optimum Allocation
 #'
-#' Determines the optimum sampling fraction and sample size for each stratum in a stratified random sample according to Neyman Allocation or Exact Optimum Sample Allocation (Wright 2014).
-#' @param data A data frame or matrix with one row for each sampled unit, one column specifying each unit's stratum, and one column holding the value of the continuous variable for which the variance should be minimized.
-#' @param strata a character string or vector of character strings specifying the name(s) of columns which specify the stratum that each unit belongs to. If multiple column names are provided, each unique combination of values in these columns is taken to define one stratum.
-#' @param y a character string specifying the name of the continuous variable for which the variance should be minimized.
+#' Determines the optimum sampling fraction and sample size for
+#' each stratum in a stratified random sample according to Neyman
+#' Allocation or Exact Optimum Sample Allocation (Wright 2014).
+#' @param data A data frame or matrix with one row for each
+#' sampled unit, one column specifying each unit's stratum, and
+#' one column holding the value of the continuous variable for
+#' which the variance should be minimized.
+#' @param strata a character string or vector of character strings
+#' specifying the name(s) of columns which specify the stratum
+#' that each unit belongs to. If multiple column names are
+#' provided, each unique combination of values in these columns
+#' is taken to define one stratum.
+#' @param y a character string specifying the name of the
+#' continuous variable for which the variance should be minimized.
 #' @param nsample the desired total sample size. Defaults to NULL.
-#' @param method a character string specifying the method of optimum sample allocation to use. Must be one of:
+#' @param method a character string specifying the method of
+#' optimum sample allocation to use. Must be one of:
 #' \itemize{
-#' \item \code{"WrightII"}, the default, uses Algorithm II from Wright (2014) to determine the optimum allocation of a fixed sample size across the strata. It requires that at least two samples are allocated to each stratum, and it is recommended because it is the only algorithm that requires an unbiased estimate of the variance and always produces the global optimum allocation.
-#' \item \code{"WrightI"} uses Wright's Algorithm I to determine the optimum sample allocation. It only requires that at least one sample is allocated to each stratum, and can therefore lead to a biased variance estimate. It is not recommended except for in very specific cases.
-#' \item \code{"Neyman"} uses the standard method of Neyman Allocation to determine the optimum sample allocation. Its calculated stratum sample sizes are frequently non-integer values, but the output rounds these to the nearest integer. It is best used when nsample is `NULL` because it will output exact sampling fractions.
+#' \item \code{"WrightII"}, the default, uses Algorithm II from
+#' Wright (2014) to determine the optimum allocation of a fixed
+#' sample size across the strata. It requires that at least two
+#' samples are allocated to each stratum, and it is recommended
+#' because it is the only algorithm that requires an unbiased
+#' estimate of the variance and always produces the global
+#' optimum allocation.
+#' \item \code{"WrightI"} uses Wright's Algorithm I to determine
+#' the optimum sample allocation. It only requires that at least
+#' one sample is allocated to each stratum, and can therefore
+#' lead to a biased variance estimate. It is not recommended
+#' except for in very specific cases.
+#' \item \code{"Neyman"} uses the standard method of Neyman
+#' Allocation to determine the optimum sample allocation. Its
+#' calculated stratum sample sizes are frequently non-integer
+#' values, but the output rounds these to the nearest integer.
+#' It is best used when nsample is `NULL` because it will output
+#' exact sampling fractions.
 #' }
-#' @param ndigits a numeric value specifying the number of digits to round the standard deviation and stratum fraction to. Defaults to 2.
-#' @param allow.na logical input specifying whether y should be allowed to have NA values. Defaults to \code{FALSE}.
+#' @param ndigits a numeric value specifying the number of digits
+#' to round the standard deviation and stratum fraction to.
+#' Defaults to 2.
+#' @param allow.na logical input specifying whether y should
+#' be allowed to have NA values. Defaults to \code{FALSE}.
 #' @examples
 #' optimum_allocation(
 #'   data = iris, strata = "Species", y = "Sepal.Length",
 #'   nsample = 100, method = "WrightII"
 #' )
 #' @export
-#' @references Wright, T. (2014). A simple method of exact optimal sample allocation under stratification with any mixed constraint patterns. Statistics, 07.
-#' @return Returns a data frame with the n allocated to each strata or the sampling fractions if nsample is NULL.
+#' @references Wright, T. (2014). A simple method of exact optimal
+#' sample allocation under stratification with any mixed
+#' constraint patterns. Statistics, 07.
+#' @return Returns a data frame with the n allocated to each
+#' strata or the sampling fractions if nsample is NULL.
 #' @importFrom magrittr %>%
 
 optimum_allocation <- function(data, strata, y, nsample = NULL,
-                               ndigits = 2, method = "WrightII", allow.na = FALSE) {
+                               ndigits = 2, method = "WrightII",
+                               allow.na = FALSE) {
   n_sd <- sd <- NULL # bind local vars as necessary
   if (is.matrix(data) | tibble::is_tibble(data)) {
     data <- data.frame(data)
@@ -33,7 +66,8 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
     stop("Input data must be a dataframe or matrix with named columns.")
   }
   if (all(strata %in% names(data)) == FALSE) {
-    stop("'Strata' must be a string or vector of strings matching column names of data.")
+    stop("'Strata' must be a string or vector of strings matching
+         column names of data.")
   }
   if (any(is.na(data[, strata]))) {
     stop("Columns specifying strata contain NAs")
@@ -64,8 +98,8 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
       dplyr::group_by(strata) %>%
       dplyr::summarize(
         n = dplyr::n(),
-        sd = stats::sd(y, na.rm = T),
-        n_sd = stats::sd(y, na.rm = T) * dplyr::n()
+        sd = stats::sd(y, na.rm = TRUE),
+        n_sd = stats::sd(y, na.rm = TRUE) * dplyr::n()
       ) %>%
       dplyr::mutate(
         stratum_fraction = round(n_sd / sum(n_sd),
@@ -95,7 +129,8 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
   }
   else if (method == "WrightI") {
     if (is.null(nsample)) {
-      stop("This method requires a fixed nsample. Try method = 'Neyman' for exact sampling fractions.")
+      stop("This method requires a fixed nsample. Try method =
+           'Neyman' for exact sampling fractions.")
     }
     else {
       n_strata <- length(unique(strata))
@@ -107,8 +142,8 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
         dplyr::group_by(strata) %>%
         dplyr::summarize(
           n = dplyr::n(),
-          sd = stats::sd(y, na.rm = T),
-          n_sd = stats::sd(y, na.rm = T) * dplyr::n()
+          sd = stats::sd(y, na.rm = TRUE),
+          n_sd = stats::sd(y, na.rm = TRUE) * dplyr::n()
         )
       if (nsample > sum(output_df$n)) {
         stop("'nsample' is larger than population size")
@@ -126,7 +161,8 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
             )
           )
         )
-        # All rows are same length, but zeroes so that n_sample won't be larger than n_strata
+        # All rows are same length, but zeroes so that n_sample
+        # won't be larger than n_strata
         names(priority_array)[[i]] <- paste0("n_sd", as.character(i))
       }
       suppressMessages(Wright_output <- dplyr::bind_rows(priority_array))
@@ -135,14 +171,16 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
       for (i in 1:(n_minus_H + 1)) {
         mult_vec[i] <- 1 / (sqrt(i * (i + 1)))
       }
-      for (i in 1:ncol(Wright_output)) {
+      for (i in seq_len(ncol(Wright_output))) {
         Wright_output[, i] <- Wright_output[, i] * mult_vec[i]
       }
       cutoff <- (sort(unlist(Wright_output, use.names = FALSE),
-        decreasing = T
+        decreasing = TRUE
       ))[n_minus_H]
       stratum_size <- rowSums(Wright_output >= cutoff) + 1
-      final_output <- cbind(output_df[, c("strata", "n", "sd", "n_sd")], stratum_size)
+      final_output <- cbind(
+        output_df[, c("strata", "n", "sd", "n_sd")], stratum_size
+        )
       final_output <- final_output %>%
         dplyr::mutate(
           stratum_fraction = round(stratum_size / nsample,
@@ -151,7 +189,9 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
           sd = round(sd, digits = ndigits),
           n_sd = round(n_sd, digits = ndigits)
         )
-      final_output <- final_output[c("strata", "n", "sd", "n_sd", "stratum_fraction", "stratum_size")]
+      final_output <- final_output[c(
+        "strata", "n", "sd", "n_sd", "stratum_fraction",
+        "stratum_size")]
       names(final_output)[names(final_output) == "n"] <- "npop"
       final_output <- dplyr::arrange(final_output, strata)
       return(final_output)
@@ -159,7 +199,8 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
   }
   else if (method == "WrightII") {
     if (is.null(nsample)) {
-      stop("This method requires a fixed nsample. Try method = 'Neyman' for exact sampling fractions.")
+      stop("This method requires a fixed nsample. Try method =
+           'Neyman' for exact sampling fractions.")
     }
     else {
       n_strata <- length(unique(strata))
@@ -171,8 +212,8 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
         dplyr::group_by(strata) %>%
         dplyr::summarize(
           n = dplyr::n(),
-          sd = stats::sd(y, na.rm = T),
-          n_sd = stats::sd(y, na.rm = T) * dplyr::n()
+          sd = stats::sd(y, na.rm = TRUE),
+          n_sd = stats::sd(y, na.rm = TRUE) * dplyr::n()
         )
       if (nsample > sum(output_df$n)) {
         stop("'nsample' is larger than population size")
@@ -190,7 +231,9 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
             )
           )
         )
-        # All rows are same length, but zeroes so that n_sample won't be larger than n_strata. Zero instead of NULL so entries in list aren't empty when n=2.
+        # All rows are same length, but zeroes so that n_sample
+        # won't be larger than n_strata. Zero instead of NULL so
+        # entries in list aren't empty when n=2.
         names(priority_array)[[i]] <- paste0("n_sd", as.character(i))
       }
       suppressMessages(Wright_output <- dplyr::bind_rows(priority_array))
@@ -199,14 +242,15 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
       for (i in 2:(n_minus_2H + 1)) {
         mult_vec[i - 1] <- 1 / (sqrt(i * (i + 1)))
       }
-      for (i in 1:ncol(Wright_output)) {
+      for (i in seq_len(ncol(Wright_output))) {
         Wright_output[, i] <- Wright_output[, i] * mult_vec[i]
       }
       cutoff <- (sort(unlist(Wright_output, use.names = FALSE),
-        decreasing = T
+        decreasing = TRUE
       ))[n_minus_2H]
       stratum_size <- rowSums(Wright_output >= cutoff) + 2
-      final_output <- cbind(output_df[, c("strata", "n", "sd", "n_sd")], stratum_size)
+      final_output <- cbind(
+        output_df[, c("strata", "n", "sd", "n_sd")], stratum_size)
       final_output <- final_output %>%
         dplyr::mutate(
           stratum_fraction = round(stratum_size / nsample,
@@ -215,13 +259,17 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
           sd = round(sd, digits = ndigits),
           n_sd = round(n_sd, digits = ndigits)
         )
-      final_output <- final_output[c("strata", "n", "sd", "n_sd", "stratum_fraction", "stratum_size")]
+      final_output <- final_output[
+        c("strata", "n", "sd", "n_sd", "stratum_fraction",
+          "stratum_size")]
       names(final_output)[names(final_output) == "n"] <- "npop"
       final_output <- dplyr::arrange(final_output, strata)
       return(final_output)
     }
   }
   else {
-    stop("'Method' must be a character string that matches or partially matches one of 'WrightI','WrightII', or 'Neyman'.")
+    stop("'Method' must be a character string that matches or
+         partially matches one of 'WrightI','WrightII', or
+         'Neyman'.")
   }
 }
