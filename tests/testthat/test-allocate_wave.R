@@ -3,48 +3,85 @@ context("test-allocate_wave")
 library(dplyr)
 library(optimall)
 
-data <- data.frame("strata" = c(rep("a", times = 15), rep("b", times = 15), rep("c", times = 12)),
+data <- data.frame("strata" = c(rep("a", times = 15),
+                                rep("b", times = 15),
+                                rep("c", times = 12)),
                    "y" = c(rnorm(30, sd = 1), rnorm(12, sd = 2)),
                    "key" = rbinom(42, 1, 0.2))
 data$key[c(1,16,31)] <- 1 #To make sure no group gets zero in wave2a
 
 test_that("the output of allocate_wave is as expected",{
-  output <- allocate_wave(data = data, strata = "strata", wave2a = "key", y = "y",nsample = 20)
-  expect_equal(output$nsample_total, optimum_allocation(data = data, strata = "strata", y = "y", nsample = sum(data$key) + 20)$stratum_size) #Only works if no oversampling in wave2a
+  output <- allocate_wave(data = data, strata = "strata",
+                          wave2a = "key", y = "y",nsample = 20)
+  expect_equal(output$nsample_total,
+               optimum_allocation(data = data, strata = "strata",
+                                  y = "y",
+                                  nsample = sum(data$key) + 20)$stratum_size)
+  # Only works if no oversampling in wave2a
   expect_equal(sum(output$n_to_sample), 20)
-  expect_equal(sum(output$n_to_sample) + sum(output$nsample_prior), sum(output$nsample_total))
+  expect_equal(sum(output$n_to_sample) + sum(output$nsample_prior),
+               sum(output$nsample_total))
 })
 
-test_that("If there is oversampling, allocate_wave does keeps strata at least as large as they were in prior samples and total sample sizes add up properly",{
-  data$key <- c(rep(1,times = 13),0,0, rep(0,times = 10),rep(1, times = 5),rep(0,times = 8),rep(1,times = 4)) #total of 42. stratum a has been oversampled. Total prior nsample is 22.
-  output_over <- allocate_wave(data = data, strata = "strata", wave2a = "key", y = "y",nsample = 8)
+test_that("If there is oversampling, allocate_wave does keeps strata
+          at least as large as they were in prior samples and total
+          sample sizes add up properly",{
+  data$key <- c(rep(1,times = 13),0,0,
+                rep(0,times = 10),
+                rep(1, times = 5),
+                rep(0,times = 8),
+                rep(1,times = 4))
+  # total of 42. stratum a has been oversampled.
+  # Total prior nsample is 22.
+  output_over <- allocate_wave(data = data,
+                               strata = "strata", wave2a = "key",
+                               y = "y",nsample = 8)
   expect_equal(sum(output_over$nsample_total),30)
   expect_equal(any(output_over$nsample_total < c(13,5,4)),FALSE)
-  expect_equal(output_over$n_to_sample + output_over$nsample_prior, output_over$nsample_total)
-  output_over_simple <- allocate_wave(data = data, strata = "strata", wave2a = "key", y = "y",nsample = 8,method = "simple") #and for simple method
+  expect_equal(output_over$n_to_sample + output_over$nsample_prior,
+               output_over$nsample_total)
+  output_over_simple <- allocate_wave(data = data, strata = "strata",
+                                      wave2a = "key", y = "y",
+                                      nsample = 8,method = "simple")
+  # and for simple method
   expect_equal(sum(output_over_simple$nsample_total),30)
   expect_equal(any(output_over_simple$nsample_total < c(13,5,4)),FALSE)
-  expect_equal(output_over_simple$n_to_sample + output_over_simple$nsample_prior, output_over_simple$nsample_total)
+  expect_equal(output_over_simple$n_to_sample +
+                 output_over_simple$nsample_prior,
+               output_over_simple$nsample_total)
 })
 
-test_that("the output of allocate_wave matches the output of optimum_allocation where it should",{
+test_that("the output of allocate_wave matches the output of
+          optimum_allocation where it should",{
   data2 <- data
   data2$key2 <- c(rep(1, times = 10), rbinom(32, 1, 0.2))
-  output_wave <- allocate_wave(data = data2, strata = "strata", wave2a = "key2", y = "y",nsample = 12, detailed = TRUE)
-  output_opt <- optimum_allocation(data = data2, strata = "strata", y = "y", nsample = sum(data2$key2 == 1) + 12)
+  output_wave <- allocate_wave(data = data2, strata = "strata",
+                               wave2a = "key2", y = "y",nsample = 12,
+                               detailed = TRUE)
+  output_opt <- optimum_allocation(data = data2, strata = "strata",
+                                   y = "y",
+                                   nsample = sum(data2$key2 == 1) + 12)
   expect_equal(output_wave$nsample_optimal, output_opt$stratum_size)
   expect_equal(output_wave$sd, output_opt$sd)
-  expect_equal(sum(output_wave$nsample_total), sum(output_opt$stratum_size))
-  expect_equal(all((output_wave$nsample_prior + output_wave$n_to_sample) == output_wave$nsample_total), TRUE)
+  expect_equal(sum(output_wave$nsample_total),
+               sum(output_opt$stratum_size))
+  expect_equal(all((output_wave$nsample_prior +
+                      output_wave$n_to_sample) ==
+                     output_wave$nsample_total),
+               TRUE)
 
 })
 
 test_that("y must be numeric, as it has to be for optimum_allocation",{
   data2 <- data
   data2$y <- as.character(data2$y)
-  expect_error(allocate_wave(data = data2, strata = "strata", wave2a = "key", y = "y",nsample = 20), "'y' must be numeric.")
+  expect_error(allocate_wave(data = data2, strata = "strata",
+                             wave2a = "key", y = "y",nsample = 20),
+               "'y' must be numeric.")
 })
 
 test_that("nsample cannot be larger than npop - n_sampled_prior",{
-  expect_error(allocate_wave(data = data, strata = "strata", wave2a = "key", y = "y",nsample = 39), "Total sample size across waves, taken as nsampled in wave2a + nsample, is larger than the population size.", fixed = TRUE)
+  expect_error(allocate_wave(data = data, strata = "strata",
+                             wave2a = "key", y = "y",nsample = 39),
+               "Total sample size across waves, taken as", fixed = TRUE)
 })
