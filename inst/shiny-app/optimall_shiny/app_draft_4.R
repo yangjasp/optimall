@@ -106,7 +106,8 @@ server <- function(input, output, session) {
     shiny::req(input$data)
     radioButtons(inputId = "type",
                  label = "Split Type:",
-                 list("global quantile","local quantile", "value", "categorical"))
+                 list("global quantile","local quantile",
+                      "value", "categorical"))
   })
   output$nsample <- renderUI({
     shiny::req(input$data)
