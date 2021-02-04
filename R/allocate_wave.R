@@ -86,8 +86,8 @@ allocate_wave <- function(data, strata, y, wave2a,
     stop("Input data must be a dataframe or matrix with named columns.")
   }
   if (all(strata %in% names(data)) == FALSE) {
-    stop("'Strata' must be a string or vector of strings matching
-         column names of data.")
+    stop("'strata' must be a character string or vector of
+    strings matching column names of data.")
   }
   if (y %in% names(data) == FALSE) {
     stop("'y' must be a character string matching a column name of data.")
