@@ -91,7 +91,8 @@ test_that("splits occur at correct local quantile values",{
 test_that("splits occur at correct local quantile values if multiple
           split points are provided",{
   cutpts <- strsplit(dplyr::filter(
-    split_strata(data = data_split, strata = "strata", split = "a", split_var = "split_var", split_at = c(0.1,0.9),
+    split_strata(data = data_split, strata = "strata", split = "a",
+                 split_var = "split_var", split_at = c(0.1,0.9),
                  type = "local quantile"),
     split_var < stats::median(split_var),
     old_strata == "a")$new_strata[1],
@@ -203,7 +204,8 @@ test_that("splits also work when multiple strata and multiple split_at
                c(4,6,5,4,6,5,12))
 })
 
-test_that("strata_split can define prior strata based on an interaction of multiple columns",{
+test_that("strata_split can define prior strata based on an
+          interaction of multiple columns",{
   expect_equal(length(unique(
     split_strata(data = data_split, strata = c("strata","strata2"),
                  split = "a.0", split_var = "split_var",

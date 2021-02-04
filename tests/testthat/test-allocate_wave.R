@@ -85,3 +85,33 @@ test_that("nsample cannot be larger than npop - n_sampled_prior",{
                              wave2a = "key", y = "y",nsample = 39),
                "Total sample size across waves, taken as", fixed = TRUE)
 })
+
+test_that("detailed = TRUE gives all columns of interest",{
+  output <- allocate_wave(data = data, strata = "strata",
+                          wave2a = "key", y = "y",nsample = 20,
+                          detailed = TRUE)
+  expect_equal(names(output),
+               c("strata", "npop", "nsample_optimal", "nsample_total",
+                 "nsample_prior","n_to_sample","sd"))
+})
+
+test_that("basic errors work",{
+  expect_error(allocate_wave(data = data, strata = "strata",
+                             wave2a = "key", y = "y_wrong",nsample = 20),
+               "'y' must be a character string")
+  expect_error(allocate_wave(data = data, strata = "strata",
+                             wave2a = "key_wrong", y = "y",nsample = 20),
+               "'wave2a' must be a character string")
+  expect_error(allocate_wave(data = data, strata = "strata_wrong",
+                             wave2a = "key", y = "y",nsample = 20),
+               "'strata' must be a character string")
+  bad_data <- data
+  bad_data$key_wrong <- rep(c(1,2,3), times = dim(bad_data)[1]/3)
+  expect_error(allocate_wave(data = bad_data, strata = "strata",
+                             wave2a = "key_wrong", y = "y",nsample = 20),
+               "has a binary indicator for whether each unit")
+  bad_data$key[3] <- NA
+  expect_error(allocate_wave(data = bad_data, strata = "strata",
+                             wave2a = "key", y = "y",nsample = 20),
+               "cannot contain NAs")
+})

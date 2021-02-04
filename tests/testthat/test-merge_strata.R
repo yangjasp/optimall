@@ -44,3 +44,17 @@ test_that("giving NULL name works",{
                                     "strata",c("A","B"))$new_strata)),
                c("A.B","C"))
 })
+
+test_that("errors work",{
+  data$strata2 <- rep(c(1,2),times = 15)
+  expect_error(merge_strata(data,c("strata","strata2"),c("A","B")),
+               "'strata' should specify only one column")
+  expect_error(merge_strata(data, strata = "strata",merge = NULL),
+               "Expecting names of strata to merge")
+  x <- c(1,2,3)
+  expect_error(merge_strata(data = x  ,"strata",
+                            merge = c(1,2)),
+               "must be a dataframe or matrix")
+
+
+})
