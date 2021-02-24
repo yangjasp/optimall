@@ -13,7 +13,7 @@ multiwave_diagram(x, height = NULL, width = NULL)
 \item{width}{The width in pixels of the diagram. Defaults to \code{NULL},
 which produces the default width.}
 
-\item{object}{An object of class "multiwave".}
+\item{object}{An object of class \code{multiwave}.}
 }
 \description{
 Takes a multiwave object as input and plots a diagram of its structure

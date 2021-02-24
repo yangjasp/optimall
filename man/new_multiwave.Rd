@@ -20,10 +20,10 @@ empty dataframe.
 phase must only have one wave.}
 }
 \value{
-Returns an object of class \code{multiwave} that stores all relevant data from the survey design in an organized and easy-to-access manner. See package vignettes or class documentation for more information.
+Returns an object of class \code{Multiwave} that stores all relevant data from the survey design in an organized and easy-to-access manner. See package vignettes or class documentation for more information.
 }
 \description{
-Creates an Object of Class \code{multiwave} with the specified number
+Creates an Object of Class \code{Multiwave} with the specified number
 of phases and waves. All contents will be NULL upon initialization,
 but the object contains a framework for contents to be added to
 during the survey design and sample collection process.

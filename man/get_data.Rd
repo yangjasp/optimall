@@ -4,5 +4,5 @@
 \alias{get_data}
 \title{Access and Write Slots of a Multiwave Object}
 \description{
-\code{get_data} is the accessor function for objects of class \code{multiwave}.
+\code{get_data} is the accessor function for objects of class \code{Multiwave}.
 }
