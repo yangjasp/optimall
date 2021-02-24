@@ -62,8 +62,8 @@ these details are all available in the output of
 Returns a dataframe with one row for each stratum and
 columns specifying the stratum name, population stratum size
 (\code{"npop"}), cumulative sample in that strata
-(\code{"nsampled_total"}), prior number sampled in that
-strata (\code{"nsampled_prior"}), and the optimally allocated
+(\code{"nsample_total"}), prior number sampled in that
+strata (\code{"nsample_prior"}), and the optimally allocated
 number of units in each strata for the next wave (\code{"n_to_sample"}).
 }
 \description{
@@ -87,7 +87,6 @@ output the \emph{most} optimal allocation possible for the next wave. By setting
 \code{detailed = TRUE}, you can compare the sampling allocation given by
 \code{allocate_wave} to the allocation given by \code{optimum_allocation} to
 see how, if at all, oversampling in previous waves affected the allocation.
-optimum allocation
 }
 \examples{
 \dontrun{

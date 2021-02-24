@@ -1,4 +1,6 @@
-setMethod("summary", "multiwave", function(object) {
+#' @export
+
+setMethod("summary", "Multiwave", function(object) {
   n_waves <- vector()
   for (i in (seq_along(object@phases))){
     n_waves[i] <- ifelse(names(object@phases)[[i]] == "phase1",
@@ -6,7 +8,7 @@ setMethod("summary", "multiwave", function(object) {
                          length(object@phases[[i]]@waves))
   }
   n_waves[1] <- 1
-  cat("A 'multiwave' object with ", length(object@phases),
+  cat("A 'Multiwave' object with ", length(object@phases),
       " phases containing",
   paste(n_waves,collapse = ", "), " waves respectively: \n",
   "\n",

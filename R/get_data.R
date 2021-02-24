@@ -1,8 +1,14 @@
 #' Access and Write Slots of a Multiwave Object
 #'
+#' \code{get_data} is the accessor function for objects of class \code{Multiwave}.
+#' @name get_data
+#' @export
+#' @include multiwave.R phase.R wave.R
+NULL
+
 get_data <- function(x, phase = 1, wave = NA, slot = "data"){
-  if (class(x) != "multiwave"){
-    stop("'x' must be a multiwave object")
+  if (class(x) != "Multiwave"){
+    stop("'x' must be an object of class 'Multiwave'")
   }
   if (is.na(phase) & is.na(wave) & slot == "metadata"){
     x@metadata
@@ -41,10 +47,10 @@ get_data <- function(x, phase = 1, wave = NA, slot = "data"){
 setGeneric("get_data<-", function(x, phase = 1, wave = NA, slot = "data",
                                   value)
   standardGeneric("get_data<-"))
-setMethod("get_data<-", "multiwave", function(x, phase = 1, wave = NA,
+setMethod("get_data<-", c(x = "Multiwave"), function(x, phase = 1, wave = NA,
                                               slot = "data", value){
-  if (class(x) != "multiwave"){
-    stop("'x' must be a multiwave object")
+  if (class(x) != "Multiwave"){
+    stop("'x' must be an object of class 'multiwave'")
   }
   if (is.na(phase) & is.na(wave) & slot == "metadata"){
     x@metadata <- value

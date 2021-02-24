@@ -35,3 +35,18 @@ Suggests:
 VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)
+Collate: 
+    'allocate_wave.R'
+    'example_simdata.R'
+    'wave.R'
+    'phase.R'
+    'multiwave.R'
+    'get_data.R'
+    'merge_strata.R'
+    'multiwave_diagram.R'
+    'new_multiwave.R'
+    'optimall_shiny.R'
+    'optimum_allocation.R'
+    'sample_strata.R'
+    'split_strata.R'
+    'summary.multiwave.R'

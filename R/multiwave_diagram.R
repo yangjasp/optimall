@@ -4,15 +4,15 @@
 #' in the plotting window. Red boxes indicate slots that have not yet been
 #' filled, blue boxes indicate that the slot is filled. Currently only supported for one-, two-, and three-phase designs.
 #'
-#' @param object An object of class "multiwave".
+#' @param object An object of class \code{multiwave}.
 #' @param height The height in pixels of the diagram. Defaults to \code{NULL}
 #' , which produces default height.
 #' @param width The width in pixels of the diagram. Defaults to \code{NULL},
 #' which produces the default width.
 #'
 multiwave_diagram <- function(x, height = NULL, width = NULL){
-  if (class(x) != "multiwave"){
-    stop("'x' must be a multiwave object")
+  if (class(x) != "Multiwave"){
+    stop("'x' must be an object of class Multiwave")
   }
   #Find title if there is one in total metadata
   if("title" %in% names(x@metadata) &

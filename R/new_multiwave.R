@@ -1,16 +1,30 @@
-#' Initialize a Multi-Wave Object
+#' Initialize a Multiwave Object
 #'
-#' Creates an Object of Class "Multiwave" with the specified number
+#' Creates an Object of Class \code{Multiwave} with the specified number
 #' of phases and waves. All contents will be NULL upon initialization,
 #' but the object contains a framework for contents to be added to
 #' during the survey design and sample collection process.
 #'
 #' @param phases A numeric value specifying the number of phases in the survey design.
-#' @param waves A vector of numeric values specifying the number of waves in each phase
-#' of the survey design. Length must match the number of \code{phases} and the first
+#' @param waves A vector of numeric values specifying the number of waves in
+#' each phase of the survey design. Length must match the number of
+#' \code{phases} and the first
+#' @param metadata A list containing the survey metadata. Defaults to an empty list.
+#' @param data A dataframe containing the phase 1 data of the survey. Defaults to an
+#' empty dataframe.
 #' phase must only have one wave.
-#' @return Returns an object of class "multi-wave" that stores all relevant data from the survey design in an organized and easy-to-access manner. See package vignettes for more information.
+#' @return Returns an object of class \code{Multiwave} that stores all relevant data from the survey design in an organized and easy-to-access manner. See package vignettes or class documentation for more information.
+#' @examples
+#' #Initialize a multiwave object for a two-phase sampling design that will
+#' #sample over three waves in the second phase
+#' multiwave_object <- new_multiwave(phases = 2, waves = c(1,3))
 #'
+#' #If we already have the phase 1 data and want to add a title to the survey
+#' metadata, we can initialize the object with these included.
+#' multiwave_object <- new_multiwave(phases = 2, waves = c(1,3),
+#' metadata = list(title = "my two-phase survey"), data = iris)
+#'
+#' @export
 
 new_multiwave <- function(phases, waves,
                           metadata = list(), phase1 = data.frame()){
@@ -45,6 +59,6 @@ new_multiwave <- function(phases, waves,
                              data = phase1)
     names(phases_list) <- c("phase1", phase_names)
   }
-  output <- new("multiwave", metadata = metadata, phases = phases_list)
+  output <- new("Multiwave", metadata = metadata, phases = phases_list)
   return(output)
 }
