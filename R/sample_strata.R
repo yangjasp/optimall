@@ -3,10 +3,13 @@
 #' Given one dataframe indicating which stratum each population
 #' unit belongs to and a second specifying the n allocated to each
 #' stratum, \code{sample_strata} selects the units to sample by
-#' selecting a random sample of the desired size within each
+#' taking a random sample of the desired size within each
 #' stratum. The second dataframe specifying the n allocated to each
-#' stratum is often the output of \code{allocate_wave} or
+#' stratum is typically the output of \code{allocate_wave} or
 #' \code{optimum_allocation}.
+#'
+#' If some units have already been sampled, \code{sample_strata} will avoid
+#' sampling them again.
 #' @param data1 A data frame or matrix with one row for each
 #' sampling unit in the population, one column specifying each
 #' unit's stratum, and one column with a unique identifier for each
@@ -22,7 +25,8 @@
 #' @param data2 a dataframe or matrix with one row for each stratum
 #' that subdivides the population, one column specifying the
 #' stratum name, and one column indicating the number of samples
-#' allocated to each stratum.
+#' allocated to each stratum. The outputs of both \code{allocate_wave} and
+#' \code{optimum_allocation} are in this format.
 #' @param strata2 a character string specifying the name of the
 #' column in \code{data2} which indicates the stratum. Defaults to "strata".
 #' @param n_allocated a character string specifying the name of the
@@ -35,7 +39,7 @@
 #' @importFrom magrittr %>%
 
 sample_strata <- function(data1, strata1, id, wave2a = NULL,
-                          data2, strata2, n_allocated) {
+                          data2, strata2 = "strata", n_allocated = "n_to_sample") {
   if (is.matrix(data1) | is.matrix(data2)) {
     data1 <- as.data.frame(data1)
     data2 <- as.data.frame(data2)
