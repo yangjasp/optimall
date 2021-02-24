@@ -7,5 +7,7 @@
 optimall_shiny()
 }
 \description{
-Launches an R Shiny application locally. This app can be used to interactively split strata and determine how the results affect optimum allocation of a fixed number of samples.
+Launches an R Shiny application locally. This app can be used to
+interactively split strata and determine how the results affect
+optimum allocation of a fixed number of samples.
 }

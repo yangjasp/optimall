@@ -83,7 +83,11 @@ amount it was allocated in previous waves, that strata has been
 re-allocates the remaining samples optimally among the open
 strata. Under these circumstances, the total sampling
 allocation is no longer optimal, but \code{optimall} will
-output the \emph{most} optimal allocation possible for the next wave.
+output the \emph{most} optimal allocation possible for the next wave. By setting
+\code{detailed = TRUE}, you can compare the sampling allocation given by
+\code{allocate_wave} to the allocation given by \code{optimum_allocation} to
+see how, if at all, oversampling in previous waves affected the allocation.
+optimum allocation
 }
 \examples{
 \dontrun{
