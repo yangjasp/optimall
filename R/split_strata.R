@@ -5,11 +5,12 @@
 #'
 #' The names of the newly created strata for a split generated
 #' from a continuous value are the `split_var` column name with
-#' the range of values defining that stratum by appended to the
+#' the range of values defining that stratum appended to the
 #' old strata name. For a categorical split, the new strata names
-#' are the `split_var` column with a 1 (if the unit is inside
-#' `split_at`) or 0 (if the unit is outside `split_at`) appended
-#' to the old strata name. If the `split_var` column name is long,
+#' are the `split_var` column name appended to the
+#' 1/0 logical flag specifying whether the unit is in \code{split at},
+#' all appended to the old strata name.
+#' If the `split_var` column name is long,
 #' the user can specify a value for `trunc` to prevent the new
 #' strata names from being inconveniently long.
 #' @param data a dataframe or matrix with one row for each
@@ -36,7 +37,7 @@
 #' \itemize{
 #' \item \code{"global quantile"}, the default, splits the strata
 #' at the quantiles specified in \code{split_at} defined along
-#' the entire, unfiltered \code{split_var} column .
+#' the entire, unfiltered \code{split_var} column.
 #' \item \code{"local quantile"} splits the strata at the
 #' quantiles specified in \code{split_at} defined along the
 #' filtered \code{split_var} column which only includes units in

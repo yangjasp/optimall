@@ -1,20 +1,23 @@
 #' Select Sampling Units based on Stratified Random Sampling
 #'
-#' Given one dataframe indicating which stratum each population
-#' unit belongs to and a second specifying the n allocated to each
-#' stratum, \code{sample_strata} selects the units to sample by
+#' Requires two dataframes or matrices: \code{data1} with a column
+#' \code{strata1} which specifies stratum membership for each unit in
+#' the population and a second dataframe \code{data2} with one row per
+#' strata level with a column \code{strata2} that indicates the unique
+#' levels of \code{strata1} and \code{n_allocated} that specifies the
+#' number to be sampled from each stratum.
+#' \code{sample_strata} selects the units to sample by
 #' selecting a random sample of the desired size within each
-#' stratum. The second dataframe specifying the n allocated to each
-#' stratum is often the output of \code{allocate_wave} or
-#' \code{optimum_allocation}.
+#' stratum. The second dataframe can be the output of \code{allocate_wave}
+#' or \code{optimum_allocation}.
 #' @param data1 A data frame or matrix with one row for each
 #' sampling unit in the population, one column specifying each
 #' unit's stratum, and one column with a unique identifier for each
 #' unit.
 #' @param strata1 a character string specifying the name of column
-#' in `data1` which indicates the stratum that each unit belongs to.
+#' in `data1` which indicates stratum membership.
 #' @param id a character string specifying the name of the column
-#' in `data1` which uniquely identifies each unit.
+#' in `data1` that uniquely identifies each unit.
 #' @param wave2a a character sting specifying the name of the
 #' column in \code{data1} which indicates (1/0 or Y/N) whether a
 #' unit has already been sampled in a prior wave. Defaults to NULL
@@ -24,15 +27,34 @@
 #' stratum name, and one column indicating the number of samples
 #' allocated to each stratum.
 #' @param strata2 a character string specifying the name of the
-#' column in \code{data2} which indicates the stratum. Defaults to "strata".
+#' column in \code{data2} that contains the stratum levels.
+#' Defaults to "strata".
 #' @param n_allocated a character string specifying the name of the
-#' column in \code{data2} which indicates the n allocated to each
+#' column in \code{data2} that indicates the n allocated to each
 #' stratum. Defaults to "n_to_sample".
 #' @export
 #' @return returns a {data1} as a dataframe with a new column named
 #' "sample_indicator" containing a binary (1/0) indicator of
 #' whether each unit should be sampled.
 #' @importFrom magrittr %>%
+#' @examples
+#' # Define a design dataframe
+#' design <- data.frame(strata = c("setosa", "virginica", "versicolor"),
+#' n_to_sample = c(5, 5, 5))
+#'
+#' # Make sure there is an id column
+#' iris$id <- 1:nrow(iris)
+#'
+#' # Run
+#' sample_strata(data1 = iris, strata1 = "Species", id = "id",
+#' data2 = design, strata2 = "strata", n_allocated = "n_to_sample")
+#'
+#' # If some units had already been samples
+#' iris$already_sampled <- rbinom(nrow(iris), 1, 0.25)
+#'
+#' sample_strata(data1 = iris, strata1 = "Species", id = "id",
+#' wave2a = "already_sampled",
+#' data2 = design, strata2 = "strata", n_allocated = "n_to_sample")
 
 sample_strata <- function(data1, strata1, id, wave2a = NULL,
                           data2, strata2, n_allocated) {

@@ -15,34 +15,78 @@ split_strata(
 )
 }
 \arguments{
-\item{data}{a dataframe or matrix with one row for each sampling unit, one column specifying each unit's current stratum, one column containing the continuous or categorical values that will define the split, and any other relevant columns.}
+\item{data}{a dataframe or matrix with one row for each
+sampling unit, one column specifying each unit's current
+stratum, one column containing the continuous or categorical
+values that will define the split, and any other relevant
+columns.}
 
-\item{strata}{a character string specifying the name of the column that defines each unit's current strata.}
+\item{strata}{a character string specifying the name of the
+column that defines each unit's current strata.}
 
-\item{split}{the name of the stratum or strata to be split, exactly as they appear in \code{strata}. Defaults to NULL, which indicates that all strata in \code{strata} will be split.}
+\item{split}{the name of the stratum or strata to be split,
+exactly as they appear in \code{strata}. Defaults to NULL,
+which indicates that all strata in \code{strata} will be split.}
 
-\item{split_var}{a character string specifying the name of the column that should be used to define the strata splits.}
+\item{split_var}{a character string specifying the name of the
+column that should be used to define the strata splits.}
 
-\item{type}{a character string specifying how the function should interpret the \code{split_at} argument. Must be one of:
+\item{type}{a character string specifying how the function
+should interpret the \code{split_at} argument. Must be one of:
 \itemize{
-\item \code{"global quantile"}, the default, splits the strata at the quantiles specified in \code{split_at} defined along the entire, unfiltered \code{split_var} column .
-\item \code{"local quantile"} splits the strata at the quantiles specified in \code{split_at} defined along the filtered \code{split_var} column which only includes units in the stratum being split.
-\item \code{"value"} splits the strata at the values specified in \code{split_at} along \code{split_var} column.
-\item \code{"categorical"} splits the strata into two new strata, one that contains each unit where \code{split_var} matches an input of \code{split_at}, and a second that contains every other unit.
+\item \code{"global quantile"}, the default, splits the strata
+at the quantiles specified in \code{split_at} defined along
+the entire, unfiltered \code{split_var} column.
+\item \code{"local quantile"} splits the strata at the
+quantiles specified in \code{split_at} defined along the
+filtered \code{split_var} column which only includes units in
+the stratum being split.
+\item \code{"value"} splits the strata at the values specified
+in \code{split_at} along \code{split_var} column.
+\item \code{"categorical"} splits the strata into two new
+strata, one that contains each unit where \code{split_var}
+matches an input of \code{split_at}, and a second that contains
+every other unit.
 }}
 
-\item{split_at}{the percentile, value, or name(s) which \code{split_var} should be split at. The interpretation of this input depends on \code{type}. For \code{"quantile"} types, input must be between \code{0} and \code{1}. Defaults to \code{0.5} (median). For \code{"categorical"} type, the input should be a vector of values or names in \code{split_var} that define the new stratum.}
+\item{split_at}{the percentile, value, or name(s) which
+\code{split_var} should be split at. The interpretation of
+this input depends on \code{type}. For \code{"quantile"} types,
+input must be between \code{0} and \code{1}. Defaults to
+\code{0.5} (median). For \code{"categorical"} type, the
+input should be a vector of values or names in \code{split_var}
+that define the new stratum.}
 
-\item{trunc}{A numeric or character value specifying how the name of the \code{split_var} should be truncated when naming the new strata. If numeric, the new strata name will only include the first 'n' characters of the \code{split_var} name. If character, the specified string will be used to name the new strata instead of the \code{split_var} name. Defaults to \code{NULL}, which creates the new strata name using the entire name of the \code{split_var} column.}
+\item{trunc}{A numeric or character value specifying how the
+name of the \code{split_var} should be truncated when naming
+the new strata. If numeric, the new strata name will only
+include the first 'n' characters of the \code{split_var} name.
+If character, the specified string will be used to name the new
+strata instead of the \code{split_var} name. Defaults to
+\code{NULL}, which creates the new strata name using the entire
+name of the \code{split_var} column.}
 }
 \value{
-Returns the input dataframe with a new column named 'new_strata' that holds the name of the stratum that each sample belongs to after the split. The column containing the previous strata names is retained and given the name "old_strata".
+Returns the input dataframe with a new column named
+'new_strata' that holds the name of the stratum that each
+sample belongs to after the split. The column containing the
+previous strata names is retained and given the name "old_strata".
 }
 \description{
-Splits pre-defined sampling strata based on values of a continuous or categorical variable.
+Splits pre-defined sampling strata based on values of a
+continuous or categorical variable.
 }
 \details{
-The names of the newly created strata for a split generated from a continuous value are the \code{split_var} column name with the range of values defining that stratum by appended to the old strata name. For a categorical split, the new strata names are the \code{split_var} column with a 1 (if the unit is inside \code{split_at}) or 0 (if the unit is outside \code{split_at}) appended to the old strata name. If the \code{split_var} column name is long, the user can specify a value for \code{trunc} to prevent the new strata names from being inconveniently long.
+The names of the newly created strata for a split generated
+from a continuous value are the \code{split_var} column name with
+the range of values defining that stratum appended to the
+old strata name. For a categorical split, the new strata names
+are the \code{split_var} column name appended to the
+1/0 logical flag specifying whether the unit is in \code{split at},
+all appended to the old strata name.
+If the \code{split_var} column name is long,
+the user can specify a value for \code{trunc} to prevent the new
+strata names from being inconveniently long.
 }
 \examples{
 x <- split_strata(iris, "Sepal.Length",
