@@ -14,6 +14,16 @@ multiwave_diagram <- function(x, height = NULL, width = NULL){
   if (class(x) != "Multiwave"){
     stop("'x' must be an object of class Multiwave")
   }
+  title_char <- n_phases <- n_waves <- metadata_rec <- design_rec <- samples_rec <-
+    sampled_data_rec <- data_rec <- full_slot_color <- empty_slot_color <-
+    overall_md_color <- overall_md_text <- p1_md_color <- p1_md_text <-
+    p1_data_color <- p1_data_text <- default_rec <- recs <- n_waves_prev <-
+    title <- start <- title_w <- md_color <- md_text <-
+    des_color <- des_text <- sampled_df_color <- sampled_df_text <-
+    samples_color <- samples_text <- data_color <- data_text <-
+    edges <- edges_vec <- phases_recs <- phases_recs_indices <- recs_vec <-
+    recs_vec_short <- wave_edges <- NULL
+
   #Find title if there is one in total metadata
   if("title" %in% names(x@metadata) &
      is.character(x@metadata$title)){
@@ -273,11 +283,12 @@ multiwave_diagram <- function(x, height = NULL, width = NULL){
 
   }
 
-  [1]: paste(title_char)
-  [2]: paste(default_rec, collapse = ' ')
-  [3]: paste(recs_vec, collapse = ' ')
-  [4]: paste(edges_vec, collapse = ' ')
+  [1]: paste(eval(title_char, envir = environment()))
+  [2]: paste(eval(default_rec, envir = environment()), collapse = ' ')
+  [3]: paste(eval(recs_vec, envir = environment()), collapse = ' ')
+  [4]: paste(eval(edges_vec, envir = environment()), collapse = ' ')
 
   ",
                     height = height, width = width)
   }
+

@@ -48,11 +48,11 @@ new_multiwave <- function(phases, waves,
       waves_list <- list()
       wave_names <- vector()
       for (j in 1:n_waves){
-        wave_names[j] <- paste0("wave", as.character(j))
-        waves_list[[j]] <- new("wave")
+        wave_names[j] <- paste0("Wave", as.character(j))
+        waves_list[[j]] <- new("Wave")
       }
       names(waves_list) <- wave_names
-      the_phase <- new("phase", waves = waves_list)
+      the_phase <- new("Phase", waves = waves_list)
       phases_list[[i]] <- the_phase
     }
     phases_list[[1]] <- list("metadata" = list(),
