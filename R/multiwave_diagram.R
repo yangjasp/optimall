@@ -265,8 +265,15 @@ multiwave_diagram <- function(x, height = NULL, width = NULL){
 
     #Combine into vec
     edges_vec <- unlist(edges)
-
   }
+  #Attach what we will be passing to GrViz
+  title_char <<- title_char
+  default_rec <<- default_rec
+  recs_vec <<- recs_vec
+  edges_vec <<- edges_vec
+
+
+
   #Diagram using DiagrammeR
   DiagrammeR::grViz("digraph {
   graph [layout = dot, rankdir = LR]
@@ -283,12 +290,18 @@ multiwave_diagram <- function(x, height = NULL, width = NULL){
 
   }
 
-  [1]: paste(eval(title_char, envir = environment()))
-  [2]: paste(eval(default_rec, envir = environment()), collapse = ' ')
-  [3]: paste(eval(recs_vec, envir = environment()), collapse = ' ')
-  [4]: paste(eval(edges_vec, envir = environment()), collapse = ' ')
+  [1]: paste(title_char)
+  [2]: paste(default_rec, collapse = ' ')
+  [3]: paste(recs_vec, collapse = ' ')
+  [4]: paste(edges_vec, collapse = ' ')
 
   ",
                     height = height, width = width)
+
+  # Remove assignments
+  rm(title_char)
+  rm(default_rec)
+  rm(recs_vec)
+  rm(edges_vec)
   }
 
