@@ -6,10 +6,12 @@
 \usage{
 allocate_wave(
   data,
-  strata,
-  y,
-  wave2a,
-  nsample,
+  phase,
+  wave,
+  strata = NULL,
+  y = NULL,
+  wave2a = NULL,
+  nsample = NULL,
   method = "iterative",
   detailed = FALSE
 )

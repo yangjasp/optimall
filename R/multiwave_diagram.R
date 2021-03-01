@@ -9,7 +9,7 @@
 #' , which produces default height.
 #' @param width The width in pixels of the diagram. Defaults to \code{NULL},
 #' which produces the default width.
-#'
+#' @export
 multiwave_diagram <- function(x, height = NULL, width = NULL){
   if (class(x) != "Multiwave"){
     stop("'x' must be an object of class Multiwave")
@@ -275,7 +275,7 @@ multiwave_diagram <- function(x, height = NULL, width = NULL){
 
 
   #Diagram using DiagrammeR
-  DiagrammeR::grViz("digraph {
+output <- DiagrammeR::grViz("digraph {
   graph [layout = dot, rankdir = LR]
 
   node [shape = rectangle, fixedsize = true, width = 4.5, height = 1.5, fontname = Helvetica, fontsize  = 20]
@@ -297,6 +297,8 @@ multiwave_diagram <- function(x, height = NULL, width = NULL){
 
   ",
                     height = height, width = width)
+  # Print
+  return(output)
 
   # Remove assignments
   rm(title_char)
