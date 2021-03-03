@@ -1,4 +1,9 @@
 #' Allocate Wave Method for Multiwave
+#'
+#' A method for \code{allocate_wave} that can be directly
+#' implemented on a multiwave object. This method requres that the data in
+#' the previous wave of the same phase is present, as it uses that
+#' data to determine the sample allocation for the current wave.
 #' @title Allocate Wave Method for Multiwave
 #' @include multiwave.R phase.R wave.R allocate_wave.R
 NULL
@@ -20,15 +25,30 @@ allocate_wave.Multiwave <- function(data, phase, wave,
                                     method = "iterative",
                                     detailed = FALSE){
   x <- data
-  data <- x@phases[[phase]]@waves[[wave]]@data
+  if((phase == 2 | phase == "phase2") & (wave == 1 | wave == "wave1")){
+    data <- x@phases$phase1$data
+  } else if(wave == 1 | wave == "wave1"){
+    data <- x@phases[[phase - 1]]@waves[[
+      length(x@phases[[phase - 1]]@waves)]]@data
+  } else if(wave != 1 ){
+    data <- x@phases[[phase]]@waves[[
+      wave - 1]]@data
+  } else{
+    stop("Allocate wave cannot be performed in Phase 1")
+  }
+
+  if (nrow(data) == 0){
+    stop("'data' slot of previous wave must contain data to be used
+         for sample allocation calculations")
+  }
   wave_md <- x@phases[[phase]]@waves[[wave]]@metadata
   phase_md <- x@phases[[phase]]@metadata
   survey_md <- x@metadata
 
   # Check for args to allocate_wave in the metadata. Start in wave and move up
   if (is.null(strata)){
-    if("strata" %in% names(wave_md) & class(waves_md$strata) == "character"){
-      strata <- waves_md$strata
+    if("strata" %in% names(wave_md) & class(wave_md$strata) == "character"){
+      strata <- wave_md$strata
     } else if("strata" %in% names(phase_md) &
               class(phase_md$strata) == "character"){
       strata <- phase_md$strata
@@ -40,8 +60,8 @@ allocate_wave.Multiwave <- function(data, phase, wave,
     }
   }
   if (is.null(y)){
-    if("y" %in% names(wave_md) & class(waves_md$y) == "character"){
-      y <- waves_md$y
+    if("y" %in% names(wave_md) & class(wave_md$y) == "character"){
+      y <- wave_md$y
     } else if("y" %in% names(phase_md) &
               class(phase_md$y) == "character"){
       y <- phase_md$y
@@ -53,8 +73,8 @@ allocate_wave.Multiwave <- function(data, phase, wave,
     }
   }
   if (is.null(wave2a)){
-    if("wave2a" %in% names(wave_md) & class(waves_md$wave2a) == "character"){
-      wave2a <- waves_md$wave2a
+    if("wave2a" %in% names(wave_md) & class(wave_md$wave2a) == "character"){
+      wave2a <- wave_md$wave2a
     } else if("wave2a" %in% names(phase_md) &
               class(phase_md$wave2a) == "character"){
       wave2a <- phase_md$wave2a
@@ -66,7 +86,7 @@ allocate_wave.Multiwave <- function(data, phase, wave,
     }
   }
 
-  output <- optimall::allocate_wave(data = data, y = y,
+  output <- allocate_wave(data = data, y = y,
                           wave2a = wave2a, strata = strata,
                           nsample = nsample, method = method,
                           detailed= detailed)
@@ -76,5 +96,5 @@ allocate_wave.Multiwave <- function(data, phase, wave,
   return(x_updated)
 }
 
-setMethod("allocate_wave.Multiwave", signature(data = "Multiwave"),
+setMethod("allocate_wave", c(data = "Multiwave"),
           allocate_wave.Multiwave)
