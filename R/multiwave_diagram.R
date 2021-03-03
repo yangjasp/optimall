@@ -120,9 +120,9 @@ multiwave_diagram <- function(x, height = NULL, width = NULL){
         paste("[label = <<b>Metadata</b>",
         ifelse(length(x@phases$phase2@metadata) == 0,
                ">, fillcolor = lightcoral, style = filled]",
-               paste("list of length",
+               paste("<br/> list of length",
                      as.character(length(x@phases$phase2@metadata)),
-                     "> fillcolor = lightblue, style = filled")))
+                     "> fillcolor = lightblue, style = filled]")))
       start <- n_waves_prev[i-1]*6 + 2*(i-1)
       for (j in seq_len(n_waves[i])){
         title_w <- paste0("Wave ",as.character(j))
