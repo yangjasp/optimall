@@ -93,3 +93,12 @@ test_that("multiple strings in  the 'strata' argument lead to the
                                                nsample = 30)$strata),
                c("a.0","b.0","c.0","a.1","b.1","c.1"))
 })
+
+test_that("Error if not enough non-NA observations in a stratum",{
+  data3 <- data %>%
+    dplyr::mutate(y = ifelse(strata == "a", NA, y))
+  expect_error(optimum_allocation(data = data3, strata = "strata",
+                                  y = "y", method = "Neyman",
+                                  allow.na = TRUE),
+               "Function requires at least two observations per stratum")
+})
