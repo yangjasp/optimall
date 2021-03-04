@@ -4,7 +4,7 @@
 \alias{merge_samples}
 \title{Merge Sampled Data based on IDs}
 \usage{
-merge_samples(x, phase, wave, id = NULL)
+merge_samples(x, phase, wave, id = NULL, sampled_ind = "already_sampled_ind")
 }
 \arguments{
 \item{x}{an object of class \code{"Multiwave"}.}
@@ -46,4 +46,13 @@ Columns in \code{"sampled_data"} that do not match names of the
 \code{"data"} from the previous wave will be added as new columns in
 the output dataframe. All ids that do not appear in
 \code{"sampled_data"} will receive NA values for these new variables.
+}
+\examples{
+test <- new_multiwave(phases = 2, waves = c(1,3))
+get_data(test, phase = 1, slot = "data") <-
+dplyr::select(iris, -Sepal.Width)
+get_data(test, phase = 2, wave = 1, slot = "sampled_data") <-
+dplyr::select(iris, id, Sepal.Width)[1:40,]
+test <- merge_samples(test, phase = 2, wave = 1, id = "id")
+
 }
