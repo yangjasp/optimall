@@ -43,11 +43,13 @@
 #' test <- merge_samples(test, phase = 2, wave = 1, id = "id")
 #'
 setGeneric("merge_samples", function(x, phase, wave,
-                                  id = NULL)
+                                  id = NULL,
+                                  sampled_ind = "already_sampled_ind")
   standardGeneric("merge_samples"))
-setMethod("merge_samples", c(x = "Multiwave"), function(x, phase,
-                                                        wave,
-                                                        id = NULL){
+setMethod("merge_samples", c(x = "Multiwave"),
+          function(x, phase, wave,id = NULL,
+                   sampled_ind = "already_sampled_ind"){
+
   if(!is.numeric(phase) |
      !(phase %in% c(1:length(x@phases)) & phase > 1)){
       stop("'phase' must be a numeric value specifying a valid phase
@@ -57,7 +59,14 @@ setMethod("merge_samples", c(x = "Multiwave"), function(x, phase,
       !(wave %in% c(1:length(x@phases[[phase]]@waves)))){
       stop("'wave' must be a numeric value specifying a valid wave in
       'phase' in 'x'")
-      }
+    }
+  if(!is.character(sampled_ind) | length(sampled_ind) != 1){
+    stop("'sampled_ind' must be a character value specifying the desired
+    name of the column in the newly merged data that should hold a
+    binary indicator for whether each unit has been sampled in the current
+    wave.")
+  }
+
   #Get previous wave data
 
   if((phase == 2 | phase == "phase2") & (wave == 1 | wave == "wave1")){
@@ -136,6 +145,28 @@ setMethod("merge_samples", c(x = "Multiwave"), function(x, phase,
                   -paste0(new_col_name, ".y"))
     }
   }
+
+  #Add indicator for already sampled
+
+  already_sampled_ids <- list()
+
+  for (i in seq_len(wave)){
+    already_sampled_ids[[i]] <- get_data(x,
+                                         phase = phase,
+                                         wave = i,
+                                         slot = "samples")
+  }
+
+  if(any(sapply(already_sampled_ids, length) == 0)){
+    warning("some 'samples' slots of previous waves in this phase are
+            empty. The `sampled_ind` column of the newly merged data may
+            be inaccurate.")
+  }
+
+  already_sampled_ids <- unlist(already_sampled_ids)
+
+  output_data[,sampled_ind] <-
+    ifelse(output_data$id %in% already_sampled_ids, 1, 0)
 
   get_data(x, phase = phase, wave = wave) <- output_data
   return(x)
