@@ -9,10 +9,11 @@ allocate_wave(
   strata = NULL,
   y = NULL,
   wave2a = NULL,
-  nsample = NULL,
+  nsample,
   method = "iterative",
   detailed = FALSE,
-  ...
+  phase,
+  wave
 )
 }
 \arguments{
