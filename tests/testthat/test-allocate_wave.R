@@ -86,6 +86,14 @@ test_that("nsample cannot be larger than npop - n_sampled_prior",{
                "Total sample size across waves, taken as", fixed = TRUE)
 })
 
+test_that("warning if no samples in some strata have been previously sampled",{
+  data3 <- data %>%
+    dplyr::mutate(key2 = ifelse(strata == "a", 0, key))
+  expect_warning(allocate_wave(data = data3, strata = "strata",
+                             wave2a = "key2", y = "y",nsample = 15),
+               "Some strata have not been sampled yet", fixed = TRUE)
+})
+
 test_that("detailed = TRUE gives all columns of interest",{
   output <- allocate_wave(data = data, strata = "strata",
                           wave2a = "key", y = "y",nsample = 20,
@@ -115,3 +123,5 @@ test_that("basic errors work",{
                              wave2a = "key", y = "y",nsample = 20),
                "cannot contain NAs")
 })
+
+
