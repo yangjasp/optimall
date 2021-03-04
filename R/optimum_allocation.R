@@ -87,11 +87,14 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
   output_df <- cbind(strata, output_df)
   output_df <- output_df[, c(1, ncol(output_df))] # Only columns of interest
   names(output_df) <- c("strata", "y")
-  if (min(dplyr::count(output_df, strata)[, "n"]) < 2) {
-    stop("Function requires at least two observations per stratum")
-  }
   if (allow.na == FALSE & sum(is.na(output_df)) >= 1) {
     stop("Data contains NAs. If this is intentional, set allow.na to TRUE.")
+  }
+  if (min(dplyr::count(
+    dplyr::filter(output_df, !(is.na(y))), strata)[, "n"]) < 2 |
+    length(unique(dplyr::filter(output_df, !(is.na(y)))$strata)) !=
+    length(unique(output_df$strata))) {
+    stop("Function requires at least two observations per stratum")
   }
   if (method == "Neyman") {
     output_df <- output_df %>%
