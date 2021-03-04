@@ -6,14 +6,13 @@
 \usage{
 allocate_wave(
   data,
-  phase,
-  wave,
   strata = NULL,
   y = NULL,
   wave2a = NULL,
   nsample = NULL,
   method = "iterative",
-  detailed = FALSE
+  detailed = FALSE,
+  ...
 )
 }
 \arguments{

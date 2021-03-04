@@ -34,7 +34,7 @@
 #' \code{"data"} slot of the specified wave.
 #' @export
 #'
-#' @example
+#' @examples
 #' test <- new_multiwave(phases = 2, waves = c(1,3))
 #' get_data(test, phase = 1, slot = "data") <-
 #' dplyr::select(iris, -Sepal.Width)

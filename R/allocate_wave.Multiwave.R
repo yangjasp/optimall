@@ -18,12 +18,13 @@ NULL
   #standardGeneric("allocate_wave")
 #}, useAsDefault=optimall::allocate_wave)
 
-allocate_wave.Multiwave <- function(data, phase, wave,
+allocate_wave.Multiwave <- function(data,
                                     strata = NULL,
                                     y = NULL, wave2a = NULL,
                                     nsample = NULL,
                                     method = "iterative",
-                                    detailed = FALSE){
+                                    detailed = FALSE,
+                                    phase, wave){
   x <- data
   if((phase == 2 | phase == "phase2") & (wave == 1 | wave == "wave1")){
     data <- x@phases$phase1$data

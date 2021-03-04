@@ -77,12 +77,12 @@
 #' @importFrom rlang sym
 #' @importFrom magrittr %>%
 #'
-allocate_wave <- function(data, phase, wave,
+allocate_wave <- function(data,
                           strata = NULL,
                           y = NULL, wave2a = NULL,
                           nsample = NULL,
                           method = "iterative",
-                          detailed = FALSE){
+                          detailed = FALSE, ...){
   UseMethod("allocate_wave", data)
 }
 

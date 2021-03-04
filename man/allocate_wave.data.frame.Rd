@@ -4,16 +4,14 @@
 \alias{allocate_wave.data.frame}
 \title{allocate_wave data frame}
 \usage{
-allocate_wave.data.frame(
+\method{allocate_wave}{data.frame}(
   data,
   strata,
   y,
   wave2a,
   nsample,
   method = "iterative",
-  detailed = FALSE,
-  phase = NA,
-  wave = NA
+  detailed = FALSE
 )
 }
 \description{

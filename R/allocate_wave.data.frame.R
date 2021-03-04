@@ -4,8 +4,7 @@
 
 allocate_wave.data.frame <- function(data, strata, y, wave2a,
                                      nsample, method = "iterative",
-                                     detailed = FALSE, phase = NA,
-                                     wave = NA) {
+                                     detailed = FALSE) {
   key <- stratum_size <- wave1_size <- npop <- difference <-
     nsample_prior <- n_to_sample <- nsample_total <-
     nsample_optimal <- sd <- NULL # bind global vars as necessary
@@ -31,12 +30,13 @@ allocate_wave.data.frame <- function(data, strata, y, wave2a,
   if (length(table(data[, wave2a])) != 2) {
     stop("'wave2a' must be a character string matching a column in
          'data' that has a binary indicator for whether each unit
-         was already sampled.")
+         was already sampled. If no units have been sampled yet,
+         use 'optimum_allocation'.")
   }
   if (("Y" %in% data[, wave2a] == FALSE & 1 %in%
        data[, wave2a] == FALSE) | any(is.na(data[, wave2a]))) {
     stop("'wave2a' column must contain '1' (numeric) or 'Y'
-         (string) as indicators that a unit was sampled in a
+         (character) as indicators that a unit was sampled in a
          previous wave and cannot contain NAs. If no units have
          been sample, use 'optimum_allocation.")
   }
@@ -71,6 +71,11 @@ allocate_wave.data.frame <- function(data, strata, y, wave2a,
     dplyr::group_by(group) %>%
     dplyr::summarize(wave1_size = sum(key == 1 | key == "Y"))
 
+  if (any(wave1_size == 0)){
+    warning("Some strata have not been sampled yet. These strata will
+    be allocated zero samples, as they have no stratum sd estimate,
+    and allocation will not be optimal.")
+  }
   names(output1)[1] <- "group"
   comp_df <- dplyr::inner_join(output1, wave1_summary, by = "group")
   comp_df <- dplyr::mutate(comp_df,
