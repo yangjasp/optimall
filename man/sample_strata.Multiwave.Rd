@@ -4,7 +4,7 @@
 \alias{sample_strata.Multiwave}
 \title{Generate IDs to sample in Multiwave Object}
 \usage{
-sample_strata.Multiwave(
+\method{sample_strata}{Multiwave}(
   data1,
   phase,
   wave,

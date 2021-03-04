@@ -11,7 +11,9 @@ sample_strata(
   wave2a = NULL,
   data2,
   strata2 = "strata",
-  n_allocated = "n_to_sample"
+  n_allocated = "n_to_sample",
+  phase,
+  wave
 )
 }
 \arguments{
