@@ -151,13 +151,6 @@ allocate_wave <- function(data, strata, y, wave2a,
     dplyr::group_by(group) %>%
     dplyr::summarize(wave1_size = sum(key == 1 | key == "Y"))
 
-  if (any(wave1_summary$wave1_size <= 1)){
-    warning("Some strata have not been sampled yet or have only been
-    sampled once. These strata will be allocated zero samples, as
-    they have no stratum sd estimate, and allocation will not be
-            optimal.")
-  }
-
   names(output1)[1] <- "group"
   comp_df <- dplyr::inner_join(output1, wave1_summary, by = "group")
   comp_df <- dplyr::mutate(comp_df,
