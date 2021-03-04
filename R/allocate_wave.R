@@ -80,9 +80,9 @@
 allocate_wave <- function(data,
                           strata = NULL,
                           y = NULL, wave2a = NULL,
-                          nsample = NULL,
+                          nsample,
                           method = "iterative",
-                          detailed = FALSE, ...){
+                          detailed = FALSE, phase, wave){
   UseMethod("allocate_wave", data)
 }
 

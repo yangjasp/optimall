@@ -1,10 +1,13 @@
 #' allocate_wave data frame
 #' @export
+#' @importFrom rlang enquo
+#' @importFrom rlang sym
+#' @importFrom magrittr %>%
 #' @include  allocate_wave.R
 
 allocate_wave.data.frame <- function(data, strata, y, wave2a,
                                      nsample, method = "iterative",
-                                     detailed = FALSE) {
+                                     detailed = FALSE, phase, wave) {
   key <- stratum_size <- wave1_size <- npop <- difference <-
     nsample_prior <- n_to_sample <- nsample_total <-
     nsample_optimal <- sd <- NULL # bind global vars as necessary
@@ -71,11 +74,6 @@ allocate_wave.data.frame <- function(data, strata, y, wave2a,
     dplyr::group_by(group) %>%
     dplyr::summarize(wave1_size = sum(key == 1 | key == "Y"))
 
-  if (any(wave1_size == 0)){
-    warning("Some strata have not been sampled yet. These strata will
-    be allocated zero samples, as they have no stratum sd estimate,
-    and allocation will not be optimal.")
-  }
   names(output1)[1] <- "group"
   comp_df <- dplyr::inner_join(output1, wave1_summary, by = "group")
   comp_df <- dplyr::mutate(comp_df,

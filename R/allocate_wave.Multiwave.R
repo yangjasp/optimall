@@ -87,6 +87,48 @@ allocate_wave.Multiwave <- function(data,
     }
   }
 
+  if (is.null(method)){
+    if("method" %in% names(wave_md) & class(wave_md$method) == "character"){
+      method <- wave_md$method
+    } else if("method" %in% names(phase_md) &
+              class(phase_md$method) == "character"){
+      method <- phase_md$method
+    } else if("method" %in% names(survemethod_md) &
+              class(survemethod_md$method) == "character"){
+      method <- phase_md$method
+    } else {
+      stop("'method' must be specified or available in metadata")
+    }
+  }
+
+  if (is.null(nsample)){
+    if("nsample" %in% names(wave_md) & class(wave_md$nsample) == "numeric"){
+      nsample <- wave_md$nsample
+    } else if("nsample" %in% names(phase_md) &
+              class(phase_md$nsample) == "numeric"){
+      nsample <- phase_md$nsample
+    } else if("nsample" %in% names(survey_md) &
+              class(survey_md$nsample) == "numeric"){
+      nsample <- phase_md$nsample
+    } else {
+      stop("'nsample' must be specified or available in metadata")
+    }
+  }
+
+  if (is.null(detailed)){
+    if("detailed" %in% names(wave_md) & class(wave_md$detailed) == "logical"){
+      detailed <- wave_md$detailed
+    } else if("detailed" %in% names(phase_md) &
+              class(phase_md$detailed) == "logical"){
+      detailed <- phase_md$detailed
+    } else if("detailed" %in% names(survey_md) &
+              class(survey_md$detailed) == "logical"){
+      detailed <- phase_md$detailed
+    } else {
+      stop("'detailed' must be specified or available in metadata")
+    }
+  }
+
   output <- allocate_wave(data = data, y = y,
                           wave2a = wave2a, strata = strata,
                           nsample = nsample, method = method,
