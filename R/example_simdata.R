@@ -23,4 +23,4 @@
 #'  \item{\code{child_race}}{specifies child's race}
 #'  \item{\code{diabetes}}{binary indicator for diabetes in the mother}
 #'  }
-"example_simdata"
+NULL
