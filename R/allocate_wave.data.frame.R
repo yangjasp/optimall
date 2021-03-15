@@ -1,4 +1,5 @@
-#' allocate_wave data frame
+#' @describeIn allocate_wave Allocate Samples to an auxiliary wave
+#' using a data frame
 #' @export
 #' @importFrom rlang enquo
 #' @importFrom rlang sym

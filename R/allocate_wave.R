@@ -78,8 +78,8 @@
 #' @importFrom magrittr %>%
 #'
 allocate_wave <- function(data,
-                          strata = NULL,
-                          y = NULL, wave2a = NULL,
+                          strata,
+                          y, wave2a,
                           nsample,
                           method = "iterative",
                           detailed = FALSE, phase, wave){

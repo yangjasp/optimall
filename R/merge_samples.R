@@ -30,6 +30,9 @@
 #' @param id A character value specifying the name of the column holding unit
 #' ids. Taken from wave, phase, or overall metadata (searched for in that
 #' order) if \code{NULL}. Defaults to \code{NULL}.
+#' @param sampled_ind a character value specifying the name of the column that
+#' should hold the indicator of whether each unit has already been sampled in
+#' the current phase.
 #' @return A Multiwave object with the merged dataframe in the
 #' \code{"data"} slot of the specified wave.
 #' @export

@@ -1,5 +1,4 @@
-#' Allocate Wave Method for Multiwave
-#'
+#' @describeIn allocate_wave Allocate Wave Method for Multiwave object
 #' A method for \code{allocate_wave} that can be directly
 #' implemented on a multiwave object. This method requres that the data in
 #' the previous wave of the same phase is present, as it uses that
