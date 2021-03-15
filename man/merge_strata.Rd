@@ -8,7 +8,8 @@ merge_strata(data, strata, merge, name = NULL)
 }
 \arguments{
 \item{data}{a dataframe or matrix with one row for each sampling
-unit, one column specifying each unit's current stratum, and any
+unit, one column, \code{strata},
+specifying each unit's current stratum, and any
 other relevant columns.}
 
 \item{strata}{a character string specifying the name of the
@@ -28,7 +29,7 @@ belongs to after the merge. The column containing the previous
 strata names is retained and given the name 'old_strata'.
 }
 \description{
-Merges multiple pre-defined sampling strata into a single strata.
+Merges multiple pre-defined sampling strata into a single stratum.
 }
 \examples{
 x <- merge_strata(iris, strata = "Species",
