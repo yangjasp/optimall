@@ -15,7 +15,10 @@ apply_multiwave(x, phase, wave, fun, ...)
 \item{wave}{A numeric or character value specifying the wave of \code{phase}
 in \code{multiwave} where the output should be placed.}
 
-\item{fun}{A character value specifying the name of the \code{optimall} #' function to apply. The four functions are: \code{optimum_allocation}, \code{allocate_wave}, \code{sample_strata}, and \code{merge_samples}.
+\item{fun}{A character value specifying the name of the \code{optimall}
+function to apply. The four available functions are:
+\code{optimum_allocation},
+\code{allocate_wave}, \code{sample_strata}, and \code{merge_samples}.
 \itemize{
 \item \code{optimum_allocation}: Uses the \code{data} from the previous wave (or previous phase if \code{wave = 1}) to determine the optimum sampling allocation for the specified wave. If used, the output multiwave object contains an updated \code{"design"} slot in the specified wave.
 \item \code{allocate_wave}: Uses the \code{data} from the previous wave (or previous phase if \code{wave = 1}) to determine the optimum sampling allocation for the specified wave. If used, the output multiwave object contains an updated \code{"design"} slot in the specified wave.
@@ -29,7 +32,7 @@ method for multiwave objects, so calling
 it through \code{apply_optimall} is the exact same as calling it on its own.}
 See documentation of these functions for more details on the specific uses and arguments.}
 
-\item{...}{Optionally, arguments to be given to \code{function}. Not necessary if the arguments are already provided as named values in the wave, phase, or overall metadata in the multiwave object. Arguments provided here will override specifications in the metadata if provided in both places.}
+\item{...}{Optional arguments to be given to \code{fun}. Not necessary if the arguments are already provided as named values in the wave, phase, or overall metadata in the multiwave object. Arguments provided here will override specifications in the metadata if provided in both places.}
 }
 \value{
 The inputted multiwave object with one slot updated to include the

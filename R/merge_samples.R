@@ -36,6 +36,7 @@
 #' @return A Multiwave object with the merged dataframe in the
 #' \code{"data"} slot of the specified wave.
 #' @export
+#' @include multiwave.R
 #'
 #' @examples
 #' test <- new_multiwave(phases = 2, waves = c(1,3))
