@@ -511,11 +511,6 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
       id <- arguments$id
     }
 
-    if (!(id %in% names(data1))){
-      stop("'id' must be a column name of the dataframe in the
-         'data' slot of the previous wave.")
-    }
-
     if (is.null(arguments$sampled_ind)){
       if("sampled_ind" %in% names(wave_md) & class(wave_md$sampled_ind) == "character"){
         sampled_ind <- wave_md$sampled_ind
