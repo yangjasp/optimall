@@ -7,7 +7,7 @@
 streamline the process of optimum sample allocation, specifically under
 an adaptive, multi-wave approach. Its main functions allow users to:
 
-  - Define, split, and merge strata based on values or percentiles of
+  - Define, split, and merge strata based on values or quantiles of
     other variables.
 
   - Calculate the optimum number of samples to allocate to each stratum
