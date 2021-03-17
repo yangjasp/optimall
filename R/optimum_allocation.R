@@ -57,7 +57,7 @@
 
 optimum_allocation <- function(data, strata, y, nsample = NULL,
                                ndigits = 2, method = "WrightII",
-                               allow.na = FALSE, phase, wave) {
+                               allow.na = FALSE) {
   n_sd <- sd <- NULL # bind local vars as necessary
   if (is.matrix(data) | tibble::is_tibble(data)) {
     data <- data.frame(data)

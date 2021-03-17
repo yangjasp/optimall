@@ -11,9 +11,7 @@ optimum_allocation(
   nsample = NULL,
   ndigits = 2,
   method = "WrightII",
-  allow.na = FALSE,
-  phase,
-  wave
+  allow.na = FALSE
 )
 }
 \arguments{

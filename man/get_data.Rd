@@ -3,6 +3,39 @@
 \name{get_data}
 \alias{get_data}
 \title{Access and Write Slots of a Multiwave Object}
+\arguments{
+\item{x}{an object of class \code{'Multiwave'}}
+
+\item{phase}{a numeric value specifying the phase that should be accessed.
+To access the overall metadata, set \code{phase = NA}. Defaults to 1.}
+
+\item{wave}{a numeric value specifying the wave that should be accessed.
+Ta access phase metadata, set \code{wave = NA}. Defaults to \code{NA}.}
+
+\item{slot}{a character value specifying the name of the slot to be
+accessed. Must be one of \code{"metadata"}, \code{"design"},
+\code{"samples"}, \code{"sampled_data"}, \code{"data"}. Defaults to
+\code{"data}. See class documentation or package vignettes for more
+information about slots.}
+}
 \description{
-\code{get_data} is the accessor function for objects of class \code{Multiwave}.
+\code{get_data} is the accessor function for objects of class \code{Multiwave}. It can be used to access or write slots.
+}
+\examples{
+# Intiate multiwave object
+MySurvey <- new_multiwave(phases = 2, waves = c(1,3))
+
+# To access overall metadata
+get_data(MySurvey, slot = "metadata")
+
+# To write overall metadata
+get_data(MySurvey, slot = "metadata") <-
+ list(title = "Maternal Weight #' Survey")
+
+# To access Phase 2 metadata
+get_data(MySurvey, phase = 2, slot = "metadata")
+
+# To access Phase 2, Wave 2 design
+get_data(MySurvey, phase = 2, wave = 2, slot = "design")
+
 }

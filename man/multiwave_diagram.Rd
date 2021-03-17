@@ -18,5 +18,9 @@ which produces the default width.}
 \description{
 Takes a multiwave object as input and plots a diagram of its structure
 in the plotting window. Red boxes indicate slots that have not yet been
-filled, blue boxes indicate that the slot is filled. Currently only supported for one-, two-, and three-phase designs.
+filled, blue boxes indicate that the slot is filled.
+}
+\examples{
+MySurvey <- new_multiwave(phases = 2, waves = c(1,3))
+multiwave_diagram(MySurvey)
 }

@@ -2,13 +2,16 @@
 #'
 #' Takes a multiwave object as input and plots a diagram of its structure
 #' in the plotting window. Red boxes indicate slots that have not yet been
-#' filled, blue boxes indicate that the slot is filled. Currently only supported for one-, two-, and three-phase designs.
+#' filled, blue boxes indicate that the slot is filled.
 #'
 #' @param object An object of class \code{multiwave}.
 #' @param height The height in pixels of the diagram. Defaults to \code{NULL}
 #' , which produces default height.
 #' @param width The width in pixels of the diagram. Defaults to \code{NULL},
 #' which produces the default width.
+#' @examples
+#' MySurvey <- new_multiwave(phases = 2, waves = c(1,3))
+#' multiwave_diagram(MySurvey)
 #' @export
 multiwave_diagram <- function(x, height = NULL, width = NULL){
   if (class(x) != "Multiwave"){
