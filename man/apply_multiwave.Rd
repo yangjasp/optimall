@@ -29,7 +29,8 @@ specified wave to generate the final, merged data for the current wave.
 If used, the output multiwave object contains an updated \code{"data"}
 slot in the specified wave. Note that \code{merge_samples} is already a
 method for multiwave objects, so calling
-it through \code{apply_optimall} is the exact same as calling it on its own.}
+it through \code{apply_optimall} is the exact same as calling it on its
+own.}
 See documentation of these functions for more details on the specific uses and arguments.}
 
 \item{...}{Optional arguments to be given to \code{fun}. Not necessary if the arguments are already provided as named values in the wave, phase, or overall metadata in the multiwave object. Arguments provided here will override specifications in the metadata if provided in both places.}
@@ -52,4 +53,26 @@ Given a specified phase and wave of an object of class multiwave,
 \code{apply_multiwave} applies one of four \code{optimall} functions
 and returns an updated multiwave object with the output of the applied
 function in its specified slot.
+}
+\examples{
+MySurvey <- new_multiwave(phases = 2, waves = c(1,3))
+get_data(MySurvey, phase = 1, slot = "data") <-
+ dplyr::select(iris, -Sepal.Width)
+
+# Get Design by applying optimum_allocation
+MySurvey <- apply_multiwave(MySurvey, phase = 2, wave = 2,
+ fun = "optimum_allocation", strata = "Species", nsample = 15,
+ method = "WrightII")
+
+# or, we can establish function args in the metadata
+get_data(MySurvey, phase = 2, slot = "metadata") <- list
+(strata = "Species",
+ nsample = 15,
+ method = "WrightII"
+)
+
+# which allows the function to be run without specifying the args
+MySurvey <- apply_multiwave(MySurvey, phase = 2, wave = 2,
+ fun = "optimum_allocation")
+
 }
