@@ -43,17 +43,20 @@
 #' @examples
 #' MySurvey <- new_multiwave(phases = 2, waves = c(1,3))
 #' get_data(MySurvey, phase = 1, slot = "data") <-
-#'  dplyr::select(iris, -Sepal.Width)
+#'  dplyr::select(datasets::iris, -Sepal.Width)
 #'
 #' # Get Design by applying optimum_allocation
-#' MySurvey <- apply_multiwave(MySurvey, phase = 2, wave = 2,
-#'  fun = "optimum_allocation", strata = "Species", nsample = 15,
+#' MySurvey <- apply_multiwave(MySurvey, phase = 2, wave = 1,
+#'  fun = "optimum_allocation", strata = "Species",
+#'  y = "Sepal.Length",
+#'  nsample = 15,
 #'  method = "WrightII")
 #'
 #' # or, we can establish function args in the metadata
 #' get_data(MySurvey, phase = 2, slot = "metadata") <- list
 #' (strata = "Species",
 #'  nsample = 15,
+#'  y = "Sepal.Length",
 #'  method = "WrightII"
 #' )
 #'
@@ -74,7 +77,6 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
 
   #optimum_allocation
   if (fun == "optimum_allocation"){
-    x <- data
     if((phase == 2 | phase == "phase2") & (wave == 1 | wave == "wave1")){
       data <- x@phases$phase1$data
     } else if(wave == 1 | wave == "wave1"){
@@ -105,7 +107,7 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
         strata <- phase_md$strata
       } else if("strata" %in% names(survey_md) &
                 class(survey_md$strata) == "character"){
-        strata <- phase_md$strata
+        strata <- survey_md$strata
       } else {
         stop("'strata' must be a character vector specified or
              available in metadata")
@@ -122,7 +124,7 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
         y <- phase_md$y
       } else if("y" %in% names(survey_md) &
                 class(survey_md$y) == "character"){
-        y <- phase_md$y
+        y <- survey_md$y
       } else {
         stop("'y' must be a character value specified or available
              in metadata")
@@ -137,9 +139,9 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
      } else if("method" %in% names(phase_md) &
                class(phase_md$method) == "character"){
        method <- phase_md$method
-      } else if("method" %in% names(survemethod_md) &
-                class(survemethod_md$method) == "character"){
-        method <- phase_md$method
+      } else if("method" %in% names(survey_md) &
+                class(survey_md$method) == "character"){
+        method <- survey_md$method
       } else {
         method <- "WrightII"
       }
@@ -155,7 +157,7 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
         nsample <- phase_md$nsample
       } else if("nsample" %in% names(survey_md) &
                 class(survey_md$nsample) == "numeric"){
-        nsample <- phase_md$nsample
+        nsample <- survey_md$nsample
       } else {
         nsample <- NULL
       }
@@ -207,7 +209,6 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
 
   #allocate_wave
   if (fun == "allocate_wave"){
-    x <- data
     if((phase == 2 | phase == "phase2") & (wave == 1 | wave == "wave1")){
       data <- x@phases$phase1$data
     } else if(wave == 1 | wave == "wave1"){
@@ -237,7 +238,7 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
         strata <- phase_md$strata
       } else if("strata" %in% names(survey_md) &
                 class(survey_md$strata) == "character"){
-        strata <- phase_md$strata
+        strata <- survey_md$strata
       } else {
         stop("'strata' must be specified or available in metadata")
       }
@@ -252,7 +253,7 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
         y <- phase_md$y
       } else if("y" %in% names(survey_md) &
                 class(survey_md$y) == "character"){
-        y <- phase_md$y
+        y <- survey_md$y
       } else {
         stop("'y' must be specified or available in metadata")
       }
@@ -267,7 +268,7 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
         wave2a <- phase_md$wave2a
       } else if("wave2a" %in% names(survey_md) &
                 class(survey_md$wave2a) == "character"){
-        wave2a <- phase_md$wave2a
+        wave2a <- survey_md$wave2a
       } else {
         stop("'wave2a' must be specified or available in metadata. If no
              samples have been taken yet, use 'optimum_allocation'")
@@ -282,9 +283,9 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
       } else if("method" %in% names(phase_md) &
                 class(phase_md$method) == "character"){
         method <- phase_md$method
-      } else if("method" %in% names(survemethod_md) &
-                class(survemethod_md$method) == "character"){
-        method <- phase_md$method
+      } else if("method" %in% names(survey_md) &
+                class(survey_md$method) == "character"){
+        method <- survey_md$method
       } else {
         method <- "iterative"
       }
@@ -300,7 +301,7 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
         nsample <- phase_md$nsample
       } else if("nsample" %in% names(survey_md) &
                 class(survey_md$nsample) == "numeric"){
-        nsample <- phase_md$nsample
+        nsample <- survey_md$nsample
       } else {
         stop("'nsample' must be specified or available in metadata")
       }
@@ -316,7 +317,7 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
         detailed <- phase_md$detailed
       } else if("detailed" %in% names(survey_md) &
                 class(survey_md$detailed) == "logical"){
-        detailed <- phase_md$detailed
+        detailed <- survey_md$detailed
       } else {
         detailed <- FALSE
       }
@@ -377,7 +378,7 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
           strata1 <- phase_md$strata1
         } else if("strata1" %in% names(survey_md) &
                   class(survey_md$strata1) == "character"){
-          strata1 <- phase_md$strata1
+          strata1 <- survey_md$strata1
         } else if("strata" %in% names(wave_md) &
                   class(wave_md$strata) == "character"){
           strata1 <- wave_md$strata
@@ -386,7 +387,7 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
           strata1 <- phase_md$strata
         } else if("strata" %in% names(survey_md) &
                   class(survey_md$strata) == "character"){
-          strata1 <- phase_md$strata
+          strata1 <- survey_md$strata
         } else {
           stop("'strata1' or 'strata' must be specified or
                available in metadata")
@@ -409,7 +410,7 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
           strata2 <- phase_md$strata2
         } else if("strata2" %in% names(survey_md) &
                   class(survey_md$strata2) == "character"){
-          strata2 <- phase_md$strata2
+          strata2 <- survey_md$strata2
         } else if("strata" %in% names(wave_md) & class(wave_md$strata) == "character"){
           strata2 <- wave_md$strata
         } else if("strata" %in% names(phase_md) &
@@ -417,7 +418,7 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
           strata2 <- phase_md$strata
         } else if("strata" %in% names(survey_md) &
                   class(survey_md$strata) == "character"){
-          strata2 <- phase_md$strata
+          strata2 <- survey_md$strata
         } else {
           strata2 <- "strata"
         }
@@ -440,7 +441,7 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
           id <- phase_md$id
         } else if("id" %in% names(survey_md) &
                   class(survey_md$id) == "character"){
-          id <- phase_md$id
+          id <- survey_md$id
         } else {
           stop("'id' must be specified or available in metadata")
         }
@@ -463,7 +464,7 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
           wave2a <- phase_md$wave2a
         } else if("wave2a" %in% names(survey_md) &
                   class(survey_md$wave2a) == "character"){
-          wave2a <- phase_md$wave2a
+          wave2a <- survey_md$wave2a
         } else {
           wave2a <- NULL
         }
@@ -487,7 +488,7 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
           n_allocated <- phase_md$n_allocated
         } else if("n_allocated" %in% names(survey_md) &
                   class(survey_md$n_allocated) == "character"){
-          n_allocated <- phase_md$n_allocated
+          n_allocated <- survey_md$n_allocated
         } else {
           n_allocated <- "n_to_sample"
           if (!(n_allocated %in% names(data2))){
@@ -515,8 +516,10 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
     }
 
   # merge_samples
-
   if(fun == "merge_samples"){
+    wave_md <- x@phases[[phase]]@waves[[wave]]@metadata
+    phase_md <- x@phases[[phase]]@metadata
+    survey_md <- x@metadata
     if (is.null(arguments$id)){
       if("id" %in% names(wave_md) & class(wave_md$id) == "character"){
         id <- wave_md$id
@@ -525,7 +528,7 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
         id <- phase_md$id
       } else if("id" %in% names(survey_md) &
                 class(survey_md$id) == "character"){
-        id <- phase_md$id
+        id <- survey_md$id
       } else {
         stop("'id' must be specified or available in metadata")
       }
@@ -541,7 +544,7 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
         sampled_ind <- phase_md$sampled_ind
       } else if("sampled_ind" %in% names(survey_md) &
                 class(survey_md$sampled_ind) == "character"){
-        sampled_ind <- phase_md$sampled_ind
+        sampled_ind <- survey_md$sampled_ind
       } else {
         sampled_ind = "sampled_ind"
       }
