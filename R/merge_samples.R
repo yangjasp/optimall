@@ -39,12 +39,12 @@
 #' @include multiwave.R
 #'
 #' @examples
-#' test <- new_multiwave(phases = 2, waves = c(1,3))
-#' get_data(test, phase = 1, slot = "data") <-
+#' MySurvey <- new_multiwave(phases = 2, waves = c(1,3))
+#' get_data(MySurvey, phase = 1, slot = "data") <-
 #' dplyr::select(iris, -Sepal.Width)
-#' get_data(test, phase = 2, wave = 1, slot = "sampled_data") <-
+#' get_data(MySurvey, phase = 2, wave = 1, slot = "sampled_data") <-
 #' dplyr::select(iris, id, Sepal.Width)[1:40,]
-#' test <- merge_samples(test, phase = 2, wave = 1, id = "id")
+#' MySurvey <- merge_samples(MySurvey, phase = 2, wave = 1, id = "id")
 #'
 setGeneric("merge_samples", function(x, phase, wave,
                                   id = NULL,
@@ -123,18 +123,33 @@ setMethod("merge_samples", c(x = "Multiwave"),
 
   #Perform merge
   output_data <-
-    dplyr::left_join(previous_wave_data,
+    dplyr::full_join(previous_wave_data,
                      x@phases[[phase]]@waves[[wave]]@sampled_data,
                      by = "id")
 
-  #Fix duplicate columns
+  # Fix duplicate columns
   dup_cols <- names(previous_wave_data)[
     names(previous_wave_data) %in% names(
       x@phases[[phase]]@waves[[wave]]@sampled_data
     )]
   dup_cols <- dup_cols[dup_cols != id]
+
+
   if(length(dup_cols > 0)){
     for (i in seq_along(dup_cols)){
+      # Warning if non-NA for both values for any row
+      if(any(!is.na(sort(previous_wave_data[
+                previous_wave_data$id %in%
+                x@phases[[phase]]@waves[[wave]]@sampled_data[,id],
+                  dup_cols[i]])) &
+             !is.na(sort(x@phases[[phase]]@waves[[wave]]@sampled_data[
+                         ,dup_cols[i]])))){
+        warning("Some units in 'sampled_data' have non-NA values already in
+                columns that are being merged. The old values will be
+                overwritten by the values in 'sampled_data' for these
+                units.")
+      }
+
       new_col_name <- as.character(dup_cols[i])
       new_col_namex <- paste0(new_col_name, ".x")
       new_col_namey <- paste0(new_col_name, ".y")
@@ -143,8 +158,8 @@ setMethod("merge_samples", c(x = "Multiwave"),
       new_col_namey_sym <- enquo(new_col_namey)
   output_data <- output_data %>%
     dplyr::mutate(!!new_col_name := dplyr::coalesce(
-      !!sym(new_col_namex),
-      !!sym(new_col_namey))) %>%
+      !!sym(new_col_namey),
+      !!sym(new_col_namex))) %>%
     dplyr::select(-paste0(new_col_name, ".x"),
                   -paste0(new_col_name, ".y"))
     }
