@@ -40,7 +40,7 @@
 
 sample_strata <- function(data1, strata1, id, wave2a = NULL,
                           data2, strata2 = "strata",
-                          n_allocated = "n_to_sample", phase, wave) {
+                          n_allocated = "n_to_sample") {
   if (is.matrix(data1) | is.matrix(data2)) {
     data1 <- as.data.frame(data1)
     data2 <- as.data.frame(data2)
