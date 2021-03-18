@@ -36,6 +36,9 @@ new_multiwave <- function(phases, waves,
     stop("'waves' must be a numeric vector with length matching
          the number of phases specified in 'phases'")
   }
+  if(waves[1] != 1){
+    stop("phase 1 can only contain one wave")
+  }
   #build list of metadata and waves for each specified phase
   if(phases == 1){
     phases_list <- list(phase1 = list("metadata" = list(),
