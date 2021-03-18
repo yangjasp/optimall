@@ -3,7 +3,8 @@
 #' Creates an Object of Class \code{Multiwave} with the specified number
 #' of phases and waves. All contents will be NULL upon initialization,
 #' but the object contains a framework for contents to be added to
-#' during the survey design and sample collection process.
+#' during the survey design and sample collection process. Currently,
+#' multiwave objects may only have one wave in Phase 1.
 #'
 #' @param phases A numeric value specifying the number of phases in the survey design.
 #' @param waves A vector of numeric values specifying the number of waves in
@@ -48,7 +49,7 @@ new_multiwave <- function(phases, waves,
       waves_list <- list()
       wave_names <- vector()
       for (j in 1:n_waves){
-        wave_names[j] <- paste0("Wave", as.character(j))
+        wave_names[j] <- paste0("wave", as.character(j))
         waves_list[[j]] <- new("Wave")
       }
       names(waves_list) <- wave_names

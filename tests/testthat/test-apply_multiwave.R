@@ -276,15 +276,15 @@ test_that("merge_samples works when args are specified within it",{
                               fun = "merge_samples", id = "id",
                               sampled_ind = "already_sampled_ind")
 
-  expect_equal(dim(MySurvey@phases$phase2@waves$Wave1@data),
+  expect_equal(dim(MySurvey@phases$phase2@waves$wave1@data),
                c(150,10))
   expect_equal(length(
-    MySurvey@phases$phase2@waves$Wave1@data$`already_sampled_ind`[
-      MySurvey@phases$phase2@waves$Wave1@data$`already_sampled_ind` == 1
+    MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind`[
+      MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind` == 1
       ]), 15)
   expect_equal(length(
-    MySurvey@phases$phase2@waves$Wave1@data$`already_sampled_ind`[
-      !is.na(MySurvey@phases$phase2@waves$Wave1@data$Sepal.Width)
+    MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind`[
+      !is.na(MySurvey@phases$phase2@waves$wave1@data$Sepal.Width)
       ]), 15)
 })
 
@@ -322,15 +322,15 @@ test_that("merge_samples works with args specifies in metadata",{
   MySurvey <- apply_multiwave(MySurvey, phase = 2, wave = 1,
                               fun = "merge_samples")
 
-  expect_equal(dim(MySurvey@phases$phase2@waves$Wave1@data),
+  expect_equal(dim(MySurvey@phases$phase2@waves$wave1@data),
                c(150,10))
   expect_equal(length(
-    MySurvey@phases$phase2@waves$Wave1@data$`already_sampled_ind`[
-      MySurvey@phases$phase2@waves$Wave1@data$`already_sampled_ind` == 1
+    MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind`[
+      MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind` == 1
       ]), 15)
   expect_equal(length(
-    MySurvey@phases$phase2@waves$Wave1@data$`already_sampled_ind`[
-      !is.na(MySurvey@phases$phase2@waves$Wave1@data$Sepal.Width)
+    MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind`[
+      !is.na(MySurvey@phases$phase2@waves$wave1@data$Sepal.Width)
       ]), 15)
 
   #But phase metadata overrides it
@@ -341,15 +341,15 @@ test_that("merge_samples works with args specifies in metadata",{
   MySurvey <- apply_multiwave(MySurvey, phase = 2, wave = 1,
                               fun = "merge_samples")
 
-  expect_equal(dim(MySurvey@phases$phase2@waves$Wave1@data),
+  expect_equal(dim(MySurvey@phases$phase2@waves$wave1@data),
                c(150,10))
   expect_equal(length(
-    MySurvey@phases$phase2@waves$Wave1@data$`already_sampled_ind1`[
-      MySurvey@phases$phase2@waves$Wave1@data$`already_sampled_ind1` == 1
+    MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind1`[
+      MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind1` == 1
       ]), 15)
   expect_equal(length(
-    MySurvey@phases$phase2@waves$Wave1@data$`already_sampled_ind1`[
-      !is.na(MySurvey@phases$phase2@waves$Wave1@data$Sepal.Width)
+    MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind1`[
+      !is.na(MySurvey@phases$phase2@waves$wave1@data$Sepal.Width)
       ]), 15)
 
   #But wave metadata overrides it
@@ -360,15 +360,15 @@ test_that("merge_samples works with args specifies in metadata",{
   MySurvey <- apply_multiwave(MySurvey, phase = 2, wave = 1,
                               fun = "merge_samples")
 
-  expect_equal(dim(MySurvey@phases$phase2@waves$Wave1@data),
+  expect_equal(dim(MySurvey@phases$phase2@waves$wave1@data),
                c(150,10))
   expect_equal(length(
-    MySurvey@phases$phase2@waves$Wave1@data$`already_sampled_ind2`[
-      MySurvey@phases$phase2@waves$Wave1@data$`already_sampled_ind2` == 1
+    MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind2`[
+      MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind2` == 1
       ]), 15)
   expect_equal(length(
-    MySurvey@phases$phase2@waves$Wave1@data$`already_sampled_ind2`[
-      !is.na(MySurvey@phases$phase2@waves$Wave1@data$Sepal.Width)
+    MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind2`[
+      !is.na(MySurvey@phases$phase2@waves$wave1@data$Sepal.Width)
       ]), 15)
 
 })

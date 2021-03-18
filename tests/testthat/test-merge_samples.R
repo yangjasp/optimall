@@ -37,15 +37,15 @@ test <- merge_samples(test, phase = 2, wave = 1, id = "id",
 
 test_that("merge_samples merges data with sampled data
           when column doesn't already exist", {
-  expect_equal(dim(test@phases$phase2@waves$Wave1@data),
+  expect_equal(dim(test@phases$phase2@waves$wave1@data),
                c(150,10))
   expect_equal(length(
-    test@phases$phase2@waves$Wave1@data$`already_sampled_ind`[
-      test@phases$phase2@waves$Wave1@data$`already_sampled_ind` == 1
+    test@phases$phase2@waves$wave1@data$`already_sampled_ind`[
+      test@phases$phase2@waves$wave1@data$`already_sampled_ind` == 1
     ]), 15)
   expect_equal(length(
-    test@phases$phase2@waves$Wave1@data$`already_sampled_ind`[
-      !is.na(test@phases$phase2@waves$Wave1@data$Sepal.Width)
+    test@phases$phase2@waves$wave1@data$`already_sampled_ind`[
+      !is.na(test@phases$phase2@waves$wave1@data$Sepal.Width)
       ]), 15)
 })
 
@@ -61,15 +61,15 @@ test1 <- merge_samples(test, phase = 2, wave = 2, id = "id",
 
 test_that("merge_samples merges data with sampled data
           when column already exists", {
-            expect_equal(dim(test1@phases$phase2@waves$Wave1@data),
+            expect_equal(dim(test1@phases$phase2@waves$wave1@data),
                          c(150,10))
             expect_equal(length(
-              test1@phases$phase2@waves$Wave2@data$`already_sampled_ind`[
-                test1@phases$phase2@waves$Wave2@data$`already_sampled_ind` == 1
+              test1@phases$phase2@waves$wave2@data$`already_sampled_ind`[
+                test1@phases$phase2@waves$wave2@data$`already_sampled_ind` == 1
                 ]), 30)
             expect_equal(length(
-              test1@phases$phase2@waves$Wave2@data$`already_sampled_ind`[
-                !is.na(test1@phases$phase2@waves$Wave2@data$Sepal.Width)
+              test1@phases$phase2@waves$wave2@data$`already_sampled_ind`[
+                !is.na(test1@phases$phase2@waves$wave2@data$Sepal.Width)
                 ]), 30)
           })
 

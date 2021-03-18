@@ -21,11 +21,11 @@ test_that("metadata access works",{
 
   #To access Phase 2, Wave 1 metadata
 
-  MySurvey@phases$phase2@waves$Wave1@metadata <-
+  MySurvey@phases$phase2@waves$wave1@metadata <-
     list(title = "Maternal Weight Survey Phase 2, Wave 1")
 
   expect_equal(get_data(MySurvey, phase = 2, wave = 1, slot = "metadata"),
-               MySurvey@phases$phase2@waves$Wave1@metadata)
+               MySurvey@phases$phase2@waves$wave1@metadata)
 
 })
 
@@ -40,7 +40,7 @@ test_that("Writing metadata slots works",{
 
   get_data(MySurvey, phase = 2, wave = 1, slot = "metadata") <- list(
     title = "test3")
-  expect_equal(MySurvey@phases$phase2@waves$Wave1@metadata$title, "test3")
+  expect_equal(MySurvey@phases$phase2@waves$wave1@metadata$title, "test3")
 })
 
 test_that("Design, samples, sampled_data, data work",{
@@ -83,22 +83,22 @@ test_that("Design, samples, sampled_data, data work",{
   expect_equal(test@phases$phase1$data,
                get_data(test, phase = 1, slot = "data"))
 
-  expect_equal(test@phases$phase2@waves$Wave2@design,
+  expect_equal(test@phases$phase2@waves$wave2@design,
                get_data(test, phase = 2, wave = 2, slot = "design"))
 
-  expect_equal(test@phases$phase2@waves$Wave1@data,
+  expect_equal(test@phases$phase2@waves$wave1@data,
                get_data(test, phase = 2, wave = 1, slot = "data"))
-  expect_equal(test@phases$phase2@waves$Wave1@samples,
+  expect_equal(test@phases$phase2@waves$wave1@samples,
                get_data(test, phase = 2, wave = 1, slot = "samples"))
-  expect_equal(test@phases$phase2@waves$Wave1@sampled_data,
+  expect_equal(test@phases$phase2@waves$wave1@sampled_data,
                get_data(test, phase = 2, wave = 1, slot = "sampled_data"))
 
   #and that writing them with get_data worked
-  expect_equal(test@phases$phase2@waves$Wave1@design,
+  expect_equal(test@phases$phase2@waves$wave1@design,
                data.frame(strata = unique(iris$Species),
               n_to_sample = c(5,5,5)))
 
-  expect_equal(test@phases$phase2@waves$Wave1@sampled_data,
+  expect_equal(test@phases$phase2@waves$wave1@sampled_data,
                dplyr::select(iris, id, Sepal.Width)[samples,])
 
   expect_equal(test@phases$phase1$data,
