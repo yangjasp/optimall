@@ -26,7 +26,8 @@ Returns an object of class \code{Multiwave} that stores all relevant data from t
 Creates an Object of Class \code{Multiwave} with the specified number
 of phases and waves. All contents will be NULL upon initialization,
 but the object contains a framework for contents to be added to
-during the survey design and sample collection process.
+during the survey design and sample collection process. Currently,
+multiwave objects may only have one wave in Phase 1.
 }
 \examples{
 #Initialize a multiwave object for a two-phase sampling design that will

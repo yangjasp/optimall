@@ -26,10 +26,10 @@ information about slots.}
 MySurvey <- new_multiwave(phases = 2, waves = c(1,3))
 
 # To access overall metadata
-get_data(MySurvey, slot = "metadata")
+get_data(MySurvey, phase = NA, slot = "metadata")
 
 # To write overall metadata
-get_data(MySurvey, slot = "metadata") <-
+get_data(MySurvey, phase = NA, slot = "metadata") <-
  list(title = "Maternal Weight #' Survey")
 
 # To access Phase 2 metadata
