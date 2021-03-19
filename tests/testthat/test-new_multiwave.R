@@ -1,5 +1,8 @@
 context("test-new_multiwave")
 
+library(optimall)
+library(dplyr)
+
 test <- new_multiwave(phases = 2, waves = c(1,3))
 
 test_that("new_multiwave makes object with proper slots", {
@@ -26,4 +29,12 @@ test_that("errors work",{
               "phase 1 can only contain")
   expect_error(new_multiwave(phases = 2, waves = c(2,3,4)),
                "must be a numeric vector with length")
+  expect_error(new_multiwave(phases = 0, waves = c(2,3,4)),
+               "must be a numeric value")
+})
+
+test_that("single phase is possible",{
+  test <- new_multiwave(phases = 1, waves = c(1))
+  expect_equal(length(test@phases), 1)
+
 })
