@@ -10,7 +10,7 @@
 #' @param slot a character value specifying the name of the slot to be
 #' accessed. Must be one of \code{"metadata"}, \code{"design"},
 #' \code{"samples"}, \code{"sampled_data"}, \code{"data"}. Defaults to
-#' \code{"data}. See class documentation or package vignettes for more
+#' \code{"data"}. See class documentation or package vignettes for more
 #'  information about slots.
 #'
 #' @examples
@@ -21,20 +21,20 @@
 #' get_data(MySurvey, phase = NA, slot = "metadata")
 #'
 #' # To write overall metadata
-#' get_data(MySurvey, phase = NA, slot = "metadata") <-
-#'  list(title = "Maternal Weight #' Survey")
+#' get_data(MySurvey, phase = NA, slot = "metadata") <- list(
+#'  title = "Maternal Weight Survey")
 #'
 #' # To access Phase 2 metadata
 #' get_data(MySurvey, phase = 2, slot = "metadata")
 #'
 #' # To access Phase 2, Wave 2 design
 #' get_data(MySurvey, phase = 2, wave = 2, slot = "design")
-#'
-#' @name get_data
 #' @export
 #' @include multiwave.R phase.R wave.R
 NULL
 
+#' @rdname get_data
+#' @export
 get_data <- function(x, phase = 1, wave = NA, slot = "data"){
   if (class(x) != "Multiwave"){
     stop("'x' must be an object of class 'Multiwave'")
@@ -72,6 +72,9 @@ get_data <- function(x, phase = 1, wave = NA, slot = "data"){
     stop("unable to find selection in 'x': invalid selection")
   }
 }
+
+#' @rdname get_data
+#' @export
 
 setGeneric("get_data<-", function(x, phase = 1, wave = NA, slot = "data",
                                   value)
