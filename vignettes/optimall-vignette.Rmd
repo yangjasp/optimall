@@ -23,14 +23,14 @@ library(datasets)
 library(dplyr)
 library(here)
 
-MatWgt_Sim_Full <- read.csv("/Users/jasper/Desktop/Sim_matWgts.csv")
-MatWgt_Sim_Full <- MatWgt_Sim_Full %>%
+MatWgt_Sim <- read.csv("/Users/jasper/Desktop/Sim_matWgts.csv")
+MatWgt_Sim <- MatWgt_Sim %>%
   dplyr::mutate(child_race = 
                   dplyr::case_when(child_race == "Asian" ~ "Other",
                                    child_race == "Other" ~ "Other",
                                    child_race == "White" ~ "White",
                                    child_race == "Black" ~ "Black"))
-phase1 <- dplyr::select(MatWgt_Sim_Full, -mat_weight_true)
+phase1 <- dplyr::select(MatWgt_Sim, -mat_weight_true)
 ```
 
 
@@ -109,7 +109,7 @@ DiagrammeR::grViz("digraph {
 ## Examples: Using `optimall` to Determine Study Design and Sample Data
 
 #### *Overview*
-We use the simulated dataset `MatWgt_Sim_Full` to demonstrate how the functions in `optimall` can be used to carry out the necessary tasks of determining study design and sampling. This section includes three examples:
+We use the simulated dataset `MatWgt_Sim` to demonstrate how the functions in `optimall` can be used to carry out the necessary tasks of determining study design and sampling. This section includes three examples:
 
 * Example 1: Uses the function `split_strata` to define and refine strata.
 
@@ -121,21 +121,21 @@ The dataset contains simulated data based on a real study of the association bet
 
 #### *Data Set Up*
 
-The simulated data used in this example is included with `optimall`. The dataset `MatWgt_Sim_Full` contains 10335 rows, one for each mother-child pair, and 5 columns containing ID numbers and covariates which we see below:
+The simulated data used in this example is included with `optimall`. The dataset `MatWgt_Sim` contains 10335 rows, one for each mother-child pair, and 5 columns containing ID numbers and covariates which we see below:
 
 ```{r first view of data}
-head(MatWgt_Sim_Full)
+head(MatWgt_Sim)
 ```
 
 Three of the covariates, child race, diabetes, and estimated maternal weight, are inexpensive to collect for all subjects, but determining the true maternal weight requires a tedious validation process. This full version of the simulated dataset contains the true weight change for all 10335 mothers, which may or may not have a relationship with the other covariates.
 
 For the purpose of our examples, we suppose that we do not have access to this full dataset. Instead, we must sample from it to optimally estimate the mean of the true maternal weight changes.
 
-During phase-I, we assume that all 10335 mother-child pairs have been sampled for the inexpensive covariates. Accordingly, we define our phase 1 dataset to be 10335 x 4 with every column of the full `MatWgt_Sim_Full` data excluding the expensive true weight change. In the examples that follow, we will assume the validated maternal weight variable `mat_weight_true` will only be available through phase 2 sampling.
+During phase-I, we assume that all 10335 mother-child pairs have been sampled for the inexpensive covariates. Accordingly, we define our phase 1 dataset to be 10335 x 4 with every column of the full `MatWgt_Sim` data excluding the expensive true weight change. In the examples that follow, we will assume the validated maternal weight variable `mat_weight_true` will only be available through phase 2 sampling.
 
 ```{r}
 library(dplyr)
-phase1 <- MatWgt_Sim_Full %>%
+phase1 <- MatWgt_Sim %>%
   dplyr::select(-mat_weight_true)
 dim(phase1)
 ```
@@ -203,7 +203,7 @@ length(ids_to_sample2a) #250 ids to sample
 
 We submit these 250 ids for validation. Hypothetically, this involves the hard work of trained nurses, but for our example it involves only a few lines of `dplyr` code 
 ```{r, include=FALSE}
-phase2a_samples <- MatWgt_Sim_Full %>%
+phase2a_samples <- MatWgt_Sim %>%
   dplyr::filter(id %in% ids_to_sample2a) %>%
   dplyr::select(id, mat_weight_true)
 
@@ -277,7 +277,7 @@ We can now get the validated maternal weight changes for these 250 subjects.
 
 ```{r, include=TRUE}
 # Take samples from true data
-phase2b_samples <- MatWgt_Sim_Full %>%
+phase2b_samples <- MatWgt_Sim %>%
   dplyr::filter(id %in% ids_to_sample2b) %>%
   dplyr::select(id, mat_weight_true)
 
@@ -331,7 +331,7 @@ ids_to_sample2c <-
 length(ids_to_sample2c)
 
 # Sample
-phase2c_samples <- MatWgt_Sim_Full %>%
+phase2c_samples <- MatWgt_Sim %>%
   dplyr::filter(id %in% ids_to_sample2c) %>%
   dplyr::select(id, mat_weight_true)
 
@@ -377,7 +377,7 @@ For comparison, we can also generate estimates for the mean and standard errors 
 ids <- sample(1:10335, size = 750)
 
 # Generate SRS_data with sampled IDs stratified into our final strata
-SRS_data <- MatWgt_Sim_Full %>%
+SRS_data <- MatWgt_Sim %>%
   dplyr::filter(id %in% ids) %>%
   dplyr::left_join(dplyr::select(phase2c, id, new_strata), by = "id")
 
@@ -396,7 +396,7 @@ We see that the standard error is much larger in this case. Similar results come
 ```{r}
 #Make Prop_data and sample proportionally to population proportions
 
-Prop_data <- MatWgt_Sim_Full %>%
+Prop_data <- MatWgt_Sim %>%
   dplyr::left_join(dplyr::select(phase2c, id, new_strata), by = "id")
 
 design_df <- data.frame(
