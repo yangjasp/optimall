@@ -12,7 +12,7 @@
 #'
 #' @docType data
 #'
-#' @name example_simdata
+#' @name MatWgt_Sim
 #' @format \code{example_simdata:} a data frame with 10335 rows and 5 columns
 #' \describe{
 #'  \item{\code{id}}{unique ID for each mother-child pair}
