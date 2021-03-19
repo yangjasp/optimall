@@ -1,10 +1,10 @@
 ---
-title: "Using optimall"
-author: "Jasper Yang"
+title: "Using Optimall"
+author: "Jasper Yang and Pamela Shaw"
 date: "Last updated: `r format(Sys.Date(), '%B %d, %Y')`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{optimall-vignette}
+  %\VignetteIndexEntry{Using Optimall}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -38,32 +38,34 @@ phase1 <- dplyr::select(MatWgt_Sim_Full, -mat_weight_true)
 
 When a study population is composed of heterogeneous subpopulations, stratified random sampling techniques are often employed to obtain more precise estimates of population characteristics. Efficiently allocating samples to strata under this method is a crucial step in the study design, especially when sampling is expensive. 
 
-`optimall` offers a collection of functions that are designed to streamline the process of optimum sample allocation, specifically under an adaptive, multi-phase approach. Its main functions allow users to:
+`optimall` offers a collection of functions that are designed to streamline the process of optimum sample allocation, for a single wave or an adaptive, multi-wave approach. Its main functions allow users to:
 
 * Define, split, and merge strata based on values or percentiles of other variables.
 
-* Calculate the optimum number of samples to allocate to each stratum in a given study in order to minimize the variance of an estimate of interest. 
+* Calculate the optimum number of samples to allocate to each stratum in a given study in order to minimize the variance of the target sample mean. 
 
 * Optimally allocate a fixed number of samples to an ancillary sampling wave based on results from a prior wave. 
+
+* Select specific IDs to sample based on a stratified sampling design.
 
 When used together, these functions can automate most of the sampling workflow. This vignette will introduce the theoretical framework behind the functions before demonstrating how they can be used to work with sampling data in R. The final section then details how to use `optimall_shiny` to efficiently make decisions about splitting strata.
 
 ## Optimum Allocation
-Assuming that the per-unit sampling cost is the same in each stratum and that $S_h$, the standard deviation of the variable of interest within each stratum, can be estimated, Neyman (1934) presented the following solution to optimally allocate $n$ samples among $H$ strata:  
+Assuming that the per-unit sampling cost is the same in each stratum and that $S_h$, the standard deviation of the variable of interest within each stratum, can be estimated, Neyman (1934) presented the following solution to optimally allocate $n$ samples among $H$ strata in order to minimize the variance of the sample mean:  
 
 $$n_h = n \frac{N_hS_h}{\sum_{i=1}^H N_iS_i}$$
-This formula, known as Neyman allocation, is widely used as a robust method for minimizing the variance of an estimate. It can be called in `optimall`. Neyman allocation offers the advantage of outputting sampling fractions that can later be multiplied by $n$ or taken on their own if $n$ is not known.  
+This formula is known as Neyman allocation and is one of the functions available in optimall. It can be called in `optimall`. Neyman allocation offers the advantage of outputting sampling fractions that can later be multiplied by $n$ or taken on their own if $n$ is not known.  
 
 While Neyman allocation has a strong theoretical backing, Wright (2014) points out some limitations that make it sub-optimal in practice. 
 
 1. Neyman does not require that the solution to $n_h$ is an integer, and thus it rarely is. When taking a fraction of a sample is not practical, researchers are forced to stray from the theory by rounding the sample sizes in ways that are not always optimal. 
 2. Closely related to the first issue, the rounded results for $n_h$ are not guarunteed to sum to $n$. This is clearly sub-optimal.
 
-Wright offers revised algorithms that solve these issues which can also be implemented in `optimall`. Essentially, his approaches use linear constraints to optimize the allocation of samples over a space of integer values. He makes use of within-stratum variance and population stratum size to generate priority values, which in turn dictate how many samples should be taken from each stratum. To learn more about the specifics of these algorithms, see Wright (2014).
+Wright offers alternative algorithms that solve the optimal problem for a discrete allocation that sums exactly to $n$, which can also be implemented in `optimall`. Essentially, his approaches use linear constraints to optimize the allocation of samples over a space of integer values. He makes use of within-stratum variance and population stratum size to generate priority values, which in turn dictate how many samples should be taken from each stratum. To learn more about the specifics of these algorithms, see Wright (2014).
 
-`optimall` allows users to select between Neyman allocation, Wright Algorithm I, and Wright Algorithm II in the `method` argument of the `optimum_allocation` function. `optimum_allocation` defaults to using Wright Algorithm II because it is the only method of the three that requires an unbiased estimate of the variance and always produces the global optimum allocation. This algorithm requires that at least 2 samples are taken from each stratum.  In `optimall`, stratum sampling sizes for both Wright algorithms are also constrained from above at $N_h$, the population stratum size, using the methods for constraints that Wright details in Algorithm III. 
+The `optimall` package allows users to select between Neyman allocation, Wright Algorithm I, and Wright Algorithm II in the `method` argument of the `optimum_allocation` function. The `optimum_allocation` function defaults to using Wright Algorithm II. This algorithm requires that at least 2 samples are taken from each stratum.  In `optimall`, stratum sampling sizes for both Wright algorithms are also constrained from above at $N_h$, the population stratum size, using the methods for constraints that Wright details in Algorithm III. 
 
-Below is an example of how `optimum_allocation` could be called to optimally allocate 20 samples among `Species` in the `iris` dataset, minimizing the variance of `Sepal.Width`.
+Below is an example of how `optimum_allocation` could be called to optimally allocate 20 samples among `Species` in the `iris` dataset, minimizing the variance of the `Sepal.Width` sample mean.
 
 ```{r Example 1}
 data <- datasets::iris
@@ -73,7 +75,7 @@ optimum_allocation(data = data, strata = "Species", y = "Sepal.Width",
 
 
 ## Adaptive, Multi-Wave Sampling
-When measuring variables of interest is expensive or difficult, it is often favorable to employ an adaptive, multi-wave sampling design. This approach, which is well-documented in McIsaac and Cook (2014), involves multiple phases of sampling where information from prior waves is used to inform the optimum sampling design of subsequent ones. With the understanding that both Neyman and Wright's optimum allocation methods depend heavily on standard deviation estimates for the variable of interest, the benefit of multi-wave sampling is clear to see. Sample allocations based on prior waves will use better estimates of the variable of interest compared to a single wave, and they will therefore be more optimal. 
+When measuring variables of interest is expensive or difficult, it can be advantageous to employ an adaptive, multi-wave sampling design. This approach, which is well-documented in McIsaac and Cook (2015), involves multiple phases of sampling where information from prior waves is used to inform the optimum sampling design of subsequent ones. With the understanding that both Neyman and Wright's optimum allocation methods depend heavily on standard deviation estimates for the variable of interest, the benefit of multi-wave sampling is clear to see. Sample allocations based on prior waves will use updated estimates of nuisance parameters that incorporate data accumulated in the prior sampling waves. The optimal sampling proportion is updated at the end of each wave and this update guides the sampling of the next wave. As the phase II data accumulates, the necessary within-strata SD estimates, and thus the estimated optimal sampling proportions, are expected to be closer to their true value.
 
 In the design described by McIsaac and Cook, a large phase-I sample is first taken to measure the inexpensive covariates and/or outcome. The results of this phase will define strata which are then sampled non-optimally (through proportional or balanced sampling) for measurement of the expensive variable in phase-IIa. The phase-IIa results are used to estimate the standard deviation required to optimally allocate the next wave of samples. This process is iterated until the desired sample size for the variable of interest is achieved. Below is an outline of the workflow, which is facilitated by `optimall`:
 <br />
@@ -104,14 +106,20 @@ DiagrammeR::grViz("digraph {
 
 `optimall` allows users to input phase-I data and iteratively allocate samples for subsequent waves with the function `allocate_wave`. Along the way, the user may also want to split or join imbalanced strata. `optimall` makes this easy with the `split_strata` function.
 
-## Example Workflow: Using `optimall` to Work with Healthy Weight Data
+## Examples: Using `optimall` to Determine Study Design and Sample Data
 
 #### *Overview*
-This example uses a simulated dataset to demonstrate how `optimall` can be used in an adaptive, multi-wave sampling workflow. The dataset is based on a real study analyzing the association between maternal weight gain during pregancy and the risk of childhood obesity after controlling for a number of clinical and demographic covariates. 
+We use the simulated dataset `MatWgt_Sim_Full` to demonstrate how the functions in `optimall` can be used to carry out the necessary tasks of determining study design and sampling. This section includes three examples:
 
-The data is obtained from electronic health records, which are known to be error-prone. In a perfect world, we would validate every observation in our sample, but auditing electronic health records is an expensive and difficult task. We determine that we can only reasonably afford to validate 750 out of the 10,335 child-mother pairs. For simplicity, suppose that we want to use these 750 samples to estimate the true population mean of maternal weight change during pregnancy with minimal error. This goal will be best accomplished through an adaptive, multi-wave sampling design.
+* Example 1: Uses the function `split_strata` to define and refine strata.
 
-#### *Data*
+* Example 2: Uses the function `sample_strata` to randomly select units to be sampled based on a specified sampling design. 
+
+* Example 3: Demonstrates how to conduct an adaptive, multi-wave sampling design that uses an optimal Neyman allocation scheme at each step to allocate the next wave across strata
+
+The dataset contains simulated data based on a real study of the association between maternal weight gain during pregancy and the risk of childhood obesity after controlling for a number of clinical and demographic covariates. In this hypothetical example, the study data are obtained from electronic health records, which are known to be error-prone and do not have all the variables of interested available without manual chart review. In a perfect world, chart review would be used to validate and obtain the necessary variables on every observation in our sample, but chart review is an expensive and difficult task. Researchers determined that they could only reasonably afford to validate 750 out of the 10,335 child-mother pairs. We refer to the 10,335 as the phase 1 sample, for which we have error-prone observations on all, and we refer to the 750 as the phase II sample, which will be designed using tools in the package optimall. For simplicity, suppose that we want to use these 750 samples to estimate the true population mean of maternal weight change during pregnancy with minimal variance. This goal will be accomplished in our last example through an adaptive, multi-wave sampling design.
+
+#### *Data Set Up*
 
 The simulated data used in this example is included with `optimall`. The dataset `MatWgt_Sim_Full` contains 10335 rows, one for each mother-child pair, and 5 columns containing ID numbers and covariates which we see below:
 
@@ -121,11 +129,9 @@ head(MatWgt_Sim_Full)
 
 Three of the covariates, child race, diabetes, and estimated maternal weight, are inexpensive to collect for all subjects, but determining the true maternal weight requires a tedious validation process. This full version of the simulated dataset contains the true weight change for all 10335 mothers, which may or may not have a relationship with the other covariates.
 
-For the purpose of this example, we suppose that we do not have access to this full dataset. Instead, we must sample from it to optimally estimate the mean of the true maternal weight changes.
+For the purpose of our examples, we suppose that we do not have access to this full dataset. Instead, we must sample from it to optimally estimate the mean of the true maternal weight changes.
 
-#### *Phase-I*
-
-During phase-I, we select all 10335 mother-child pairs to be sampled for the inexpensive covariates. Accordingly, our `phase1` dataset is 10335 x 4 with every column of the full `MatWgt_Sim_Full` data excluding the expensive true weight change.
+During phase-I, we assume that all 10335 mother-child pairs have been sampled for the inexpensive covariates. Accordingly, we define our phase 1 dataset to be 10335 x 4 with every column of the full `MatWgt_Sim_Full` data excluding the expensive true weight change. In the examples that follow, we will assume the validated maternal weight variable `mat_weight_true` will only be available through phase 2 sampling.
 
 ```{r}
 library(dplyr)
@@ -134,7 +140,9 @@ phase1 <- MatWgt_Sim_Full %>%
 dim(phase1)
 ```
 
-We suspect that the true mean maternal weight change may vary with some of these inexpensive covariates, so we decide to split our population into 9 non-overlapping strata. Each stratum will be defined by a unique combination of child race and global percentile of maternal weight gain (≤25th, 25th - 75th, >75th). We can accomplish this quickly in `optimall` using the `split_strata` function. 
+#### *Example 1: Defining Sample Strata*
+
+We suspect that the true mean maternal weight change may vary with some of the inexpensive covariates in the phase 1 dataset, so we decide to split our population into 9 non-overlapping strata. Each stratum will be defined by a unique combination of child race and global percentile of maternal weight gain (≤25th, 25th - 75th, >75th). We can accomplish this quickly in `optimall` using the `split_strata` function.
 
 ```{r}
 phase1$strata <- phase1$child_race #initialize a strata column first
@@ -146,15 +154,32 @@ phase1 <- split_strata(data = phase1, strata = "strata", split = NULL,
                        trunc = "MWC_est")
 #Trunc argument specifies how to refer to mat_weight_est in new strata names
 ```
-We now have the same `phase1` data with a new column specifying the strata we have defined.
+We now have the same `phase1` data with a new column specifying the strata we have defined. 
 
 ```{r}
 head(phase1)
 table(phase1$new_strata) #9 strata
 ```
 
-#### *Phase-IIa*
-With the strata now defined by the inexpensive variables sampled in phase-I, we are ready to begin auditing patient records for validation of the true maternal weight changes. Without any validated data to define the optimum phase-IIa sample allocation, we decide to use proportional stratified sampling for the first 250 out of our 750 audits. That is, we want the proportion of samples randomly taken from each stratum to reflect its population proportion. Conveniently, `optimall` can select this random sample for us with `sample_strata`, we just have to make a "design" dataframe specifying the $n_h$ values first. 
+We may also want to merge the two smallest strata, which are both Other race. This can easily be done in `optimall` with `merge_strata`.
+
+```{r}
+phase2b <- merge_strata(data = phase1, 
+                          strata = "new_strata",
+                          merge = c("Other.MWC_est_(15.06,30.94]",
+                                    "Other.MWC_est_[-5.39,9.75]"),
+                          name = "Other.MWC_est_[-5.39,30.94]")
+```
+
+#### *Example 2: Create an Initial Phase 2 Subsample: Phase-IIa*
+With the strata now defined by the inexpensive variables sampled in phase-I, we are ready to begin auditing patient records for validation of the true maternal weight changes. Without any validated data to define the optimum phase-IIa sample allocation, we decide to use proportional stratified sampling for the first 250 out of our 750 audits. Conveniently, `optimall` can select this random sample for us with `sample_strata`.
+
+The `sample_strata` function requires as input two dataframes, one containing the stratum membership of each individual unit (`data1`) and a second specifying the sampling design (`data2`). The `data2` dataframe must contain at least two columns:
+
+* `strata2`: A column holding strata names
+* `n_allocated`: The total $n$ allocated to each stratum.
+
+In our example, we want the proportion of samples randomly taken from each stratum to reflect its population proportion and a total of 250 samples. 
 
 ```{r}
 phase2a_design <- data.frame(
@@ -190,7 +215,7 @@ table(is.na(phase2a$mat_weight_true))
 
 We notice that all of the units that were not validated have `NA` values in the new columns. We will use the non-missing validated data to inform optimum allocation in our future sampling waves. 
 
-#### *Phase-IIb*
+#### *Example 3: Optimally Allocate 2nd Wave of Phase 2 Sample*
 In phase-IIa, we allocated samples to strata using proportional sampling rather than optimum allocation because we had no prior samples of the true maternal weight change from which to estimate within-stratum variances. Now that we have completed the first wave of validation, we can estimate these variances and will thus use optimum allocation for each of the subsequent sampling waves.
 
 In phase-IIb, we will optimally allocate 250 more samples, raising our total number of validated samples to 500. The `allocate_wave` function makes this step simple by calculating the optimum allocation for 500 samples, determining how many units have already been sampled in previous waves (only Phase-IIa in this case), and allocating the 250 samples of the current wave to make up the difference. The output is a design dataframe summarizing the results for each stratum.
@@ -213,7 +238,7 @@ phase2b_design
 
 Looking at the output of `allocate_wave`, we notice that the optimum sample sizes for the next wave vary greatly between strata, but all are greater than one. Because we set `detailed = TRUE`, we can also see what the optimum allocation for 500 samples would have been ignoring prior wave sizes in the column `"nsample_optimal"`. These two columns match because we did not oversample any strata in phase-IIa.
 
-In other cases when `"n_to_sample"` = 0 for some strata, we may not be so lucky. If the optimum sample size in a stratum is smaller than the amount it was allocated in previous waves (`"nsample_prior"`), we say that that strata has been oversampled. When oversampling occurs, `allocate_wave` "closes" the oversampled strata and re-allocates the remaining samples optimally among the open strata. Under these circumstances, the total sampling allocation is no longer optimal, but `optimall` will output the most optimal allocation possible for the next wave.
+In other cases when `"n_to_sample"` = 0 for some strata, we may not be so lucky. If the optimum sample size in a stratum is smaller than the amount it was allocated in previous waves (`"nsample_prior"`), we say that that strata has been oversampled. When oversampling occurs, `allocate_wave` "closes" the oversampled strata and re-allocates the remaining samples optimally among the open strata. Under these circumstances, the total sampling allocation is no longer optimal, but `optimall` will output the most optimal allocation from the non-oversampled strata for the next wave.
 
 Although we don't see evidence of oversampling, these results suggest that our strata are relatively imbalanced. We decide to split the largest stratum into three similarly-sized strata along mat_weight_est using the `local quantile` option of `split_strata`.  
 
@@ -223,16 +248,6 @@ phase2b <- split_strata(data = phase2b,
                         strata = "new_strata", 
                         split_var = "mat_weight_est",
                         type = "local quantile", split_at = c(1/3,2/3))
-```
-
-We may also want to merge the two smallest strata, which are both Other race. This can easily be done in `optimall` with `merge_strata`.
-
-```{r}
-phase2b <- merge_strata(data = phase2b, 
-                          strata = "new_strata",
-                          merge = c("Other.MWC_est_(15.06,30.94]",
-                                    "Other.MWC_est_[-5.39,9.75]"),
-                          name = "Other.MWC_est_[-5.39,30.94]")
 ```
 
 With our strata now more balanced in size, we can re-run `allocate_wave` to make a new design dataframe for `sample_strata` to use to determine which ids to sample in phase-IIb. 
@@ -420,13 +435,10 @@ To help users make these difficult decisions, `optimall` includes an R Shiny app
 <br />
 Each time the user updates an input, the parameters of the `split_strata` function are updated accordingly, and the resulting dataframe showing the optimum allocation of samples among the new strata is displayed. Once the user is satsfied with a set of inputs, they can `confirm` the split and the underlying data will be updated. The code used to perform the split will also be displayed.
 
-Note that the data in the Shiny App has to be loaded in from a file, and it is thus separate from data being used in the `optimall` workflow. This means that the user has to return to their R session to make the changes determined in the Shiny app. The app, however, makes this easy by printing the code to perform all of the confirmed changes, so making them in R is as easy as copying and pasting. You may have to update the `"data"` argument, though.
+Note that the data in the Shiny App has to be loaded in from a file, and it is thus separate from data being used in the `optimall` workflow. This means that the user has to return to their R session to make the changes determined in the Shiny app. The app, however, makes this easy by printing the code to perform all of the confirmed changes, so making them in R is as easy as copying and pasting. You may have to update the `"data"` argument.
 
 
 ## References
 McIsaac MA, Cook RJ. Adaptive sampling in two‐phase designs: a biomarker study for progression in arthritis. Statistics in Medicine. 2015 Sep 20;34(21):2899-912.
 
-Wright, T. (2014). A Simple Method of Exact Optimal Sample Allocation under Stratification with any Mixed Constraint Patterns, Research Report Series (Statistics #2014-07), Center for Statistical Research and Methodology, U.S. Bureau of the Census, Washington, D.C.
-
-
-
+Wright, T. A simple method of exact optimal sample allocation under stratification with any mixed constraint patterns.2014; Statistics, 07.
