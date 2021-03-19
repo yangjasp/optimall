@@ -1,6 +1,6 @@
 ---
 title: "optimall vignette"
-author: "Jasper Yang"
+author: "Jasper Yang and Pamela Shaw"
 date: "Last updated: `r format(Sys.Date(), '%B %d, %Y')`"
 output: rmarkdown::html_vignette
 vignette: >
