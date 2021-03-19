@@ -41,6 +41,9 @@
 #' \code{"design"} slot of phase 2, wave 2.
 #'
 #' @examples
+#'
+#' library(datasets)
+#'
 #' MySurvey <- new_multiwave(phases = 2, waves = c(1,3))
 #' get_data(MySurvey, phase = 1, slot = "data") <-
 #'  dplyr::select(datasets::iris, -Sepal.Width)
@@ -53,19 +56,21 @@
 #'  method = "WrightII")
 #'
 #' # or, we can establish function args in the metadata
-#' get_data(MySurvey, phase = 2, slot = "metadata") <- list
-#' (strata = "Species",
+#' get_data(MySurvey, phase = 2, slot = "metadata") <- list(
+#'  strata = "Species",
 #'  nsample = 15,
 #'  y = "Sepal.Length",
 #'  method = "WrightII"
 #' )
 #'
 #' # which allows the function to be run without specifying the args
-#' MySurvey <- apply_multiwave(MySurvey, phase = 2, wave = 2,
+#' MySurvey <- apply_multiwave(MySurvey, phase = 2, wave = 1,
 #'  fun = "optimum_allocation")
 #'
 #' @include get_data.R phase.R wave.R multiwave.R optimum_allocation.R
 #' @include allocate_wave.R merge_samples.R sample_strata.R
+#' @importFrom magrittr %>%
+#' @export
 
 setGeneric("apply_multiwave", function(x, phase, wave, fun, ...)
   standardGeneric("apply_multiwave"))
@@ -209,7 +214,10 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
 
   #allocate_wave
   if (fun == "allocate_wave"){
-    if((phase == 2 | phase == "phase2") & (wave == 1 | wave == "wave1")){
+    if (phase == 1){
+        stop("Allocate wave cannot be performed in Phase 1")
+    } else if((phase == 2 | phase == "phase2") &
+              (wave == 1 | wave == "wave1")){
       data <- x@phases$phase1$data
     } else if(wave == 1 | wave == "wave1"){
       data <- x@phases[[phase - 1]]@waves[[
@@ -217,8 +225,6 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
     } else if(wave != 1 ){
       data <- x@phases[[phase]]@waves[[
         wave - 1]]@data
-    } else{
-      stop("Allocate wave cannot be performed in Phase 1")
     }
 
     if (nrow(data) == 0){
@@ -428,7 +434,7 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
 
       if (!(strata2 %in% names(data2))){
         stop("'strata2' must be a column name of the dataframe in the
-         'data' slot of the previous wave.")
+         'design' slot of the specified wave.")
       }
 
 
@@ -504,12 +510,13 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
         'design' slot of the specified wave.")
       }
 
-      output <- sample_strata(data = data1, id = id,
+      output <- sample_strata(data1 = data1, id = id,
                               strata1 = strata1, wave2a = wave2a,
                               data2 = data2, strata2 = strata2,
                               n_allocated = n_allocated)
 
       x_updated <- x
+      sample_indicator <- NULL
       x_updated@phases[[phase]]@waves[[wave]]@samples <-
         as.character(dplyr::filter(output, sample_indicator == 1)$id)
       return(x_updated)
