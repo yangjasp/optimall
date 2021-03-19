@@ -15,9 +15,8 @@ each phase of the survey design. Length must match the number of
 
 \item{metadata}{A list containing the survey metadata. Defaults to an empty list.}
 
-\item{data}{A dataframe containing the phase 1 data of the survey. Defaults to an
-empty dataframe.
-phase must only have one wave.}
+\item{phase1}{A dataframe containing the phase 1 data of the survey.
+Defaults to an empty dataframe.}
 }
 \value{
 Returns an object of class \code{Multiwave} that stores all relevant data from the survey design in an organized and easy-to-access manner. See package vignettes or class documentation for more information.
