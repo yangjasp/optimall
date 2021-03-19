@@ -1,8 +1,9 @@
 #' Merge Strata
 #'
-#' Merges multiple pre-defined sampling strata into a single strata.
+#' Merges multiple pre-defined sampling strata into a single stratum.
 #' @param data a dataframe or matrix with one row for each sampling
-#' unit, one column specifying each unit's current stratum, and any
+#' unit, one column, \code{strata},
+#' specifying each unit's current stratum, and any
 #' other relevant columns.
 #' @param strata a character string specifying the name of the
 #' column that defines each unit's current strata.

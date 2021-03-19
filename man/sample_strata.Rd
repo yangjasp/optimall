@@ -21,10 +21,10 @@ unit's stratum, and one column with a unique identifier for each
 unit.}
 
 \item{strata1}{a character string specifying the name of column
-in \code{data1} which indicates the stratum that each unit belongs to.}
+in \code{data1} which indicates stratum membership.}
 
 \item{id}{a character string specifying the name of the column
-in \code{data1} which uniquely identifies each unit.}
+in \code{data1} that uniquely identifies each unit.}
 
 \item{wave2a}{a character sting specifying the name of the
 column in \code{data1} which indicates (1/0 or Y/N) whether a
@@ -34,14 +34,14 @@ which means that none have been sampled yet.}
 \item{data2}{a dataframe or matrix with one row for each stratum
 that subdivides the population, one column specifying the
 stratum name, and one column indicating the number of samples
-allocated to each stratum. The outputs of both \code{allocate_wave} and
-\code{optimum_allocation} are in this format.}
+allocated to each stratum.}
 
 \item{strata2}{a character string specifying the name of the
-column in \code{data2} which indicates the stratum. Defaults to "strata".}
+column in \code{data2} that contains the stratum levels.
+Defaults to "strata".}
 
 \item{n_allocated}{a character string specifying the name of the
-column in \code{data2} which indicates the n allocated to each
+column in \code{data2} that indicates the n allocated to each
 stratum. Defaults to "n_to_sample".}
 }
 \value{
@@ -50,15 +50,33 @@ returns a {data1} as a dataframe with a new column named
 whether each unit should be sampled.
 }
 \description{
-Given one dataframe indicating which stratum each population
-unit belongs to and a second specifying the n allocated to each
-stratum, \code{sample_strata} selects the units to sample by
-taking a random sample of the desired size within each
-stratum. The second dataframe specifying the n allocated to each
-stratum is typically the output of \code{allocate_wave} or
-\code{optimum_allocation}.
+Requires two dataframes or matrices: \code{data1} with a column
+\code{strata1} which specifies stratum membership for each unit in
+the population and a second dataframe \code{data2} with one row per
+strata level with a column \code{strata2} that indicates the unique
+levels of \code{strata1} and \code{n_allocated} that specifies the
+number to be sampled from each stratum.
+\code{sample_strata} selects the units to sample by
+selecting a random sample of the desired size within each
+stratum. The second dataframe can be the output of \code{allocate_wave}
+or \code{optimum_allocation}.
 }
-\details{
-If some units have already been sampled, \code{sample_strata} will avoid
-sampling them again.
+\examples{
+# Define a design dataframe
+design <- data.frame(strata = c("setosa", "virginica", "versicolor"),
+n_to_sample = c(5, 5, 5))
+
+# Make sure there is an id column
+iris$id <- 1:nrow(iris)
+
+# Run
+sample_strata(data1 = iris, strata1 = "Species", id = "id",
+data2 = design, strata2 = "strata", n_allocated = "n_to_sample")
+
+# If some units had already been samples
+iris$already_sampled <- rbinom(nrow(iris), 1, 0.25)
+
+sample_strata(data1 = iris, strata1 = "Species", id = "id",
+wave2a = "already_sampled",
+data2 = design, strata2 = "strata", n_allocated = "n_to_sample")
 }

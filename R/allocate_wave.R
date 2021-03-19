@@ -1,6 +1,6 @@
 #' Adaptive Multi-Wave Sampling
 #'
-#' Determines the optimum sampling allocation for a new sampling
+#' Determines the adaptive optimum sampling allocation for a new sampling
 #' wave based on results from previous waves. Using Algorithm II
 #' from Wright (2014), \code{allocate_wave} calculates the
 #' optimum allocation for the \emph{total} number of samples
@@ -15,17 +15,15 @@
 #' re-allocates the remaining samples optimally among the open
 #' strata. Under these circumstances, the total sampling
 #' allocation is no longer optimal, but \code{optimall} will
-#' output the \emph{most} optimal allocation possible for the next wave. By setting
-#' \code{detailed = TRUE}, you can compare the sampling allocation given by
-#' \code{allocate_wave} to the allocation given by \code{optimum_allocation} to
-#' see how, if at all, oversampling in previous waves affected the allocation.
+#' output the \emph{most} optimal allocation possible for the next wave.
 #' @param data A data frame or matrix with one row for each
 #' sampling unit, one column specifying each unit's stratum,
 #' one column holding the value of the continuous variable for
 #' which the variance should be minimized, and one column
-#' containing a key specifying if each unit has already been sampled.
+#' containing a binary indicator, \code{wave2a},
+#' specifying whether each unit has already been sampled.
 #' @param strata A character string or vector of character strings
-#' specifying the name of columns which indicate the stratum that
+#' specifying the name of columns that indicate the stratum that
 #' each unit belongs to.
 #' @param y A character string specifying the name of the
 #' continuous variable for which the variance should be minimized.
@@ -38,7 +36,7 @@
 #' used if at least one group was oversampled. Must be one of:
 #' \itemize{
 #' \item \code{"iterative"}, the default, will require a longer
-#' runtime but is a more precise method of handling oversampled
+#' runtime but may be a more precise method of handling oversampled
 #' strata. If there are multiple oversampled strata, this method
 #' closes strata and re-calculates optimum allocation one by one.
 #' \item \code{"simple"} closes all oversampled together and
@@ -51,9 +49,10 @@
 #' }
 #' @param detailed A logical value indicating whether the output
 #' dataframe should include details about each stratum including
-#' the true optimum allocation without previous waves of sampling
-#' and stratum standard deviations. Defaults to FALSE because
-#' these details are all available in the output of
+#' the true optimum allocation without the constraint of
+#' previous waves of sampling
+#' and stratum standard deviations. Defaults to FALSE.
+#' These details are all available from
 #' \code{optimum_allocation}.
 #' @examples
 #' \dontrun{
@@ -64,19 +63,27 @@
 #' )
 #' }
 #' @export
-#' @references Wright, T. (2014). A simple method of exact optimal
-#' sample allocation under stratification with any mixed
-#' constraint patterns. Statistics, 07.
+#' @references McIsaac MA, Cook RJ. Adaptive sampling in two‐phase designs:
+#' a biomarker study for progression in arthritis. Statistics in medicine.
+#' 2015 Sep 20;34(21):2899-912.
+#' @references Reilly, M., & Pepe, M. S. (1995). A mean score method for
+#' missing and auxiliary covariate data in regression models.
+#' Biometrika, 82(2), 299-314.
+#' @references  Wright, T. (2014). A Simple Method of Exact Optimal
+#' Sample Allocation under Stratification with any Mixed
+#' Constraint Patterns, Research Report Series (Statistics #2014-07),
+#' Center for Statistical Research and Methodology, U.S. Bureau
+#' of the Census, Washington, D.C.
 #' @return Returns a dataframe with one row for each stratum and
-#' columns specifying the stratum name, population stratum size
+#' columns specifying the stratum name ("strata"), population stratum size
 #' (\code{"npop"}), cumulative sample in that strata
-#' (\code{"nsample_total"}), prior number sampled in that
-#' strata (\code{"nsample_prior"}), and the optimally allocated
+#' (\code{"nsampled_total"}), prior number sampled in that
+#' strata (\code{"nsampled_prior"}), and the optimally allocated
 #' number of units in each strata for the next wave (\code{"n_to_sample"}).
 #' @importFrom rlang enquo
 #' @importFrom rlang sym
 #' @importFrom magrittr %>%
-#'
+
 allocate_wave <- function(data,
                           strata,
                           y, wave2a,

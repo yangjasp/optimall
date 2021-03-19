@@ -18,7 +18,7 @@ optimum_allocation(
 \item{data}{A data frame or matrix with one row for each
 sampled unit, one column specifying each unit's stratum, and
 one column holding the value of the continuous variable for
-which the variance should be minimized.}
+which the sample mean variance should be minimized.}
 
 \item{strata}{a character string or vector of character strings
 specifying the name(s) of columns which specify the stratum
@@ -32,7 +32,7 @@ continuous variable for which the variance should be minimized.}
 \item{nsample}{the desired total sample size. Defaults to NULL.}
 
 \item{ndigits}{a numeric value specifying the number of digits
-to round the standard deviation and stratum fraction to.
+to which the standard deviation and stratum fraction should be rounded.
 Defaults to 2.}
 
 \item{method}{a character string specifying the method of
@@ -41,33 +41,32 @@ optimum sample allocation to use. Must be one of:
 \item \code{"WrightII"}, the default, uses Algorithm II from
 Wright (2014) to determine the optimum allocation of a fixed
 sample size across the strata. It requires that at least two
-samples are allocated to each stratum, and it is recommended
-because it is the only algorithm that requires an unbiased
-estimate of the variance and always produces the global
-optimum allocation.
+samples are allocated to each stratum.
 \item \code{"WrightI"} uses Wright's Algorithm I to determine
 the optimum sample allocation. It only requires that at least
 one sample is allocated to each stratum, and can therefore
-lead to a biased variance estimate. It is not recommended
-except for in very specific cases.
+lead to a biased variance estimate.
 \item \code{"Neyman"} uses the standard method of Neyman
-Allocation to determine the optimum sample allocation. Its
-calculated stratum sample sizes are frequently non-integer
-values, but the output rounds these to the nearest integer.
-It is best used when nsample is \code{NULL} because it will output
-exact sampling fractions.
+Allocation to determine the optimum sample allocation. When
+\code{nsample = NULL}, the optimal sampling fraction is calculated
+and returned. When a numeric value is specified for \code{nsample},
+then the number allocated to each stratum is the optimal sampling
+fraction times \code{nsample} rounded to the nearest integer,
+which may no longer be optimall.
 }}
 
 \item{allow.na}{logical input specifying whether y should
 be allowed to have NA values. Defaults to \code{FALSE}.}
 }
 \value{
-Returns a data frame with the n allocated to each
+Returns a data frame with the specified total
+sample size, \code{nsample}, allocated across
 strata or the sampling fractions if nsample is NULL.
 }
 \description{
 Determines the optimum sampling fraction and sample size for
-each stratum in a stratified random sample according to Neyman
+each stratum in a stratified random sample, which
+minimizes the variance of the sample mean according to Neyman
 Allocation or Exact Optimum Sample Allocation (Wright 2014).
 }
 \examples{
@@ -77,7 +76,9 @@ optimum_allocation(
 )
 }
 \references{
-Wright, T. (2014). A simple method of exact optimal
-sample allocation under stratification with any mixed
-constraint patterns. Statistics, 07.
+Wright, T. (2014). A Simple Method of Exact Optimal
+Sample Allocation under Stratification with any Mixed
+Constraint Patterns, Research Report Series (Statistics #2014-07),
+Center for Statistical Research and Methodology, U.S. Bureau
+of the Census, Washington, D.C.
 }

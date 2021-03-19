@@ -36,7 +36,7 @@ should interpret the \code{split_at} argument. Must be one of:
 \itemize{
 \item \code{"global quantile"}, the default, splits the strata
 at the quantiles specified in \code{split_at} defined along
-the entire, unfiltered \code{split_var} column .
+the entire, unfiltered \code{split_var} column.
 \item \code{"local quantile"} splits the strata at the
 quantiles specified in \code{split_at} defined along the
 filtered \code{split_var} column which only includes units in
@@ -79,11 +79,12 @@ continuous or categorical variable.
 \details{
 The names of the newly created strata for a split generated
 from a continuous value are the \code{split_var} column name with
-the range of values defining that stratum by appended to the
+the range of values defining that stratum appended to the
 old strata name. For a categorical split, the new strata names
-are the \code{split_var} column with a 1 (if the unit is inside
-\code{split_at}) or 0 (if the unit is outside \code{split_at}) appended
-to the old strata name. If the \code{split_var} column name is long,
+are the \code{split_var} column name appended to the
+1/0 logical flag specifying whether the unit is in \code{split at},
+all appended to the old strata name.
+If the \code{split_var} column name is long,
 the user can specify a value for \code{trunc} to prevent the new
 strata names from being inconveniently long.
 }
