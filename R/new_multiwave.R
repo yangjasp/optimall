@@ -11,9 +11,8 @@
 #' each phase of the survey design. Length must match the number of
 #' \code{phases} and the first
 #' @param metadata A list containing the survey metadata. Defaults to an empty list.
-#' @param data A dataframe containing the phase 1 data of the survey. Defaults to an
-#' empty dataframe.
-#' phase must only have one wave.
+#' @param phase1 A dataframe containing the phase 1 data of the survey.
+#' Defaults to an empty dataframe.
 #' @return Returns an object of class \code{Multiwave} that stores all relevant data from the survey design in an organized and easy-to-access manner. See package vignettes or class documentation for more information.
 #' @examples
 #' #Initialize a multiwave object for a two-phase sampling design that will
