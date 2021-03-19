@@ -1,5 +1,8 @@
 context("test-get_data")
 
+library(optimall)
+library(dplyr)
+
 # Make multiwave object and add things into slots
 MySurvey <- new_multiwave(phases = 2, waves = c(1,3))
 
@@ -18,6 +21,15 @@ test_that("metadata access works",{
 
   expect_equal(get_data(MySurvey, phase = 1, slot = "metadata"),
                MySurvey@phases$phase1$metadata)
+
+  #To access Phase 2metadata
+
+  MySurvey@phases$phase2@metadata <-
+    list(title = "Maternal Weight Survey Phase 2")
+
+  expect_equal(get_data(MySurvey, phase = 2, slot = "metadata"),
+               MySurvey@phases$phase2@metadata)
+
 
   #To access Phase 2, Wave 1 metadata
 
@@ -48,6 +60,12 @@ test_that("Design, samples, sampled_data, data work",{
   # Set up
 
   test <- new_multiwave(phases = 2, waves = c(1,3))
+
+  set.seed <- 345
+  iris <- data.frame(id = c(1:60),
+                     Species = rep(c("A","B","C"), times = 20),
+                     Sepal.Length = rnorm(60, 3, 0.7))
+  iris$Sepal.Width <- iris$Sepal.Length + rnorm(60, 0, 0.5)
 
   get_data(test, phase = 1, slot = "data") <-
   dplyr::select(iris, -Sepal.Width)
@@ -112,6 +130,12 @@ test_that("errors work when invalid slot is accessed",{
                "must specify a phase unless getting overall metadata")
 
   expect_error(get_data(MySurvey, phase = 2, wave = NA, slot = "data"),
+               "must specify wave number unless")
+  expect_error(get_data(MySurvey, phase = NA, slot = "data") <-
+                 data.frame(),
+               "must specify a phase unless getting overall metadata")
+  expect_error(get_data(MySurvey, phase = 2, wave = NA, slot = "data") <-
+                 data.frame(),
                "must specify wave number unless")
 
 })
