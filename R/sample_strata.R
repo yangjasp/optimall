@@ -37,6 +37,7 @@
 #' "sample_indicator" containing a binary (1/0) indicator of
 #' whether each unit should be sampled.
 #' @importFrom magrittr %>%
+#'
 
 sample_strata <- function(data1, strata1, id, wave2a = NULL,
                           data2, strata2 = "strata",
