@@ -55,6 +55,9 @@ and returns an updated multiwave object with the output of the applied
 function in its specified slot.
 }
 \examples{
+
+library(datasets)
+
 MySurvey <- new_multiwave(phases = 2, waves = c(1,3))
 get_data(MySurvey, phase = 1, slot = "data") <-
  dplyr::select(datasets::iris, -Sepal.Width)
@@ -67,15 +70,15 @@ MySurvey <- apply_multiwave(MySurvey, phase = 2, wave = 1,
  method = "WrightII")
 
 # or, we can establish function args in the metadata
-get_data(MySurvey, phase = 2, slot = "metadata") <- list
-(strata = "Species",
+get_data(MySurvey, phase = 2, slot = "metadata") <- list(
+ strata = "Species",
  nsample = 15,
  y = "Sepal.Length",
  method = "WrightII"
 )
 
 # which allows the function to be run without specifying the args
-MySurvey <- apply_multiwave(MySurvey, phase = 2, wave = 2,
+MySurvey <- apply_multiwave(MySurvey, phase = 2, wave = 1,
  fun = "optimum_allocation")
 
 }
