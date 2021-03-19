@@ -24,13 +24,6 @@ library(dplyr)
 library(here)
 
 MatWgt_Sim <- read.csv("/Users/jasper/Desktop/Sim_matWgts.csv")
-MatWgt_Sim <- MatWgt_Sim %>%
-  dplyr::mutate(child_race = 
-                  dplyr::case_when(child_race == "Asian" ~ "Other",
-                                   child_race == "Other" ~ "Other",
-                                   child_race == "White" ~ "White",
-                                   child_race == "Black" ~ "Black"))
-phase1 <- dplyr::select(MatWgt_Sim, -mat_weight_true)
 ```
 
 
@@ -135,8 +128,15 @@ During phase-I, we assume that all 10335 mother-child pairs have been sampled fo
 
 ```{r}
 library(dplyr)
+
+# Get phase 1 data, combine smallest race categories
 phase1 <- MatWgt_Sim %>%
-  dplyr::select(-mat_weight_true)
+  dplyr::mutate(child_race = 
+                  dplyr::case_when(child_race == "Asian" ~ "Other",
+                                   child_race == "Other" ~ "Other",
+                                   child_race == "White" ~ "White",
+                                   child_race == "Black" ~ "Black")) %>%
+                dplyr::select(-mat_weight_true)
 dim(phase1)
 ```
 
@@ -442,3 +442,4 @@ Note that the data in the Shiny App has to be loaded in from a file, and it is t
 McIsaac MA, Cook RJ. Adaptive sampling in two‐phase designs: a biomarker study for progression in arthritis. Statistics in Medicine. 2015 Sep 20;34(21):2899-912.
 
 Wright, T. A simple method of exact optimal sample allocation under stratification with any mixed constraint patterns.2014; Statistics, 07.
+
