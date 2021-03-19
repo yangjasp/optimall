@@ -37,6 +37,7 @@ VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)
 Collate: 
+    'MatWgt_Sim.R'
     'allocate_wave.R'
     'sample_strata.R'
     'wave.R'
@@ -46,7 +47,6 @@ Collate:
     'optimum_allocation.R'
     'get_data.R'
     'apply_multiwave.R'
-    'example_simdata.R'
     'merge_strata.R'
     'multiwave_diagram.R'
     'new_multiwave.R'
