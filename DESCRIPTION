@@ -25,7 +25,8 @@ Imports:
 	survey,
 	survival,
 	here,
-	bslib	
+	bslib,
+	methods	
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Suggests: 
@@ -38,11 +39,11 @@ Depends:
 Collate: 
     'allocate_wave.R'
     'sample_strata.R'
+    'wave.R'
+    'phase.R'
     'multiwave.R'
     'merge_samples.R'
     'optimum_allocation.R'
-    'wave.R'
-    'phase.R'
     'get_data.R'
     'apply_multiwave.R'
     'example_simdata.R'
