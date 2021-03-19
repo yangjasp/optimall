@@ -4,7 +4,7 @@
 #' in the plotting window. Red boxes indicate slots that have not yet been
 #' filled, blue boxes indicate that the slot is filled.
 #'
-#' @param object An object of class \code{multiwave}.
+#' @param x An object of class \code{multiwave}.
 #' @param height The height in pixels of the diagram. Defaults to \code{NULL}
 #' , which produces default height.
 #' @param width The width in pixels of the diagram. Defaults to \code{NULL},

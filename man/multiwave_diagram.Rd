@@ -7,13 +7,13 @@
 multiwave_diagram(x, height = NULL, width = NULL)
 }
 \arguments{
+\item{x}{An object of class \code{multiwave}.}
+
 \item{height}{The height in pixels of the diagram. Defaults to \code{NULL}
 , which produces default height.}
 
 \item{width}{The width in pixels of the diagram. Defaults to \code{NULL},
 which produces the default width.}
-
-\item{object}{An object of class \code{multiwave}.}
 }
 \description{
 Takes a multiwave object as input and plots a diagram of its structure
