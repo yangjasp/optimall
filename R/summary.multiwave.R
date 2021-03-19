@@ -8,13 +8,13 @@ setMethod("summary", "Multiwave", function(object) {
                          length(object@phases[[i]]@waves))
   }
   n_waves[1] <- 1
-  cat("A 'Multiwave' object with ", length(object@phases),
-      " phases containing",
-  paste(n_waves,collapse = ", "), " waves respectively: \n",
+  cat("A 'Multiwave' object with", length(object@phases),
+      "phases containing",
+  paste(n_waves,collapse = ", "), "waves respectively: \n",
   "\n",
   "Phase 1: \n",
   " data: ", as.character(nrow(object@phases$phase1$data)),
-  "observations of", as.character(ncol(object@phases$phase1$data)), "vars: ",
+  "observations of", as.character(ncol(object@phases$phase1$data)), "vars:",
   paste(names(object@phases$phase1$data)
         [1:min(5, length(names(object@phases$phase1$data)))],
         collapse = ", "),
@@ -34,7 +34,7 @@ setMethod("summary", "Multiwave", function(object) {
             c(as.character(nrow(object@phases[[i]]@waves[[j]]@data)),
             "observations of",
             as.character(ncol(object@phases[[i]]@waves[[j]]@data)),
-            "vars: ",
+            "vars:",
             paste(names(object@phases[[i]]@waves[[j]]@data)
                                   [1:min(5,length(names(object@phases[[i]]
                                                       @waves[[j]]@data)))],
