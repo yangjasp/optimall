@@ -32,6 +32,14 @@ You can install the development version of `optimall` from
 devtools::install_github("yangjasp/optimall")
 ```
 
+You can install the beta version of `optimall` with the multiwave object
+additions with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("yangjasp/optimall", ref = "multiwave_object")
+```
+
 ## Example
 
 Given a dataframe where each row represents one unit, `optimall` can
