@@ -62,7 +62,7 @@ The multiwave object is an S4 object, which makes it slightly more complicated t
 
 <center>
 <br />
-![](/Users/jasper/Desktop/MultiwaveStructure.png){width=65%}
+![](../inst/images/MultiwaveStructure.png){width=65%}
 </center>
 <br />
 
