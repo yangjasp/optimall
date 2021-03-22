@@ -19,7 +19,7 @@ library(DiagrammeR)
 library(dplyr)
 
 #data
-MatWgt_Sim <- read.csv("/Users/jasper/Desktop/Sim_matWgts.csv")
+data(MatWgt_Sim, package = "optimall")
 MatWgt_Sim <- MatWgt_Sim %>%
   dplyr::mutate(child_race = 
                   dplyr::case_when(child_race == "Asian" ~ "Other",

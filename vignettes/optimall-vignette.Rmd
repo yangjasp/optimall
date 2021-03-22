@@ -23,7 +23,7 @@ library(datasets)
 library(dplyr)
 library(here)
 
-MatWgt_Sim <- read.csv("/Users/jasper/Desktop/Sim_matWgts.csv")
+data(MatWgt_Sim, package = "optimall")
 ```
 
 
@@ -117,6 +117,7 @@ The dataset contains simulated data based on a real study of the association bet
 The simulated data used in this example is included with `optimall`. The dataset `MatWgt_Sim` contains 10335 rows, one for each mother-child pair, and 5 columns containing ID numbers and covariates which we see below:
 
 ```{r first view of data}
+data(MatWgt_Sim, package = "optimall")
 head(MatWgt_Sim)
 ```
 
