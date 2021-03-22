@@ -3,6 +3,7 @@
 \name{get_data}
 \alias{get_data}
 \alias{get_data<-}
+\alias{get_data<-,Multiwave-method}
 \title{Access and Write Slots of a Multiwave Object}
 \usage{
 get_data(x, phase = 1, wave = NA, slot = "data")
@@ -23,10 +24,19 @@ accessed. Must be one of \code{"metadata"}, \code{"design"},
 \code{"samples"}, \code{"sampled_data"}, \code{"data"}. Defaults to
 \code{"data"}. See class documentation or package vignettes for more
 information about slots.}
+
+\item{value}{value to assign to specified slot}
 }
 \description{
 \code{get_data} is the accessor function for objects of class \code{Multiwave}. It can be used to access or write slots.
 }
+\section{Functions}{
+\itemize{
+\item \code{get_data}: access slot of multiwave object
+
+\item \code{get_data<-}: assign value to slot of a multiwave object
+}}
+
 \examples{
 # Intiate multiwave object
 MySurvey <- new_multiwave(phases = 2, waves = c(1,3))

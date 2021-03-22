@@ -2,9 +2,12 @@
 % Please edit documentation in R/apply_multiwave.R
 \name{apply_multiwave}
 \alias{apply_multiwave}
+\alias{apply_multiwave,Multiwave-method}
 \title{Apply a basic optimall function to a Multiwave Object}
 \usage{
 apply_multiwave(x, phase, wave, fun, ...)
+
+\S4method{apply_multiwave}{Multiwave}(x, phase, wave, fun, ...)
 }
 \arguments{
 \item{x}{An Object of class \code{"multiwave"}}

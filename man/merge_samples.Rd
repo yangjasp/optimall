@@ -2,6 +2,7 @@
 % Please edit documentation in R/merge_samples.R
 \name{merge_samples}
 \alias{merge_samples}
+\alias{merge_samples,Multiwave-method}
 \title{Merge Sampled Data based on IDs}
 \usage{
 merge_samples(x, phase, wave, id = NULL, sampled_ind = "already_sampled_ind")

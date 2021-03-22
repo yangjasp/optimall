@@ -34,7 +34,8 @@
 #' @include multiwave.R phase.R wave.R
 NULL
 
-#' @rdname get_data
+#' @describeIn get_data
+#' access slot of multiwave object
 #' @export
 get_data <- function(x, phase = 1, wave = NA, slot = "data"){
   if (class(x) != "Multiwave"){
@@ -74,8 +75,10 @@ get_data <- function(x, phase = 1, wave = NA, slot = "data"){
   }
 }
 
-#' @rdname get_data
-#' @aliases get_data
+#' @describeIn get_data
+#' assign value to slot of a multiwave object
+#' @param value value to assign to specified slot
+#' @aliases get_data<-,Multiwave-method
 #' @export
 
 setGeneric("get_data<-", function(x, phase = 1, wave = NA, slot = "data",

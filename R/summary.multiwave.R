@@ -1,3 +1,6 @@
+#' Method for summary for class Multiwave
+#' @param object object of class "Multiwave"
+#' @aliases summary,Multiwave-method
 #' @export
 
 setMethod("summary", "Multiwave", function(object) {

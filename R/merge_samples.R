@@ -37,7 +37,7 @@
 #' \code{"data"} slot of the specified wave.
 #' @export
 #' @include multiwave.R phase.R wave.R
-#' @aliases merge_samples
+#' @aliases merge_samples,Multiwave-method
 #'
 #' @examples
 #' library(datasets)

@@ -75,6 +75,9 @@
 setGeneric("apply_multiwave", function(x, phase, wave, fun, ...)
   standardGeneric("apply_multiwave"))
 
+#' @name apply_multiwave
+#' @aliases apply_multiwave,Multiwave-method
+
 setMethod("apply_multiwave", c(x = "Multiwave"),
           function(x, phase, wave, fun, ...){
   #Get function args
