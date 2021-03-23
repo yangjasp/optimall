@@ -14,10 +14,10 @@ an adaptive, multi-wave approach. Its main functions allow users to:
     in a given study in order to minimize the variance of an estimate of
     interest.
 
+  - Select specific ids to sample based on a stratified sampling design.
+
   - Optimally allocate a fixed number of samples to an ancillary
     sampling wave based on results from a prior wave.
-
-  - Select specific ids to sample based on a stratified sampling design.
 
 When used together, these functions can automate most of the sampling
 workflow.
