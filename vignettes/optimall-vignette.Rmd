@@ -491,4 +491,3 @@ Note that the data in the Shiny App has to be loaded in from a file, and it is t
 McIsaac MA, Cook RJ. Adaptive sampling in two‐phase designs: a biomarker study for progression in arthritis. Statistics in Medicine. 2015 Sep 20;34(21):2899-912.
 
 Wright, T. A simple method of exact optimal sample allocation under stratification with any mixed constraint patterns.2014; Statistics, 07.
-
