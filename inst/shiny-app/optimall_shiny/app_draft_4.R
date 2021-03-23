@@ -4,12 +4,17 @@ library(shiny)
 library(DT)
 library(optimall)
 library(glue)
+library(bslib)
 
 # Splitting Strata with Optimal Allocation
 ui <- fluidPage(
 
   # Application title
   titlePanel("Splitting Strata with Optimum Allocation"),
+
+  # Set Application Theme
+  theme = bslib::bs_theme(version = 4, bootswatch = "spacelab",
+                          secondary = "#446E9B"),
 
   # Data input and describe its columns
   # radio buttons from test result

@@ -156,3 +156,18 @@ test_that("works if input is a matrix",{
                                   n_allocated = "n_to_sample")
     expect_equal(sum(sampled_data_mat$sample_indicator),15)
 })
+
+test_that("returns error if n_allocated is not a whole number",{
+  df$n_to_sample <- c(1.5,2,4)
+  expect_error(sample_strata(data1 = data, strata1 = "strata",
+                             id = "id", data2 = df,
+                             wave2a = "key",strata2 = "strata",
+                             n_allocated = "n_to_sample" ),
+               "must specify a numeric column")
+  df$n_to_sample <- c("a","b","c")
+  expect_error(sample_strata(data1 = data, strata1 = "strata",
+                             id = "id", data2 = df,
+                             wave2a = "key",strata2 = "strata",
+                             n_allocated = "n_to_sample" ),
+               "must specify a numeric column")
+})

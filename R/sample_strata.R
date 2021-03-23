@@ -57,7 +57,8 @@
 #' data2 = design, strata2 = "strata", n_allocated = "n_to_sample")
 
 sample_strata <- function(data1, strata1, id, wave2a = NULL,
-                          data2, strata2, n_allocated) {
+                          data2, strata2 = "strata",
+                          n_allocated = "n_to_sample") {
   if (is.matrix(data1) | is.matrix(data2)) {
     data1 <- as.data.frame(data1)
     data2 <- as.data.frame(data2)
@@ -77,6 +78,14 @@ sample_strata <- function(data1, strata1, id, wave2a = NULL,
   }
   if (any(data2[, strata2] %in% data1[, strata1] == FALSE)) {
     stop("strata names in 'data2' must all match strata names in 'data1'.")
+  }
+  if (is.numeric(data2[,n_allocated]) == FALSE) {
+    stop("'n_allocated' must specify a numeric column in 'data2' containing only
+         whole number values")
+  }
+  if (is.numeric(data2[,n_allocated]) == TRUE & any(data2[,n_allocated]%%1 != 0)){
+    stop("'n_allocated' must specify a numeric column in 'data2' containing only
+         whole number values")
   }
   nsample <- sum(data2[, n_allocated])
   if (is.null(wave2a) == FALSE) {
@@ -119,7 +128,7 @@ sample_strata <- function(data1, strata1, id, wave2a = NULL,
         & data1[, wave2a] != "Y"
         & data1[, wave2a] != 1,
         c(id, strata1)
-      ]
+        ]
       sampled_ids[[i]] <- sample(x = strata_data[, id],
                                  size = data2[, n_allocated][i])
     }
@@ -129,4 +138,5 @@ sample_strata <- function(data1, strata1, id, wave2a = NULL,
   output_df <- data1 %>%
     dplyr::mutate(sample_indicator = ifelse(id %in% sampled_ids, 1, 0))
   return(output_df)
+
 }

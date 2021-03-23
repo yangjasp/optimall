@@ -4,7 +4,15 @@
 \alias{sample_strata}
 \title{Select Sampling Units based on Stratified Random Sampling}
 \usage{
-sample_strata(data1, strata1, id, wave2a = NULL, data2, strata2, n_allocated)
+sample_strata(
+  data1,
+  strata1,
+  id,
+  wave2a = NULL,
+  data2,
+  strata2 = "strata",
+  n_allocated = "n_to_sample"
+)
 }
 \arguments{
 \item{data1}{A data frame or matrix with one row for each

@@ -96,7 +96,6 @@
 #' previous strata names is retained and given the name "old_strata".
 #' @importFrom magrittr %>%
 
-
 split_strata <- function(data, strata, split = NULL,
                          split_var, type = "global quantile",
                          split_at = .5, trunc = NULL) {

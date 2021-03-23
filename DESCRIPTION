@@ -24,7 +24,9 @@ Imports:
 	magrittr,
 	survey,
 	survival,
-	here	
+	here,
+	bslib,
+	methods	
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Suggests: 
@@ -34,3 +36,20 @@ Suggests:
 VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)
+Collate: 
+    'MatWgt_Sim.R'
+    'allocate_wave.R'
+    'sample_strata.R'
+    'wave.R'
+    'phase.R'
+    'multiwave.R'
+    'merge_samples.R'
+    'optimum_allocation.R'
+    'get_data.R'
+    'apply_multiwave.R'
+    'merge_strata.R'
+    'multiwave_diagram.R'
+    'new_multiwave.R'
+    'optimall_shiny.R'
+    'split_strata.R'
+    'summary.multiwave.R'
