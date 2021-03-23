@@ -7,17 +7,17 @@
 streamline the process of optimum sample allocation, specifically under
 an adaptive, multi-wave approach. Its main functions allow users to:
 
-  - Define, split, and merge strata based on values or percentiles of
+  - Define, split, and merge strata based on values or quantiles of
     other variables.
 
   - Calculate the optimum number of samples to allocate to each stratum
     in a given study in order to minimize the variance of an estimate of
     interest.
 
+  - Select specific ids to sample based on a stratified sampling design.
+
   - Optimally allocate a fixed number of samples to an ancillary
     sampling wave based on results from a prior wave.
-
-  - Select specific ids to sample based on a stratified sampling design.
 
 When used together, these functions can automate most of the sampling
 workflow.
@@ -30,14 +30,6 @@ You can install the development version of `optimall` from
 ``` r
 # install.packages("devtools")
 devtools::install_github("yangjasp/optimall")
-```
-
-You can install the beta version of `optimall` with the multiwave object
-additions with:
-
-``` r
-# install.packages("devtools")
-devtools::install_github("yangjasp/optimall", ref = "multiwave_object")
 ```
 
 ## Example
