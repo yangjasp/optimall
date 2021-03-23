@@ -484,7 +484,9 @@ To help users make these difficult decisions, `optimall` includes an R Shiny app
 <br />
 Each time the user updates an input, the parameters of the `split_strata` function are updated accordingly, and the resulting dataframe showing the optimum allocation of samples among the new strata is displayed. Once the user is satsfied with a set of inputs, they can `confirm` the split and the underlying data will be updated. The code used to perform the split will also be displayed.
 
-Note that the data in the Shiny App has to be loaded in from a file, and it is thus separate from data being used in the `optimall` workflow. This means that the user has to return to their R session to make the changes determined in the Shiny app. The app, however, makes this easy by printing the code to perform all of the confirmed changes, so making them in R is as easy as copying and pasting. You may have to update the `"data"` argument.
+Note that the data in the Shiny App has to be loaded in from a file, and it is thus separate from data being used in the `optimall` workflow. This means that the user has to return to their R session to make the changes determined in the Shiny app. The app, however, makes this easy by printing the code to perform all of the confirmed changes, so making them in R is as easy as copying and pasting. You may have to update the `"data"` argument. 
+
+For more information on `optimall_shiny` see the package vignette titled "Splitting Strata with Optimall Shiny".
 
 
 ## References
