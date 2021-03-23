@@ -92,9 +92,9 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
     stop("Data contains NAs. If this is intentional, set allow.na to TRUE.")
   }
   if (min(dplyr::count(
-    dplyr::filter(output_df, !(is.na(y))), strata)[, "n"]) < 2 |
-    length(unique(dplyr::filter(output_df, !(is.na(y)))$strata)) !=
-    length(unique(output_df$strata))) {
+        dplyr::filter(output_df, !(is.na(y))), strata)[, "n"]) < 2 |
+      length(unique(dplyr::filter(output_df, !(is.na(y)))$strata)) !=
+        length(unique(output_df$strata))) {
     stop("Function requires at least two observations per stratum")
   }
   if (method == "Neyman") {
@@ -107,7 +107,7 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
       ) %>%
       dplyr::mutate(
         stratum_fraction = round(n_sd / sum(n_sd),
-                                 digits = ndigits
+          digits = ndigits
         ),
         sd = round(sd, digits = ndigits),
         n_sd = round(n_sd, digits = ndigits)
@@ -122,7 +122,7 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
       output_df <- output_df %>%
         dplyr::mutate(
           stratum_size = round(nsample * n_sd / sum(n_sd),
-                               digits = 0
+            digits = 0
           ),
           sd = round(sd, digits = ndigits),
           n_sd = round(n_sd, digits = ndigits)
@@ -156,13 +156,13 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
       for (i in 1:n_strata) {
         priority_array[[i]] <- c(
           rep(output_df[i, "n_sd"],
-              times = min(output_df[i, "n"] - 1, n_minus_H)
+            times = min(output_df[i, "n"] - 1, n_minus_H)
           ),
           rep(NULL,
-              times = ifelse(n_minus_H > (output_df[i, "n"] - 1),
-                             n_minus_H - (output_df[i, "n"] - 1),
-                             0
-              )
+            times = ifelse(n_minus_H > (output_df[i, "n"] - 1),
+              n_minus_H - (output_df[i, "n"] - 1),
+              0
+            )
           )
         )
         # All rows are same length, but zeroes so that n_sample
@@ -179,16 +179,16 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
         Wright_output[, i] <- Wright_output[, i] * mult_vec[i]
       }
       cutoff <- (sort(unlist(Wright_output, use.names = FALSE),
-                      decreasing = TRUE
+        decreasing = TRUE
       ))[n_minus_H]
       stratum_size <- rowSums(Wright_output >= cutoff) + 1
       final_output <- cbind(
         output_df[, c("strata", "n", "sd", "n_sd")], stratum_size
-      )
+        )
       final_output <- final_output %>%
         dplyr::mutate(
           stratum_fraction = round(stratum_size / nsample,
-                                   digits = ndigits
+            digits = ndigits
           ),
           sd = round(sd, digits = ndigits),
           n_sd = round(n_sd, digits = ndigits)
@@ -226,13 +226,13 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
       for (i in 1:n_strata) {
         priority_array[[i]] <- c(
           rep(output_df[i, "n_sd"],
-              times = min(output_df[i, "n"] - 2, n_minus_2H)
+            times = min(output_df[i, "n"] - 2, n_minus_2H)
           ),
           rep(output_df[i, "n_sd"] * 0,
-              times = ifelse(n_minus_2H > (output_df[i, "n"] - 2),
-                             n_minus_2H - (output_df[i, "n"] - 2),
-                             0
-              )
+            times = ifelse(n_minus_2H > (output_df[i, "n"] - 2),
+              n_minus_2H - (output_df[i, "n"] - 2),
+              0
+            )
           )
         )
         # All rows are same length, but zeroes so that n_sample
@@ -250,7 +250,7 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
         Wright_output[, i] <- Wright_output[, i] * mult_vec[i]
       }
       cutoff <- (sort(unlist(Wright_output, use.names = FALSE),
-                      decreasing = TRUE
+        decreasing = TRUE
       ))[n_minus_2H]
       stratum_size <- rowSums(Wright_output >= cutoff) + 2
       final_output <- cbind(
@@ -258,7 +258,7 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
       final_output <- final_output %>%
         dplyr::mutate(
           stratum_fraction = round(stratum_size / nsample,
-                                   digits = ndigits
+            digits = ndigits
           ),
           sd = round(sd, digits = ndigits),
           n_sd = round(n_sd, digits = ndigits)
@@ -277,4 +277,3 @@ optimum_allocation <- function(data, strata, y, nsample = NULL,
          'Neyman'.")
   }
 }
-
