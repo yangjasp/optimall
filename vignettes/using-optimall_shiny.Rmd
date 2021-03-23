@@ -1,8 +1,8 @@
 ---
-title: "Splitting Strata with optimall's R Shiny App"
+title: "Splitting Strata with Optimall Shiny"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{using-optimall_shiny}
+  %\VignetteIndexEntry{Splitting Strata with Optimall Shiny}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -54,7 +54,7 @@ Once the dataset has been uploaded, options for the user to select inputs will a
 
 ## Output
 
-`optimall_shiny` displays the output dataframe of `optimum_allocation` or `allocate wave` based on the current inputs. After a split is confirmed and these inputs are reset, it will show an error in place of this dataframe until valid inputs are selected again. Displayed below this dataframe is a text list of the code that performs each of the confirmed splits in `optimall`.
+`optimall_shiny` displays the output dataframe of `optimum_allocation` or `allocate_wave` based on the current inputs. After a split is confirmed and these inputs are reset, it will show an error in place of this dataframe until valid inputs are selected again. Displayed below this dataframe is a text list of the code that performs each of the confirmed splits in `optimall`.
 
 <center>
 <br />
