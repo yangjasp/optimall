@@ -390,7 +390,9 @@ phase2c <- phase2c %>%
   dplyr::select(-mat_weight_true.x, - mat_weight_true.y)
 ```
 
-We have now validated 750 samples!
+We have now validated 750 samples! 
+
+As this example shows, there are quite a few moving parts to keep track of in the multi-wave sampling workflow. When performing a multi-wave sampling design, you may also want to consider using `optimall's` multiwave object to organize and visualize the process. This feature is described in detail in the package vignette titled "The Multiwave Object".
 
 #### Conclusion: Assessing the Efficiency of the Multi-wave Design
 
@@ -468,7 +470,7 @@ data_svy_rakeProp <- survey::rake(design = data_svyProp,
 survey::svymean(Prop_data$mat_weight_true,data_svy_rakeProp)
 ```
 
-Multiphase adaptive sampling using optimum allocation efficiently minimizes the variance of an estimate, and it is thus useful in epidemiological studies where one or more covariates is difficult to measure. `Optimall` streamlines the adaptive sampling workflow in R, providing users with a simple framework for study design and analysis.
+Multi-wave adaptive sampling using optimum allocation efficiently minimizes the variance of an estimate, and it is thus useful in epidemiological studies where one or more covariates is difficult to measure. `Optimall` streamlines the adaptive sampling workflow in R, providing users with a simple framework for study design and analysis.
 
 ## Splitting Strata Efficiently with `optimall_shiny`
 
@@ -489,6 +491,4 @@ Note that the data in the Shiny App has to be loaded in from a file, and it is t
 McIsaac MA, Cook RJ. Adaptive sampling in two‐phase designs: a biomarker study for progression in arthritis. Statistics in Medicine. 2015 Sep 20;34(21):2899-912.
 
 Wright, T. A simple method of exact optimal sample allocation under stratification with any mixed constraint patterns.2014; Statistics, 07.
-
-
 

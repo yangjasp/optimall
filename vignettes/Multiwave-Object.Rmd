@@ -50,15 +50,15 @@ phase1_data_dictionary <- data.frame("Variable" = c("id",
 
 ## Overview
 
-The current functions of `optimall` allow users to efficiently determine optimum allocation, select samples, and split strata during the design of a multi-wave stratified sampling survey. Despite these features, an efficient sampling workflow in R still requires the user to manually organize the many moving parts of the process including design data, a list of samples, data extracted from the samples, and merged data for each wave. When a sampling design involves many waves, these parts can be difficult to keep track of and may be prone to errors. Even more, it may be difficult to go back and reproduce results at the end of a long sampling process.
+The base functions of `optimall` allow users to efficiently determine optimum allocation, select samples, and split strata during the design of a multi-wave stratified sampling survey. Despite these features, an efficient sampling workflow in R still requires the user to manually organize the many moving parts of the process including design data, a list of samples, data extracted from the samples, and merged data for each wave. When a sampling design involves many waves, these parts can be difficult to keep track of and may be prone to errors. Even more, it may be difficult to go back and reproduce results at the end of a long sampling process.
 
-Here, I describe an addition to `optimall` called the multiwave object which stores the metadata, design, samples, and merged data from each step of the multi-wave sampling process in an accessible format. It is completely optional for the user to use, but it offers the advantages of automatic organization, efficient compatibility with other functions in `optimall`, and an option for a summary of the sampling design to be printed at any point.
+This vignette describes an addition to `optimall` called the multiwave object which stores the metadata, design, samples, and merged data from each step of the multi-wave sampling process in an accessible format. It is completely optional for the user to use, but it offers the advantages of automatic organization, efficient compatibility with other functions in `optimall`, and an option for a summary of the sampling design to be printed at any point. It is recommended that user thoroughly reads the introductory package vignette title "Using Optimall" before reading this vignette.
 
 This addition contributes towards `optimall's` goal of being a tool to streamline the often cumbersome aspects of the multi-wave sampling workflow.
 
 ## Format
 
-The multiwave object is an S4 object, which makes it slightly more complicated to work with in R. Fortunately, all of these potential complications will be dealt with in the package design and will be unseen by the user. Here is what the user will see:
+The multiwave object uses the S4 class system, which makes it slightly more complicated to work with in R. Fortunately, all of these potential complications are dealt with in the package design and will be unseen by the user. Here is what the user will see:
 
 <center>
 <br />
@@ -88,7 +88,7 @@ MySurvey <- new_multiwave(phases = 2, waves = c(1,3))
 We now have an object that can hold all of the information for our two-phase survey for which the second phase will be conducted over three waves.
 
 ### Access and Write slots
-To access and write slots of the multiwave object, the user could use `@` and `$`:
+As is standard for an S4 object in R, components of the multiwave object are stored in slots. To access and write slots of the multiwave object, the user could use `@` and `$`:
 
 ```{r}
 #To access overall metadata
@@ -129,6 +129,16 @@ head(phase1)
 
 get_data(MySurvey, phase = 1, slot = "data") <- phase1
 
+#Make Phase 1 data dict
+phase1_data_dictionary <- data.frame(
+  "Variable" = c( "id", "child_race", "mat_weight_est", "diabetes"),
+  "Description" = c("unique identifier", 
+                    "race of child",
+                    "error-prone estimate of maternal weight change 
+                    during pregnancy",
+                    "1/0 indicator for diabetes in the mother during 
+                    pregnancy"))
+
 head(phase1_data_dictionary)
 
 get_data(MySurvey, phase = 1, slot = "metadata") <- list(data_dict = phase1_data_dictionary)
@@ -148,28 +158,32 @@ multiwave_diagram(MySurvey)
 </center>
 Notice that the title of the survey, "Maternal Weight Survey", was found from the overall survey metadata and that boxes are colored based on whether they have been filled yet. Slots that have been filled are blue and contain a short description of their contents. This function enables users to track their progress during a multiwave sampling survey.
 
-### Call `optimall` functions with less arguments
+### Call `optimall` functions with fewer arguments
 Another advantage of the multiwave object is that the primary functions of `optimall` such as `optimum_allocation`, `allocate_wave`, and `sample_strata` can be called on the object using the function `apply_multiwave`, The `apply_multiwave` function takes the standard arguments to the function as well as `phase` and `wave`, which are used to determine the input dataframe(s) and the slot of the object where the output should be placed. If the arguments, including names of columns (which tend to be repetitive when used without the multiwave object framework), are specified in the metadata, the function will find them itself, allowing calls to the function to be much simpler. It is recommended that users gain familiarity with the basic uses of these functions on dataframes before using them on multiwave objects.
 
 When working with a multiwave object, a new function called `merge_samples` also becomes available. This allows users to quickly and efficiently merge the `sampled_data` with the previous wave's `data`.
 
-### Example Wave Workflow Using `optimal` with A Multiwave Object
+### Example Wave Workflow Using `optimall` with a Multiwave Object
 
-In this section, we demonstrate an example of how the multiwave Object can be useful in the adaptive multi-wave sampling workflow. In this example, we will create and execute Wave 1 of Phase 2 of our sample. 
+In this section, we demonstrate an example of how the multiwave object can be useful in the adaptive multi-wave sampling workflow. In this example, we will create and execute Wave 1 of Phase 2 of our sample. 
 
-The first step of Phase 2, Wave 1 is to specify the metadata for both the phase and wave:
+The first step of Phase 2, Wave 1 is to specify the metadata for both the phase and wave. Note that can be useful to specify a title, description, function arguments, and anything else relevant to the survey in the metadata, but nothing is *required* to be specified. If no function arguments are found in the metadata, they must instead be specified during the call to `apply_multiwave`. In this example we choose to specify a description and function arguments in the wave metadata:
 
 ```{r}
 # Metadata for Phase 2 including description,
-# and column names to be used in function calls
+# and column names to be used in function calls.
+# Note that each element name corresponds to at least one argument of a 
+# function that will be called later on in the multi-wave workflow.
 get_data(MySurvey, phase = 2, slot = "metadata") <- 
   list(description = "Phase 2 of Maternal Weight Survey in which we
        seek to validate 750 samples across three waves.",
-       strata = "new_strata", #this is strata column in data
-       id = "id",  #name of id column
-       y = "mat_weight_true", #var for which to minimize variance
-       strata2 = "strata", #strata column in designs
-       n_allocated = "n_to_sample" #n allocated to strata in designs
+       strata = "new_strata", # strata column in data (used in multiple funcs)
+       id = "id", # name of id column (used in sample_strata and merge_samples)
+       y = "mat_weight_true", # col for which to minimize variance 
+                                  # (used in optimum_allocation)
+       strata2 = "strata", # strata column in designs (used for sample_strata)
+       n_allocated = "n_to_sample" # n allocated to strata in designs
+                                    # (used for sample_strata)
        )
 
 # Then, metadata for Wave 1 of Phase 2 
@@ -178,7 +192,7 @@ get_data(MySurvey, phase = 2, wave = 1, slot = "metadata") <-
        sampled using proportional sampling")
 ```
 
-After the metadata is specified, we create a dataframe specifying the survey design. It contains one column holding the stratum names and one column specifying how many samples should be allocated to each stratum in Wave 1. Since we have not collected any validated data to base our stratum standard deviations on yet, we will use proportional sampling for the first 250 samples.
+After the metadata is specified, we create a dataframe specifying the survey design. It contains one variable holding the stratum names and one variable specifying how many samples should be allocated to each stratum in Wave 1. We will use proportional sampling for the first 250 samples.
 
 ```{r}
 #Design for Wave 1
@@ -190,11 +204,12 @@ get_data(MySurvey, phase = 2, wave = 1, slot = "design") <- data.frame(
 get_data(MySurvey, phase = 2, wave = 1, slot = "design")
 ```
 
-We can use this design to randomly select ids to sample from the previous wave (in this case the overall Phase 1 data) using `apply_multiwave` to apply the function `sample_strata` to the multiwave object. When applied to an object of class "Multiwave", `sample_strata` will find `"data1"` and `"data2"` in the object and will look in the wave, phase, then overall metadata for the other arguments to `"sample_strata"`. It will return the same multiwave object with a vector of ids to sample in the `"samples"` slot of the specified wave.
+We can use this design to randomly select ids to sample from the previous wave (in this case the overall Phase 1 data) using `apply_multiwave` to apply the function `sample_strata` to the multiwave object. When applied to an object of class "Multiwave", `sample_strata` will find `"data1"` and `"data2"` in the object and will look in the wave, phase, then overall metadata for the other arguments to `"sample_strata"` if they are not provided in the call. It will return the same multiwave object with a vector of ids to sample in the `"samples"` slot of the specified wave.
 
 ```{r}
 
-# Get list of ids to sample
+# Get list of ids to sample using stratified random sampling 
+# without replacement
 set.seed(456)
 MySurvey <- apply_multiwave(MySurvey, phase = 2, wave = 1,
                             fun = "sample_strata",
@@ -223,7 +238,7 @@ head(ids_wave1)
 length(ids_wave1)
 ```
 
-We can use these sample ids to get the Phase 2, Wave 1 data:
+We can use these sample ids to sample the Phase 2, Wave 1 data from MatWgt_Sim, which holds the (hypothetically unknown) `mat_weight_true` variable:
 
 ```{r}
 
@@ -233,16 +248,18 @@ get_data(MySurvey, phase = 2, wave = 1, slot = "sampled_data") <- MatWgt_Sim %>%
   dplyr::select(id, mat_weight_true)
 ```
 
-Then, we can use the function `merge_samples` merge the sampled data into our full dataframe. This function generates the dataframe for the `"data"` slot of the specified wave using the `"sampled_data"` and the data from the previous wave (Phase 1 data in this case).
+Then, we can use the function `merge_samples` to merge the sampled data (250 rows of data sampled in wave 1 of phase 2) that we just collected into our full dataframe (10,335 rows of data sampled in phase 1). This function generates the dataframe for the `"data"` slot of the specified wave using the `"sampled_data"` and the data from the previous wave (Phase 1 data in this case).
 
 ```{r}
 MySurvey <- apply_multiwave(MySurvey, phase = 2, wave = 1, fun = "merge_samples",
                             sampled_ind = "already_sampled_ind")
 ```
 
-All the slots for this wave are now filled, so it is complete, but we may want to add an indicator for which samples were already sampled to this wave 1 data. This will be useful for future waves and can be easily done with `dplyr` because the already sampled ids are all stored in the `"samples"` slot of each wave:
+All the slots for this wave are now filled! We can check to make sure everything that we have done so far looks good using `multiwave_diagram`:
 
-```{r}
+```{r, include = F}
+# Old, before added sampled_ind you had to specify yourself
+
 get_data(MySurvey, phase = 2, wave = 1) <- 
   get_data(MySurvey, phase = 2, wave = 1) %>%
   dplyr::mutate(already_sampled_ind = 
@@ -253,7 +270,6 @@ get_data(MySurvey, phase = 2, wave = 1) <-
                                     slot = "samples"), 1, 0))
 ```
 
-We can check to make sure everything that we have done so far looks good:
 ```{r, eval = FALSE}
 multiwave_diagram(MySurvey)
 ```
