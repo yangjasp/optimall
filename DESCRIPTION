@@ -7,7 +7,7 @@ Authors@R:
 		email = "jasper.yang@pennmedicine.upenn.edu") 
 Maintainer: Jasper Yang <jasper.yang@pennmedicine.upenn.edu>
 Description: A collection of functions accompanied by an R Shiny application to streamline multi-wave adaptive sampling workflows.
-License: GPL-2
+License: GPL-3
 URL: https://github.com/yangjasp/optimall
 BugReports: https://github.com/yangjasp/optimall/issues
 Encoding: UTF-8
