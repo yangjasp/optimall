@@ -1,41 +1,45 @@
-Package: optimall
 Type: Package
+Package: optimall
 Title: Allocate Samples Among Strata
 Version: 0.1.0
 Authors@R:
-	person("Jasper", "Yang", role = c("aut","cre"),
-		email = "jasper.yang@pennmedicine.upenn.edu") 
+    person(given = "Jasper",
+           family = "Yang",
+           role = c("aut", "cre"),
+           email = "jasper.yang@pennmedicine.upenn.edu")
 Maintainer: Jasper Yang <jasper.yang@pennmedicine.upenn.edu>
-Description: A collection of functions accompanied by an R Shiny application to streamline multi-wave adaptive sampling workflows.
+Description: A collection of functions accompanied by an R Shiny
+    application to streamline multi-wave adaptive sampling workflows.
 License: GPL-3
 URL: https://github.com/yangjasp/optimall
 BugReports: https://github.com/yangjasp/optimall/issues
-Encoding: UTF-8
-LazyData: true
-Imports: 
-	dplyr,
-	stats,
-	tibble,
-	shiny,
-	glue,
-	rlang,
-	DiagrammeR,
-	datasets,
-	magrittr,
-	survey,
-	survival,
-	here,
-	bslib,
-	methods	
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
-Suggests: 
-    testthat,
-    knitr,
-    rmarkdown
-VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)
+Imports: 
+    bslib,
+    datasets,
+    DiagrammeR,
+    dplyr,
+    glue,
+    here,
+    magrittr,
+    methods,
+    rlang,
+    shiny,
+    stats,
+    survey,
+    survival,
+    tibble
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: 
+    knitr
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
 Collate: 
     'MatWgt_Sim.R'
     'allocate_wave.R'
