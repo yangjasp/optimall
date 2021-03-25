@@ -41,7 +41,6 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Collate: 
-    'MatWgt_Sim.R'
     'allocate_wave.R'
     'sample_strata.R'
     'wave.R'
@@ -51,6 +50,7 @@ Collate:
     'optimum_allocation.R'
     'get_data.R'
     'apply_multiwave.R'
+    'matwgt_sim.R'
     'merge_strata.R'
     'multiwave_diagram.R'
     'new_multiwave.R'
