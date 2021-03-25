@@ -29,7 +29,7 @@ setMethod("summary", "Multiwave", function(object) {
     for (i in 2:length(object@phases)){
       title <- paste0("Phase ",as.character(i),": \n")
       wave_data <- list()
-      for (j in 1:length(object@phases[[i]]@waves)){
+      for (j in seq_len(length(object@phases[[i]]@waves))){
         info <- if (nrow(object@phases[[i]]@waves[[j]]@data) == 0 &
                          ncol(object@phases[[i]]@waves[[j]]@data) == 0){
           c("NA \n"," \n")

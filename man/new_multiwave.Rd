@@ -7,19 +7,23 @@
 new_multiwave(phases, waves, metadata = list(), phase1 = data.frame())
 }
 \arguments{
-\item{phases}{A numeric value specifying the number of phases in the survey design.}
+\item{phases}{A numeric value specifying the number of phases in the
+survey design.}
 
 \item{waves}{A vector of numeric values specifying the number of waves in
 each phase of the survey design. Length must match the number of
 \code{phases} and the first}
 
-\item{metadata}{A list containing the survey metadata. Defaults to an empty list.}
+\item{metadata}{A list containing the survey metadata.
+Defaults to an empty list.}
 
 \item{phase1}{A dataframe containing the phase 1 data of the survey.
 Defaults to an empty dataframe.}
 }
 \value{
-Returns an object of class \code{Multiwave} that stores all relevant data from the survey design in an organized and easy-to-access manner. See package vignettes or class documentation for more information.
+Returns an object of class \code{Multiwave} that stores all
+relevant data from the survey design in an organized and easy-to-access
+manner. See package vignettes or class documentation for more information.
 }
 \description{
 Creates an Object of Class \code{Multiwave} with the specified number

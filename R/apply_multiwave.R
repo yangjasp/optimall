@@ -15,9 +15,20 @@
 #' \code{optimum_allocation},
 #' \code{allocate_wave}, \code{sample_strata}, and \code{merge_samples}.
 #' \itemize{
-#' \item \code{optimum_allocation}: Uses the \code{data} from the previous wave (or previous phase if \code{wave = 1}) to determine the optimum sampling allocation for the specified wave. If used, the output multiwave object contains an updated \code{"design"} slot in the specified wave.
-#' \item \code{allocate_wave}: Uses the \code{data} from the previous wave (or previous phase if \code{wave = 1}) to determine the optimum sampling allocation for the specified wave. If used, the output multiwave object contains an updated \code{"design"} slot in the specified wave.
-#' \item \code{sample_strata}: Uses the \code{data} from the previous wave (or previous phase if \code{wave = 1}) and \code{design} from current wave to generate a vector of ids to sample for the current wave. If used, the output multiwave object contains an updated \code{"samples"} slot in the specified wave.
+#' \item \code{optimum_allocation}: Uses the \code{data} from
+#' the previous wave
+#' (or previous phase if \code{wave = 1}) to determine the optimum sampling
+#' allocation for the specified wave. If used, the output multiwave
+#' object contains an updated \code{"design"} slot in the specified wave.
+#' \item \code{allocate_wave}: Uses the \code{data} from the previous wave
+#' (or previous phase if \code{wave = 1}) to determine the optimum sampling
+#' allocation for the specified wave. If used, the output multiwave object
+#' contains an updated \code{"design"} slot in the specified wave.
+#' \item \code{sample_strata}: Uses the \code{data} from the previous wave
+#' (or previous phase if \code{wave = 1}) and \code{design}
+#' from current wave to generate a vector of ids to sample for the current
+#' wave. If used, the output multiwave object contains an updated
+#' \code{"samples"} slot in the specified wave.
 #' \item \code{merge_samples}: Uses the \code{data} from the previous wave (or
 #' previous phase if \code{wave = 1}) and \code{sampled_data} from the
 #' specified wave to generate the final, merged data for the current wave.
@@ -26,8 +37,12 @@
 #' method for multiwave objects, so calling
 #' it through \code{apply_optimall} is the exact same as calling it on its
 #' own.}
-#' See documentation of these functions for more details on the specific uses and arguments.
-#' @param ... Optional arguments to be given to \code{fun}. Not necessary if the arguments are already provided as named values in the wave, phase, or overall metadata in the multiwave object. Arguments provided here will override specifications in the metadata if provided in both places.
+#' See documentation of these functions for more details on the
+#' specific uses and arguments.
+#' @param ... Optional arguments to be given to \code{fun}. Not necessary if
+#' the arguments are already provided as named values in the wave, phase,
+#' or overall metadata in the multiwave object. Arguments provided here
+#' will override specifications in the metadata if provided in both places.
 #' @return The inputted multiwave object with one slot updated to include the
 #' output of the specified function.
 #'
@@ -331,7 +346,7 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
         detailed <- FALSE
       }
     } else{
-      detailed = arguments$detailed
+      detailed <-  arguments$detailed
     }
 
     output <- allocate_wave(data = data, y = y,
@@ -420,7 +435,8 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
         } else if("strata2" %in% names(survey_md) &
                   class(survey_md$strata2) == "character"){
           strata2 <- survey_md$strata2
-        } else if("strata" %in% names(wave_md) & class(wave_md$strata) == "character"){
+        } else if("strata" %in% names(wave_md) &
+                  class(wave_md$strata) == "character"){
           strata2 <- wave_md$strata
         } else if("strata" %in% names(phase_md) &
                   class(phase_md$strata) == "character"){
@@ -490,7 +506,8 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
 
       # n_allocated
       if (is.null(arguments$n_allocated)){
-        if("n_allocated" %in% names(wave_md) & class(wave_md$n_allocated) == "character"){
+        if("n_allocated" %in% names(wave_md) &
+           class(wave_md$n_allocated) == "character"){
           n_allocated <- wave_md$n_allocated
         } else if("n_allocated" %in% names(phase_md) &
                   class(phase_md$n_allocated) == "character"){
@@ -547,7 +564,8 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
     }
 
     if (is.null(arguments$sampled_ind)){
-      if("sampled_ind" %in% names(wave_md) & class(wave_md$sampled_ind) == "character"){
+      if("sampled_ind" %in% names(wave_md) &
+         class(wave_md$sampled_ind) == "character"){
         sampled_ind <- wave_md$sampled_ind
       } else if("sampled_ind" %in% names(phase_md) &
                 class(phase_md$sampled_ind) == "character"){
@@ -556,7 +574,7 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
                 class(survey_md$sampled_ind) == "character"){
         sampled_ind <- survey_md$sampled_ind
       } else {
-        sampled_ind = "sampled_ind"
+        sampled_ind <-  "sampled_ind"
       }
     } else{
       sampled_ind <- arguments$sampled_ind

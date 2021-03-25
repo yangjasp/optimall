@@ -1,6 +1,7 @@
 #' Access and Write Slots of a Multiwave Object
 #'
-#' \code{get_data} is the accessor function for objects of class \code{Multiwave}. It can be used to access or write slots.
+#' \code{get_data} is the accessor function for objects of
+#' class \code{Multiwave}. It can be used to access or write slots.
 #' @param x an object of class \code{'Multiwave'}
 #' @param phase a numeric value specifying the phase that should be accessed.
 #' To access the overall metadata, set \code{phase = NA}. Defaults to 1.

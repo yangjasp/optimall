@@ -17,7 +17,8 @@ multiwave_diagram <- function(x, height = NULL, width = NULL){
   if (class(x) != "Multiwave"){
     stop("'x' must be an object of class Multiwave")
   }
-  title_char <- n_phases <- n_waves <- metadata_rec <- design_rec <- samples_rec <-
+  title_char <- n_phases <- n_waves <- metadata_rec <- design_rec <-
+    samples_rec <-
     sampled_data_rec <- data_rec <- full_slot_color <- empty_slot_color <-
     overall_md_color <- overall_md_text <- p1_md_color <- p1_md_text <-
     p1_data_color <- p1_data_text <- default_rec <- recs <- n_waves_prev <-

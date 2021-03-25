@@ -10,7 +10,7 @@
 #' merged into one column with the same name in the output dataframe.
 #' For ids that have non-missing values in both columns of the merge,
 #' the value from
-#' \code{"sampled_data"} will overwite the previous value and a warning
+#' \code{"sampled_data"} will overwrite the previous value and a warning
 #' will be printed. All ids present in the \code{"data"} from the previous
 #' wave but missing from \code{"sampled_data"} will be given NA values
 #' for the newly merged variables
@@ -26,7 +26,10 @@
 #'  the specified wave is in. Cannot be phase 1.
 #' @param wave A numeric value specifying the wave of the Multiwave
 #'  object that the merge should be
-#' performed in. This wave must have a valid dataframe in the \code{"sampled data"} slot. The previous wave, taken as the final wave of the previous phase if \code{wave} = 1, must have a valid dataframe in the \code{"data"} slot.
+#' performed in. This wave must have a valid dataframe in the
+#' \code{"sampled data"} slot. The previous wave, taken as the final
+#' wave of the previous phase if \code{wave} = 1, must have a valid
+#' dataframe in the \code{"data"} slot.
 #' @param id A character value specifying the name of the column holding unit
 #' ids. Taken from wave, phase, or overall metadata (searched for in that
 #' order) if \code{NULL}. Defaults to \code{NULL}.
@@ -59,12 +62,12 @@ setMethod("merge_samples", c(x = "Multiwave"),
                    sampled_ind = "already_sampled_ind"){
 
   if(!is.numeric(phase) |
-     !(phase %in% c(1:length(x@phases)) & phase > 1)){
+     !(phase %in% c(seq_len(length(x@phases))) & phase > 1)){
       stop("'phase' must be a numeric value specifying a valid phase
       in 'x'")
      }
   if(!is.numeric(wave) |
-      !(wave %in% c(1:length(x@phases[[phase]]@waves)))){
+      !(wave %in% c(seq_len(length(x@phases[[phase]]@waves))))){
       stop("'wave' must be a numeric value specifying a valid wave in
       'phase' in 'x'")
     }

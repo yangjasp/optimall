@@ -6,14 +6,18 @@
 #' during the survey design and sample collection process. Currently,
 #' multiwave objects may only have one wave in Phase 1.
 #'
-#' @param phases A numeric value specifying the number of phases in the survey design.
+#' @param phases A numeric value specifying the number of phases in the
+#' survey design.
 #' @param waves A vector of numeric values specifying the number of waves in
 #' each phase of the survey design. Length must match the number of
 #' \code{phases} and the first
-#' @param metadata A list containing the survey metadata. Defaults to an empty list.
+#' @param metadata A list containing the survey metadata.
+#' Defaults to an empty list.
 #' @param phase1 A dataframe containing the phase 1 data of the survey.
 #' Defaults to an empty dataframe.
-#' @return Returns an object of class \code{Multiwave} that stores all relevant data from the survey design in an organized and easy-to-access manner. See package vignettes or class documentation for more information.
+#' @return Returns an object of class \code{Multiwave} that stores all
+#' relevant data from the survey design in an organized and easy-to-access
+#' manner. See package vignettes or class documentation for more information.
 #' @examples
 #'
 #' #Initialize a multiwave object for a two-phase sampling design that will

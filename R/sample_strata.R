@@ -80,10 +80,11 @@ sample_strata <- function(data1, strata1, id, wave2a = NULL,
     stop("strata names in 'data2' must all match strata names in 'data1'.")
   }
   if (is.numeric(data2[,n_allocated]) == FALSE) {
-    stop("'n_allocated' must specify a numeric column in 'data2' containing only
-         whole number values")
+    stop("'n_allocated' must specify a numeric column in 'data2'
+    containing only whole number values")
   }
-  if (is.numeric(data2[,n_allocated]) == TRUE & any(data2[,n_allocated]%%1 != 0)){
+  if (is.numeric(data2[,n_allocated]) == TRUE &
+      any(data2[,n_allocated]%%1 != 0)){
     stop("'n_allocated' must specify a numeric column in 'data2' containing only
          whole number values")
   }

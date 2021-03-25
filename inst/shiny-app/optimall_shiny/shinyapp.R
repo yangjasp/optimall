@@ -1,4 +1,5 @@
-#Interactive Shiny for Optimall. Adds on to Draft 3 by adding option for allocate wave.
+# Interactive Shiny for Optimall.
+# Adds on to Draft 3 by adding option for allocate wave.
 
 library(shiny)
 library(DT)
@@ -56,7 +57,8 @@ server <- function(input, output, session) {
     shiny::req(input$data)
     radioButtons(inputId = "allocation",
                  label = "Include Information from Previous Wave",
-                 list("optimum_allocation","allocate_wave (have some units already been sampled?)"),)
+                 list("optimum_allocation","allocate_wave
+                      (have some units already been sampled?)"),)
   })
   type_vals <- reactiveValues()
   type_vals$func <- "optimum_allocation"
@@ -66,7 +68,10 @@ server <- function(input, output, session) {
   output$key <- renderUI({
     shiny::req(input$data)
     if(type_vals$func != c("optimum_allocation")){
-      selectInput(inputId = "key", label = "Column Indicating Which Have Already Been Sampled (Y/N or 1/0):",
+      selectInput(
+        inputId = "key",
+        label =
+          "Column Indicating Which Have Already BeenSampled (Y/N or 1/0):",
                   choices = names(values$df_data))
     } else{
       NULL
@@ -95,13 +100,20 @@ server <- function(input, output, session) {
     shiny::req(input$data)
     selectInput(inputId = "strata_to_split",
                 label = "Name of Strata to Split",
-                choices = c("All", sort(unique(dplyr::select(values$df_data, input$strata)[,input$strata]))))
+                choices =
+                  c("All",
+                    sort(unique(
+                      dplyr::select(values$df_data,
+                                    input$strata)[,input$strata]))))
   })
   output$type <- renderUI({
     shiny::req(input$data)
     radioButtons(inputId = "type",
                  label = "Split Type:",
-                 list("global quantile","local quantile", "value", "categorical"))
+                 list("global quantile",
+                      "local quantile",
+                      "value",
+                      "categorical"))
   })
   output$nsample <- renderUI({
     shiny::req(input$data)
@@ -111,8 +123,10 @@ server <- function(input, output, session) {
   type_vals$type <- "global quantile"
 
   observeEvent(input$type, {type_vals$type <- input$type})
-  #observe(input$type == "global quantile",{slidertype$type <- "global quantile"})
-  #observe(input$type == "local quantile", {slidertype$type <- "local quantile"})
+  #observe(input$type == "global quantile",
+   #{slidertype$type <- "global quantile"})
+  #observe(input$type == "local quantile",
+   #{slidertype$type <- "local quantile"})
   #observe(input$type == "value", {slidertype$type <- "value"})
   #observe(input$type == "categorical", {slidertype$type <- "categorical"})
 
@@ -127,14 +141,19 @@ server <- function(input, output, session) {
     }
     else if(type_vals$type == "value"){
       sliderInput(inputId = "split_at", label = "Split At",
-                  min = min(dplyr::select(values$df_data, input$split_var)[,1]),
-                  max = max(dplyr::select(values$df_data, input$split_var)[,1]),
-                  value = max(dplyr::select(values$df_data, input$split_var)[,1]),
+                  min = min(dplyr::select(values$df_data,
+                                          input$split_var)[,1]),
+                  max = max(dplyr::select(values$df_data,
+                                          input$split_var)[,1]),
+                  value = max(dplyr::select(values$df_data,
+                                            input$split_var)[,1]),
                   step = 0.01)
     }
     else{
-      checkboxGroupInput(inputId = "split_at", label = "Split At:",
-                         choices = c(unique(dplyr::select(values$df_data, input$split_var)[,input$split_var])))
+      checkboxGroupInput(
+        inputId = "split_at", label = "Split At:",
+        choices = c(unique(dplyr::select(
+          values$df_data, input$split_var)[,input$split_var])))
     }
   })
 
@@ -155,11 +174,25 @@ server <- function(input, output, session) {
     shiny::req(input$split_var)
     shiny::req(input$strata)
     shiny::req(input$split_at)
-    output_df <- optimall::split_strata(data = values$df_data, strata = input$strata, split = strata_to_split$split ,split_var = input$split_var, type = input$type, split_at = input$split_at)
+    output_df <- optimall::split_strata(data = values$df_data,
+                                        strata = input$strata,
+                                        split = strata_to_split$split,
+                                        split_var = input$split_var,
+                                        type = input$type,
+                                        split_at = input$split_at)
     if(type_vals$func == "optimum_allocation"){
-    output_df <- optimall::optimum_allocation(data = output_df, strata = "new_strata", y = input$y, nsample = input$nsample, ndigits = 4,allow.na = T)
+    output_df <- optimall::optimum_allocation(data = output_df,
+                                              strata = "new_strata",
+                                              y = input$y,
+                                              nsample = input$nsample,
+                                              ndigits = 4,allow.na = T)
     } else {
-    output_df <- optimall::allocate_wave(data = output_df, strata = "new_strata", y = input$y, nsample = input$nsample, wave2a = input$key, method = "simple")
+    output_df <- optimall::allocate_wave(data = output_df,
+                                         strata = "new_strata",
+                                         y = input$y,
+                                         nsample = input$nsample,
+                                         wave2a = input$key,
+                                         method = "simple")
     }
     datatable(output_df, options = list(pageLength = 25))
   })
@@ -168,17 +201,47 @@ server <- function(input, output, session) {
   startVal <- reactiveVal()
   startVal(1)
 
-  #What happens when you confirm your split. 1: output_df updates and 2: code for the split pops up.
+  #What happens when you confirm your split. 1: output_df updates and
+  # 2: code for the split pops up.
   myValues <- reactiveValues(dList = NULL)
   observeEvent(input$confirm,{
-    temp <- optimall::split_strata(data = values$df_data, strata = input$strata, split = strata_to_split$split ,split_var = input$split_var, type = input$type, split_at = input$split_at)
+    temp <- optimall::split_strata(data = values$df_data,
+                                   strata = input$strata,
+                                   split = strata_to_split$split,
+                                   split_var = input$split_var,
+                                   type = input$type,
+                                   split_at = input$split_at)
     if(type_vals$type != "categorical"|
        (type_vals$type == "categorical" & length(input$split_at) == 1)){
-      myValues$dList <- c(isolate(myValues$dList), isolate(paste0("split_strata(data = 'df_name', strata = '",input$strata,"', split = ",ifelse(is.null(strata_to_split$split), "NULL", paste0("'",strata_to_split$split,"'")),", split_var = '",input$split_var,"', type = '",input$type,"', split_at = '",input$split_at,"')")))
+      myValues$dList <- c(isolate(myValues$dList),
+                          isolate(paste0(
+                            "split_strata(data = 'df_name', strata = '",
+                            input$strata,"', split = ",
+                            ifelse(is.null(strata_to_split$split),
+                                   "NULL",
+                                   paste0("'",
+                                          strata_to_split$split,
+                                          "'")),
+                            ", split_var = '",
+                            input$split_var,
+                            "', type = '",input$type,
+                            "', split_at = '",input$split_at,"')")))
     }
     if(type_vals$type == "categorical" & length(input$split_at) > 1){
-      split_cat_text <- paste0("c('", glue::glue_collapse(input$split_at, sep = "','"), "')")
-      myValues$dList <- c(isolate(myValues$dList), isolate(paste0("split_strata(data = 'df_name', strata = '",input$strata,"', split = ",ifelse(is.null(strata_to_split$split), "NULL", paste0("'",strata_to_split$split,"'")),", split_var = '",input$split_var,"', type = '",input$type,"', split_at = ",split_cat_text,")")))
+      split_cat_text <- paste0("c('",
+                               glue::glue_collapse(
+                                 input$split_at, sep = "','"), "')")
+      myValues$dList <- c(isolate(myValues$dList),
+                          isolate(paste0(
+                            "split_strata(data = 'df_name', strata = '",
+                            input$strata,
+                            "', split = ",
+                            ifelse(is.null(strata_to_split$split),
+                                   "NULL",
+                                   paste0("'",strata_to_split$split,"'")),
+                            ", split_var = '",input$split_var,
+                            "', type = '",input$type,
+                            "', split_at = ",split_cat_text,")")))
     }
     output$list<-renderPrint({
       c(myValues$dList[startVal():length(myValues$dList)])

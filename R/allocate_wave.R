@@ -107,7 +107,8 @@ allocate_wave <- function(data,
       stop("'y' must be a character string matching a column name of data.")
     }
     if (wave2a %in% names(data) == FALSE) {
-      stop("'wave2a' must be a character string matching a column name of data.")
+      stop("'wave2a' must be a character string matching a column name of
+           data.")
     }
     if (class(detailed) != "logical") {
       stop("'detailed' must be a logical value.")
@@ -242,12 +243,14 @@ allocate_wave <- function(data,
 
       output_df <- rbind(closed_output, open_output)
       if (detailed == TRUE) {
-        output_df <- dplyr::inner_join(output_df,
-                                       dplyr::select(output1,
-                                                     "nsample_optimal" = stratum_size,
-                                                     sd, "strata" = group
-                                       ),
-                                       by = "strata"
+        output_df <- dplyr::inner_join(
+          output_df,
+          dplyr::select(output1,
+                        "nsample_optimal" = stratum_size,
+                        sd,
+                        "strata" = group
+                        ),
+          by = "strata"
         )
         output_df <- dplyr::select(
           output_df, strata, npop, nsample_optimal,
@@ -329,12 +332,14 @@ allocate_wave <- function(data,
           n_to_sample)
       output_df <- rbind(closed_output, open_output)
       if (detailed == TRUE) {
-        output_df <- dplyr::inner_join(output_df,
-                                       dplyr::select(output1,
-                                                     "nsample_optimal" = stratum_size,
-                                                     sd, "strata" = group
-                                       ),
-                                       by = "strata"
+        output_df <- dplyr::inner_join(
+          output_df,
+          dplyr::select(output1,
+                        "nsample_optimal" = stratum_size,
+                        sd,
+                        "strata" = group
+                        ),
+          by = "strata"
         )
         output_df <- dplyr::select(
           output_df, strata, npop, nsample_optimal,

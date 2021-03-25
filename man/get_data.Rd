@@ -28,7 +28,8 @@ information about slots.}
 \item{value}{value to assign to specified slot}
 }
 \description{
-\code{get_data} is the accessor function for objects of class \code{Multiwave}. It can be used to access or write slots.
+\code{get_data} is the accessor function for objects of
+class \code{Multiwave}. It can be used to access or write slots.
 }
 \section{Functions}{
 \itemize{
