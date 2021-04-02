@@ -90,12 +90,12 @@ Wright offers alternative algorithms that solve the optimal problem for a discre
 
 The `optimall` package allows users to select between Neyman allocation, Wright Algorithm I, and Wright Algorithm II in the `method` argument of the `optimum_allocation` function. The `optimum_allocation` function defaults to using Wright Algorithm II. This algorithm requires that at least 2 samples are taken from each stratum.  In `optimall`, stratum sampling sizes for both Wright algorithms are also constrained from above at $N_h$, the population stratum size, using the methods for constraints that Wright details in Algorithm III. 
 
-Below is an example of how `optimum_allocation` could be called to optimally allocate 20 samples among `"Species"` in the `iris` dataset, minimizing the variance of the `"Sepal.Width"` sample mean.
+Below is an example of how `optimum_allocation` could be called to optimally allocate 40 samples among `"Species"` in the `iris` dataset, minimizing the variance of the `"Sepal.Width"` sample mean.
 
 ```{r Example 1}
 sampling_design <- optimum_allocation(data = iris, strata = "Species", 
                                       y = "Sepal.Width",
-                                      nsample = 20, method = "WrightII")
+                                      nsample = 40, method = "WrightII")
 sampling_design
 ```
 
@@ -153,7 +153,54 @@ DiagrammeR::grViz("digraph {
 
 <br />
 
-`optimall` allows users to input phase-I data and iteratively allocate samples for subsequent waves with the function `allocate_wave`, which is demonstrated in the examples below. Along the way, the user may also want to split strata to make them more balanced. `optimall` makes this easy with the `split_strata` function.
+`optimall` allows users to input phase-I data and iteratively allocate samples for subsequent waves with the function `allocate_wave`. This function essentially runs integer-valued `optimum_allocation` on a dataset but takes into account previous sampling waves. 
+
+For a simple example, suppose that we again want to allocate 40 samples to minimize the variance of `"Sepal.Width"` in the `iris` dataset, but 30 out of the 40 have already been sampled. We assume that the strata are still defined only by `"Species"`, and that 16 of the first 30 samples were taken from the virginica species, 7 from setosa, and 7 from versicolor. Assuming we only have those 30 samples to base our within-stratum standard deviation estimates on, we can allocate the next 10 samples using `allocate_wave`:
+
+```{r}
+# Set up Wave 1
+wave1_design <- data.frame(strata = c("setosa",
+                                       "virginica",
+                                      "versicolor"),
+                           stratum_size = c(7, 16, 7))
+
+# Collect Sepal.Width from only the 30 samples
+phase1_data <- datasets::iris %>%
+  dplyr::select(-Sepal.Width) %>%
+  dplyr::mutate(id = row_number())
+
+set.seed(234)
+phase1_data <- sample_strata(data = phase1_data, 
+                               strata = "Species", id = "id",
+                               design_data = wave1_design,
+                               design_strata = "strata",
+                               n_allocated = "stratum_size")
+
+wave1_ids <- iris$id[phase1_data$sample_indicator == 1]
+
+wave1_sampled_data <- iris %>%
+  dplyr::filter(id %in% wave1_ids) %>%
+  dplyr::select(id, Sepal.Width)
+
+wave1_data <- dplyr::left_join(phase1_data, 
+                               wave1_sampled_data,
+                               by = "id")
+
+# We have our 30 samples
+table(is.na(wave1_data$Sepal.Width), wave1_data$Species)
+
+# Now, allocate the next 10:
+wave2_design <- allocate_wave(data = wave1_data,
+                              strata = "Species", 
+                              y = "Sepal.Width",
+                              wave2a = "sample_indicator",
+                              nsample = 10, 
+                              detailed = TRUE)
+
+wave2_design
+```
+
+Notice that in this case, `"n_sample_optimal"` does not match `"n_sample_actual"` for every stratum in the outputted design dataframe. This occurred because we *oversampled* from the virginica stratum in wave 1, meaning that the optimum stratum sample size among 40 total samples was smaller than the amount of samples already taken in that group. When oversampling occurs, `allocate_wave` recalculates the optimum allocation among the non-oversampled strata and uses that result to allocate the specified number of samples as optimally as possible. When no oversampling occurs, `"nsample_optimal"` will match `"nsample_actual"` for every stratum.
 
 ## Examples: Using `optimall` to Determine Study Design and Sample Data
 
@@ -251,7 +298,7 @@ ids_to_sample2a <- phase1[phase1$sample_indicator == 1,"id"]
 length(ids_to_sample2a) # 250 ids to sample
 ```
 
-We submit these 250 ids for validation. Hypothetically, this involves the hard work of trained nurses, but for our example it involves only a few lines of `dplyr` code 
+We submit these 250 ids for validation. Hypothetically, this involves the hard work of trained nurses, but for our example it involves only a few lines of `dplyr` code. 
 ```{r}
 phase2a_samples <- MatWgt_Sim %>%
   dplyr::filter(id %in% ids_to_sample2a) %>%
@@ -285,7 +332,7 @@ phase2b_design
 ```
 
 
-Looking at the output of `allocate_wave`, we notice that the optimum sample sizes for the next wave vary greatly between strata, but all are greater than one. Because we set `detailed = TRUE`, we can also see what the optimum allocation for 500 samples would have been ignoring prior wave sizes in the column `"nsample_optimal"`. These two columns match because we did not oversample any strata in phase-IIa.
+Looking at the output of `allocate_wave`, we notice that the optimum sample sizes for the next wave vary greatly between strata, but all are greater than one. Because we set `detailed = TRUE`, we can also see what the optimum allocation for 500 samples would have been ignoring prior wave sizes in the column `"nsample_optimal"`. This column matches `"nsample_actual"` because we did not oversample any strata in phase-IIa.
 
 In other cases when `"n_to_sample"` = 0 for some strata, we may not be so lucky. If the optimum sample size in a stratum is smaller than the amount it was allocated in previous waves (`"nsample_prior"`), we say that that strata has been oversampled. When oversampling occurs, `allocate_wave` "closes" the oversampled strata and re-allocates the remaining samples optimally among the open strata. Under these circumstances, the total sampling allocation is no longer optimal, but `optimall` will output the most optimal allocation from the non-oversampled strata for the next wave.
 
