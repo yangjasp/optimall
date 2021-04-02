@@ -181,7 +181,7 @@ get_data(MySurvey, phase = 2, slot = "metadata") <-
        id = "id", # name of id column (used in sample_strata and merge_samples)
        y = "mat_weight_true", # col for which to minimize variance 
                                   # (used in optimum_allocation)
-       strata2 = "strata", # strata column in designs (used for sample_strata)
+       design_strata = "strata", # strata column in designs (used for sample_strata)
        n_allocated = "n_to_sample" # n allocated to strata in designs
                                     # (used for sample_strata)
        )
@@ -204,7 +204,7 @@ get_data(MySurvey, phase = 2, wave = 1, slot = "design") <- data.frame(
 get_data(MySurvey, phase = 2, wave = 1, slot = "design")
 ```
 
-We can use this design to randomly select ids to sample from the previous wave (in this case the overall Phase 1 data) using `apply_multiwave` to apply the function `sample_strata` to the multiwave object. When applied to an object of class "Multiwave", `sample_strata` will find `"data1"` and `"data2"` in the object and will look in the wave, phase, then overall metadata for the other arguments to `"sample_strata"` if they are not provided in the call. It will return the same multiwave object with a vector of ids to sample in the `"samples"` slot of the specified wave.
+We can use this design to randomly select ids to sample from the previous wave (in this case the overall Phase 1 data) using `apply_multiwave` to apply the function `sample_strata` to the multiwave object. When applied to an object of class "Multiwave", `sample_strata` will find `"data"` and `"design_data"` in the object and will look in the wave, phase, then overall metadata for the other arguments to `"sample_strata"` if they are not provided in the call. It will return the same multiwave object with a vector of ids to sample in the `"samples"` slot of the specified wave.
 
 ```{r}
 
@@ -213,10 +213,10 @@ We can use this design to randomly select ids to sample from the previous wave (
 set.seed(456)
 MySurvey <- apply_multiwave(MySurvey, phase = 2, wave = 1,
                             fun = "sample_strata",
-                            strata1 = "new_strata",
+                            strata = "new_strata",
                             id = "id",
                             wave2a = NULL, #No one has been sampled yet
-                            strata2 = "strata", #from design
+                            design_strata = "strata", #from design
                             n_allocated = "n_to_sample"
                             )
 # check that it worked

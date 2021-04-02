@@ -5,56 +5,56 @@
 \title{Select Sampling Units based on Stratified Random Sampling}
 \usage{
 sample_strata(
-  data1,
-  strata1,
+  data,
+  strata,
   id,
   wave2a = NULL,
-  data2,
-  strata2 = "strata",
+  design_data,
+  design_strata = "strata",
   n_allocated = "n_to_sample"
 )
 }
 \arguments{
-\item{data1}{A data frame or matrix with one row for each
+\item{data}{A data frame or matrix with one row for each
 sampling unit in the population, one column specifying each
 unit's stratum, and one column with a unique identifier for each
 unit.}
 
-\item{strata1}{a character string specifying the name of column
-in \code{data1} which indicates stratum membership.}
+\item{strata}{a character string specifying the name of column
+in \code{data} which indicates stratum membership.}
 
 \item{id}{a character string specifying the name of the column
-in \code{data1} that uniquely identifies each unit.}
+in \code{data} that uniquely identifies each unit.}
 
 \item{wave2a}{a character sting specifying the name of the
-column in \code{data1} which indicates (1/0 or Y/N) whether a
+column in \code{data} which indicates (1/0 or Y/N) whether a
 unit has already been sampled in a prior wave. Defaults to NULL
 which means that none have been sampled yet.}
 
-\item{data2}{a dataframe or matrix with one row for each stratum
+\item{design_data}{a dataframe or matrix with one row for each stratum
 that subdivides the population, one column specifying the
 stratum name, and one column indicating the number of samples
 allocated to each stratum.}
 
-\item{strata2}{a character string specifying the name of the
-column in \code{data2} that contains the stratum levels.
+\item{design_strata}{a character string specifying the name of the
+column in \code{design_data} that contains the stratum levels.
 Defaults to "strata".}
 
 \item{n_allocated}{a character string specifying the name of the
-column in \code{data2} that indicates the n allocated to each
+column in \code{design_data} that indicates the n allocated to each
 stratum. Defaults to "n_to_sample".}
 }
 \value{
-returns a {data1} as a dataframe with a new column named
+returns {data} as a dataframe with a new column named
 "sample_indicator" containing a binary (1/0) indicator of
 whether each unit should be sampled.
 }
 \description{
-Requires two dataframes or matrices: \code{data1} with a column
-\code{strata1} which specifies stratum membership for each unit in
-the population and a second dataframe \code{data2} with one row per
-strata level with a column \code{strata2} that indicates the unique
-levels of \code{strata1} and \code{n_allocated} that specifies the
+Requires two dataframes or matrices: \code{data} with a column
+\code{strata} which specifies stratum membership for each unit in
+the population and a second dataframe \code{design_data} with one #' row per strata level with a column \code{design_strata} that
+indicates the unique levels of \code{strata} in \code{data} and
+\code{n_allocated} that specifies the
 number to be sampled from each stratum.
 \code{sample_strata} selects the units to sample by
 selecting a random sample of the desired size within each
@@ -70,13 +70,13 @@ n_to_sample = c(5, 5, 5))
 iris$id <- 1:nrow(iris)
 
 # Run
-sample_strata(data1 = iris, strata1 = "Species", id = "id",
-data2 = design, strata2 = "strata", n_allocated = "n_to_sample")
+sample_strata(data = iris, strata = "Species", id = "id",
+design_data = design, design_strata = "strata", n_allocated = "n_to_sample")
 
 # If some units had already been samples
 iris$already_sampled <- rbinom(nrow(iris), 1, 0.25)
 
-sample_strata(data1 = iris, strata1 = "Species", id = "id",
+sample_strata(data = iris, strata = "Species", id = "id",
 wave2a = "already_sampled",
-data2 = design, strata2 = "strata", n_allocated = "n_to_sample")
+design_data = design, design_strata = "strata", n_allocated = "n_to_sample")
 }

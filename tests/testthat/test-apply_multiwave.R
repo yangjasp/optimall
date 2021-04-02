@@ -115,7 +115,7 @@ test_that("allocate_wave runs with args provided",{
 
   get_data(MySurvey, phase = 2, slot = "metadata") <- list(
     strata = "Species",
-    strata2 = "strata",
+    design_strata = "strata",
     id = "id",
     n_allocated = "n_to_sample"
   )
@@ -152,7 +152,7 @@ test_that("allocate_wave runs with args in metadata",{
 
   get_data(MySurvey, phase = 2, slot = "metadata") <- list(
     strata = "Species",
-    strata2 = "strata",
+    design_strata = "strata",
     id = "id",
     n_allocated = "n_to_sample"
   )
@@ -232,7 +232,7 @@ test_that("errors if args are not specified",{
 
   get_data(MySurvey, phase = 2, slot = "metadata") <- list(
     strata = "Species",
-    strata2 = "strata",
+    design_strata = "strata",
     id = "id",
     n_allocated = "n_to_sample"
   )
@@ -291,8 +291,8 @@ test_that("sample_strata works with specified args",{
     data.frame(strata = unique(iris$Species), n_to_sample = c(5,5,5))
   set.seed(123)
   MySurvey <- apply_multiwave(MySurvey, phase = 2, wave = 1,
-                              fun = "sample_strata",strata1 = "Species",
-                              strata2 = "strata",
+                              fun = "sample_strata",strata = "Species",
+                              design_strata = "strata",
                               id = "id",
                               n_allocated = "n_to_sample")
   expect_equal(length(
@@ -306,7 +306,7 @@ test_that("sample_strata works with args specified in metadata",{
 
   get_data(MySurvey, phase = NA, slot = "metadata") <- list(
     strata = "Species",
-    strata2 = "strata",
+    design_strata = "strata",
     id = "id",
     n_allocated = "n_to_sample"
   )
@@ -338,7 +338,7 @@ test_that("sample_strata works with args specified in metadata",{
   #but metadata in phase overrides
   get_data(MySurvey, phase = 2, slot = "metadata") <- list(
     strata = "Species",
-    strata2 = "strata",
+    design_strata = "strata",
     id = "id",
     n_allocated = "n_to_sample"
   )
@@ -370,7 +370,7 @@ test_that("sample_strata works with args specified in metadata",{
   #And wave overrides that
   get_data(MySurvey, phase = 2, wave = 1, slot = "metadata") <- list(
     strata = "Species",
-    strata2 = "strata",
+    design_strata = "strata",
     id = "id",
     n_allocated = "n_to_sample"
   )
@@ -410,8 +410,8 @@ test_that("errors in sample_strata if args don't match",{
     data.frame()
   set.seed(123)
   expect_error(apply_multiwave(MySurvey, phase = 2, wave = 1,
-                               fun = "sample_strata",strata1 = "Species",
-                               strata2 = "strata",
+                               fun = "sample_strata",strata = "Species",
+                               design_strata = "strata",
                                id = "id",
                                n_allocated = "n_to_sample"),
                "of specified wave must be filled")
@@ -425,8 +425,8 @@ test_that("errors in sample_strata if args don't match",{
 
 
   expect_error(apply_multiwave(MySurvey, phase = 2, wave = 1,
-                               fun = "sample_strata",strata1 = "Species",
-                               strata2 = "strata",
+                               fun = "sample_strata",strata = "Species",
+                               design_strata = "strata",
                                id = "id",
                                n_allocated = "n_to_sample"),
                "of previous wave must contain data to be used")
@@ -436,31 +436,31 @@ test_that("errors in sample_strata if args don't match",{
 
   expect_error(apply_multiwave(MySurvey, phase = 2, wave = 1,
                                fun = "sample_strata", strata = NULL,
-                               strata2 = "strata",
+                               design_strata = "strata",
                                id = "id",
                                n_allocated = "n_to_sample"),
                "must be specified")
   expect_error(apply_multiwave(MySurvey, phase = 2, wave = 1,
-                               fun = "sample_strata",strata1 = "Species",
-                               strata2 = "wrong",
+                               fun = "sample_strata",strata = "Species",
+                               design_strata = "wrong",
                                id = "id",
                                n_allocated = "n_to_sample"),
                "must be a column name")
   expect_error(apply_multiwave(MySurvey, phase = 2, wave = 1,
-                               fun = "sample_strata",strata1 = "Species",
-                               strata2 = "strata", id = NULL,
+                               fun = "sample_strata",strata = "Species",
+                               design_strata = "strata", id = NULL,
                                n_allocated = "n_to_sample"),
                "must be specified or available")
   expect_error(apply_multiwave(MySurvey, phase = 2, wave = 1,
-                               fun = "sample_strata",strata1 = "Species",
-                               strata2 = "strata",
+                               fun = "sample_strata",strata = "Species",
+                               design_strata = "strata",
                                wave2a = NULL,
                                id = "id",
                                n_allocated = "wrong"),
                "must be a column name")
   expect_error(apply_multiwave(MySurvey, phase = 2, wave = 1,
-                               fun = "sample_strata",strata1 = "Species",
-                               strata2 = "strata",
+                               fun = "sample_strata",strata = "Species",
+                               design_strata = "strata",
                                wave2a = "wrong",
                                id = "id"),
                "must be a column name")
@@ -480,7 +480,7 @@ test_that("merge_samples works when args are specified within it",{
 
   get_data(MySurvey, phase = 2, slot = "metadata") <- list(
     strata = "Species",
-    strata2 = "strata",
+    design_strata = "strata",
     id = "id",
     n_allocated = "n_to_sample"
   )
@@ -523,7 +523,7 @@ test_that("merge_samples works with args specifies in metadata",{
 
   get_data(MySurvey, phase = NA, slot = "metadata") <- list(
     strata = "Species",
-    strata2 = "strata",
+    design_strata = "strata",
     id = "id",
     n_allocated = "n_to_sample"
   )

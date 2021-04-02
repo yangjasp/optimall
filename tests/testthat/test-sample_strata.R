@@ -16,9 +16,9 @@ df <- allocate_wave(data = data, strata = "strata",
                     wave2a = "key", y = "y", nsample = 15)
 
 set.seed(384)
-sampled_data <- sample_strata(data1 = data, strata1 = "strata",
-                              id = "id", data2 = df,
-                              wave2a = "key",strata2 = "strata",
+sampled_data <- sample_strata(data = data, strata = "strata",
+                              id = "id", design_data = df,
+                              wave2a = "key",design_strata = "strata",
                               n_allocated = "n_to_sample" )
 
 test_that("samples are properly allocated",{
@@ -35,98 +35,98 @@ test_that("no samples in wave2a are again sampled",{
 
 test_that("same thing with new seed yields different sample",{
   set.seed(6589)
-  sampled_data2 <- sample_strata(data1 = data, strata1 = "strata",
-                                 id = "id", data2 = df,
-                                 wave2a = "key",strata2 = "strata",
+  sampled_design_data <- sample_strata(data = data, strata = "strata",
+                                 id = "id", design_data = df,
+                                 wave2a = "key",design_strata = "strata",
                                  n_allocated = "n_to_sample" )
   expect_equal(length(setdiff(
     sampled_data[sampled_data$sample_indicator ==1,]$id,
-    sampled_data2[sampled_data2$sample_indicator ==1,]$id)) > 0,
+    sampled_design_data[sampled_design_data$sample_indicator ==1,]$id)) > 0,
     TRUE)
 })
 
 test_that("works if wave2a is NULL",{
-  data2 <- data
-  data2$key <- rep(0, times = 42)
-  df2 <- optimum_allocation(data = data2, strata = "strata",
+  design_data <- data
+  design_data$key <- rep(0, times = 42)
+  df2 <- optimum_allocation(data = design_data, strata = "strata",
                             y = "y", nsample = 15)
   set.seed(384)
-  sampled_data2 <- sample_strata(data1 = data2, strata1 = "strata",
-                                 id = "id", data2 = df2,
-                                 wave2a = NULL,strata2 = "strata",
+  sampled_design_data <- sample_strata(data = design_data, strata = "strata",
+                                 id = "id", design_data = df2,
+                                 wave2a = NULL,design_strata = "strata",
                                  n_allocated = "stratum_size" )
-  expect_equal(sum(sampled_data2$sample_indicator == 1), 15)
+  expect_equal(sum(sampled_design_data$sample_indicator == 1), 15)
   expect_equal(sort(as.vector(table(
-    sampled_data2[sampled_data2$sample_indicator== 1,]$strata))),
+    sampled_design_data[sampled_design_data$sample_indicator== 1,]$strata))),
     sort(df2$stratum_size))
 })
 
 test_that("Error messages displayed as necessary",{
   x <- c(1,2,3,4,5)
-  expect_error(sampled_data <- sample_strata(data1 = x,
-                                             strata1 = "strata",
-                                             id = "id", data2 = df,
+  expect_error(sampled_data <- sample_strata(data = x,
+                                             strata = "strata",
+                                             id = "id", design_data = df,
                                              wave2a = "key",
-                                             strata2 = "strata",
+                                             design_strata = "strata",
                                              n_allocated = "n_to_sample"),
-               "'data1' and 'data2' must be a dataframe")
-  expect_error(sampled_data <- sample_strata(data1 = data,
-                                             strata1 = "strata_wrong",
-                                             id = "id", data2 = df,
+               "'data' and 'design_data' must be a dataframe")
+  expect_error(sampled_data <- sample_strata(data = data,
+                                             strata = "strata_wrong",
+                                             id = "id", design_data = df,
                                              wave2a = "key",
-                                             strata2 = "strata",
+                                             design_strata = "strata",
                                              n_allocated = "n_to_sample"),
-               "'strata1' and 'id' must be strings matching a column")
-  expect_error(sampled_data <- sample_strata(data1 = data,
-                                             strata1 = "strata",
-                                             id = "id", data2 = df,
+               "'strata' and 'id' must be strings matching a column")
+  expect_error(sampled_data <- sample_strata(data = data,
+                                             strata = "strata",
+                                             id = "id", design_data = df,
                                              wave2a = "key",
-                                             strata2 = "strata_wrong",
+                                             design_strata = "strata_wrong",
                                              n_allocated = "n_to_sample"),
-               "'strata2' and 'n_allocated' must be strings matching")
+               "'design_strata' and 'n_allocated' must be strings matching")
   df_extra_row <- rbind(df,df[3,])
-  expect_error(sampled_data <- sample_strata(data1 = data,
-                                             strata1 = "strata",
+  expect_error(sampled_data <- sample_strata(data = data,
+                                             strata = "strata",
                                              id = "id",
-                                             data2 = df_extra_row,
+                                             design_data = df_extra_row,
                                              wave2a = "key",
-                                             strata2 = "strata",
+                                             design_strata = "strata",
                                              n_allocated = "n_to_sample"),
-               "'data2' may only contain one row per stratum")
-  expect_error(sampled_data <- sample_strata(data1 = data,
-                                             strata1 = "strata",
+               "'design_data' may only contain one row per stratum")
+  expect_error(sampled_data <- sample_strata(data = data,
+                                             strata = "strata",
                                              id = "id",
-                                             data2 = df,
+                                             design_data = df,
                                              wave2a = "key_wrong",
-                                             strata2 = "strata",
+                                             design_strata = "strata",
                                              n_allocated = "n_to_sample"),
                "If not NULL, 'wave2a' must be a character string")
   data$three_key <- rep(c(1,2,3), times = dim(data)[1]/3)
-  expect_error(sampled_data <- sample_strata(data1 = data,
-                                             strata1 = "strata",
+  expect_error(sampled_data <- sample_strata(data = data,
+                                             strata = "strata",
                                              id = "id",
-                                             data2 = df,
+                                             design_data = df,
                                              wave2a = "three_key",
-                                             strata2 = "strata",
+                                             design_strata = "strata",
                                              n_allocated = "n_to_sample"),
                "has a binary indicator for whether")
   data$wrong_two_key <- rep(c(2,3), times = dim(data)[1]/2)
-  expect_error(sampled_data <- sample_strata(data1 = data,
-                                             strata1 = "strata",
+  expect_error(sampled_data <- sample_strata(data = data,
+                                             strata = "strata",
                                              id = "id",
-                                             data2 = df,
+                                             design_data = df,
                                              wave2a = "wrong_two_key",
-                                             strata2 = "strata",
+                                             design_strata = "strata",
                                              n_allocated = "n_to_sample"),
                "'wave2a' column must contain '1'")
   data$wrong_two_key <- c(rep(1, times = dim(data)[1] - 6), 0, 0, 0,
                           0, 0, 0)
-  expect_error(sampled_data <- sample_strata(data1 = data,
-                                             strata1 = "strata",
+  expect_error(sampled_data <- sample_strata(data = data,
+                                             strata = "strata",
                                              id = "id",
-                                             data2 = df,
+                                             design_data = df,
                                              wave2a = "wrong_two_key",
-                                             strata2 = "strata",
+                                             design_strata = "strata",
                                              n_allocated = "n_to_sample"),
                "Total sample size across waves, taken as")
 
@@ -136,38 +136,38 @@ test_that("Error messages displayed as necessary",{
     dplyr::mutate(strata_new = case_when(strata == "a" ~ "a",
                                          strata == "b" ~ "b",
                                          strata == "c" ~ "c_2"))
-  expect_error(sampled_data <- sample_strata(data1 = data,
-                                             strata1 = "strata",
+  expect_error(sampled_data <- sample_strata(data = data,
+                                             strata = "strata",
                                              id = "id",
-                                             data2 = df_wrong_strata_name,
+                                             design_data = df_wrong_strata_name,
                                              wave2a = "key",
-                                             strata2 = "strata_new",
+                                             design_strata = "strata_new",
                                              n_allocated = "n_to_sample"),
-               "strata names in 'data2' must all match strata")
+               "strata names in 'design_data' must all match strata")
 })
 
 test_that("works if input is a matrix",{
-    sampled_data_mat <- sample_strata(data1 = data.matrix(data),
-                                  strata1 = "strata",
+    sampled_data_mat <- sample_strata(data = data.matrix(data),
+                                  strata = "strata",
                                   id = "id",
-                                  data2 = data.matrix(df),
+                                  design_data = data.matrix(df),
                                   wave2a = "key",
-                                  strata2 = "strata",
+                                  design_strata = "strata",
                                   n_allocated = "n_to_sample")
     expect_equal(sum(sampled_data_mat$sample_indicator),15)
 })
 
 test_that("returns error if n_allocated is not a whole number",{
   df$n_to_sample <- c(1.5,2,4)
-  expect_error(sample_strata(data1 = data, strata1 = "strata",
-                             id = "id", data2 = df,
-                             wave2a = "key",strata2 = "strata",
+  expect_error(sample_strata(data = data, strata = "strata",
+                             id = "id", design_data = df,
+                             wave2a = "key",design_strata = "strata",
                              n_allocated = "n_to_sample" ),
                "must specify a numeric column")
   df$n_to_sample <- c("a","b","c")
-  expect_error(sample_strata(data1 = data, strata1 = "strata",
-                             id = "id", data2 = df,
-                             wave2a = "key",strata2 = "strata",
+  expect_error(sample_strata(data = data, strata = "strata",
+                             id = "id", design_data = df,
+                             wave2a = "key",design_strata = "strata",
                              n_allocated = "n_to_sample" ),
                "must specify a numeric column")
 })

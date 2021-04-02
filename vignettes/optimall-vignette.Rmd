@@ -107,8 +107,8 @@ With the number of units to sample per stratum specified in a dataframe, `optima
 iris$id <- 1:150
 set.seed(743)
 
-iris <- sample_strata(data1 = iris, strata1 = "Species", id = "id",
-                               data2 = sampling_design, strata2 = "strata",
+iris <- sample_strata(data = iris, strata = "Species", id = "id",
+                               design_data = sampling_design, design_strata = "strata",
                                n_allocated = "stratum_size")
 
 # Created new column called "sample_indicator"
@@ -119,7 +119,7 @@ head(ids_to_sample)
 length(ids_to_sample)
 ```
 
-Note that `"data2"` is the output of `optimum_allocation` in this example, but in practice it can be any dataframe that has one row per stratum and one column specifying each stratum's desired sample size.
+Note that `"design_data"` is the output of `optimum_allocation` in this example, but in practice it can be any dataframe that has one row per stratum and one column specifying each stratum's desired sample size.
 
 ## Adaptive, Multi-Wave Sampling
 When measuring variables of interest is expensive or difficult, it can be advantageous to employ a multi-phase design, where cheaper variables are collected from the entire population and expensive variables are collected from subsamples selected through adaptive, multi-wave sampling. This approach, which is documented in McIsaac and Cook (2015), involves multiple waves of sampling where information from prior waves is used to inform the optimum sampling design of subsequent ones. With the understanding that both Neyman and Wright's optimum allocation methods depend heavily on standard deviation estimates for the variable of interest, the benefit of multi-wave sampling is clear to see. Sample allocations based on prior waves will use updated estimates of nuisance parameters that incorporate data accumulated in the prior sampling waves. The optimal sampling proportion is updated at the end of each wave, and this update guides the sampling of the next wave. As the phase II data accumulate, the necessary within-strata SD estimates, and thus the estimated optimal sampling proportions, are expected to be closer to their true value.
@@ -224,9 +224,9 @@ table(phase1$new_strata) # 9 strata
 #### *Example 2: Create an Initial Phase 2 Subsample: Phase-IIa*
 With the strata now defined by the inexpensive variables sampled in phase-I, we are ready to begin auditing patient records for validation of the true maternal weight changes. Without any validated data to define the optimum phase-IIa sample allocation, we decide to use proportional stratified sampling for the first 250 out of our 750 audits. Conveniently, `optimall` can select this random sample for us with `sample_strata`.
 
-The `sample_strata` function requires as input two dataframes, one containing the stratum membership of each individual unit (`data1`) and a second specifying the sampling design (`data2`). The `data2` dataframe must contain at least two columns:
+The `sample_strata` function requires as input two dataframes, one containing the stratum membership of each individual unit (`data`) and a second specifying the sampling design (`design_data`). The `design_data` dataframe must contain at least two columns:
 
-* `strata2`: A column holding strata names
+* `design_strata`: A column holding strata names
 * `n_allocated`: The total $n$ allocated to each stratum.
 
 In our example, we want the proportion of samples randomly taken from each stratum to reflect its population proportion and a total of 250 samples. 
@@ -243,9 +243,9 @@ phase2a_design
 We can now call `sample_strata` to randomly draw the specified number samples from each stratum. It will output the same `phase1` dataframe with an extra column indicating which units should be sampled. We can then extract the ids to sample based on this indicator.
 
 ```{r}
-phase1 <- sample_strata(data1 = phase1, strata1 = "new_strata", 
-                        id = "id", data2 = phase2a_design, 
-                        strata2 = "strata_name", 
+phase1 <- sample_strata(data = phase1, strata = "new_strata", 
+                        id = "id", design_data = phase2a_design, 
+                        design_strata = "strata_name", 
                         n_allocated = "strata_n")
 ids_to_sample2a <- phase1[phase1$sample_indicator == 1,"id"]
 length(ids_to_sample2a) # 250 ids to sample
@@ -310,12 +310,12 @@ phase2b_design <- allocate_wave(data = phase2b,
 phase2b_design
 
 # Extract IDs to sample
-ids_to_sample2b <- sample_strata(data1 = phase2b, 
-                                 strata1 = "new_strata", 
+ids_to_sample2b <- sample_strata(data = phase2b, 
+                                 strata = "new_strata", 
                                  id = "id", 
                                  wave2a = "already_sampled", 
-                                 data2 = phase2b_design,
-                                 strata2 = "strata", 
+                                 design_data = phase2b_design,
+                                 design_strata = "strata", 
                                  n_allocated = "n_to_sample")
 ids_to_sample2b <- 
   ids_to_sample2b[ids_to_sample2b$sample_indicator == 1,"id"]
@@ -368,12 +368,12 @@ phase2c_design <- allocate_wave(data = phase2c, strata = "new_strata",
 phase2c_design
 
 # Find IDs to sample
-ids_to_sample2c <- sample_strata(data1 = phase2c, 
-                                 strata1 = "new_strata", 
+ids_to_sample2c <- sample_strata(data = phase2c, 
+                                 strata = "new_strata", 
                                  id = "id", 
                                  wave2a = "already_sampled", 
-                                 data2 = phase2c_design,
-                                 strata2 = "strata", 
+                                 design_data = phase2c_design,
+                                 design_strata = "strata", 
                                  n_allocated = "n_to_sample")
 ids_to_sample2c <- 
   ids_to_sample2c[ids_to_sample2c$sample_indicator == 1,"id"]
@@ -458,7 +458,7 @@ sum(design_df$n)
 design_df
 
 
-Prop_data <- sample_strata(data1 = Prop_data,  strata1 = "new_strata", id = "id", data2 = design_df, strata2 = "strata", n_allocated = "n")
+Prop_data <- sample_strata(data = Prop_data,  strata = "new_strata", id = "id", design_data = design_df, design_strata = "strata", n_allocated = "n")
 ids <- dplyr::filter(Prop_data, sample_indicator == 1)$id
 Prop_data <- dplyr::filter(Prop_data, id %in% ids)
 

@@ -72,7 +72,7 @@ test_that("Design, samples, sampled_data, data work",{
 
   get_data(test, phase = 2, slot = "metadata") <- list(
     strata = "Species",
-    strata2 = "strata",
+    design_strata = "strata",
     id = "id",
     n_allocated = "n_to_sample"
   )

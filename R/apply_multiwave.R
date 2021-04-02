@@ -360,28 +360,28 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
   }
     # sample_strata
     if(fun == "sample_strata"){
-      #Get data1
+      #Get data
       if((phase == 2 | phase == "phase2") & (wave == 1 | wave == "wave1")){
-        data1 <- x@phases$phase1$data
+        data <- x@phases$phase1$data
       } else if(wave == 1 | wave == "wave1"){
-        data1 <- x@phases[[phase - 1]]@waves[[
+        data <- x@phases[[phase - 1]]@waves[[
           length(x@phases[[phase - 1]]@waves)]]@data
       } else if(wave != 1 ){
-        data1 <- x@phases[[phase]]@waves[[
+        data <- x@phases[[phase]]@waves[[
           wave - 1]]@data
       } else{
         stop("sample strata cannot be performed in Phase 1")
       }
 
-      #Get data2
+      #Get design_data
 
-      data2 <- x@phases[[phase]]@waves[[wave]]@design
-      if (nrow(data2) == 0){
+      design_data <- x@phases[[phase]]@waves[[wave]]@design
+      if (nrow(design_data) == 0){
         stop("'design' slot of specified wave must be filled with valid
          design dataframe")
       }
 
-      if (nrow(data1) == 0){
+      if (nrow(data) == 0){
         stop("'data' slot of previous wave must contain data to be used
          for sample allocation calculations")
       }
@@ -392,67 +392,58 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
       # Check for args to sample_strata in the metadata.
       # Start in wave and move up.
 
-      # strata1. Can be "strata1" or "strata" in metadata
-      if (is.null(arguments$strata1)){
-        if("strata1" %in% names(wave_md) & class(wave_md$strata1)
-           == "character"){
-          strata1 <- wave_md$strata1
-        } else if("strata1" %in% names(phase_md) &
-                  class(phase_md$strata1) == "character"){
-          strata1 <- phase_md$strata1
-        } else if("strata1" %in% names(survey_md) &
-                  class(survey_md$strata1) == "character"){
-          strata1 <- survey_md$strata1
-        } else if("strata" %in% names(wave_md) &
+      # strata (in data). Can be "strata" in metadata
+      if (is.null(arguments$strata)){
+        if("strata" %in% names(wave_md) &
                   class(wave_md$strata) == "character"){
-          strata1 <- wave_md$strata
+          strata <- wave_md$strata
         } else if("strata" %in% names(phase_md) &
                   class(phase_md$strata) == "character"){
-          strata1 <- phase_md$strata
+          strata <- phase_md$strata
         } else if("strata" %in% names(survey_md) &
                   class(survey_md$strata) == "character"){
-          strata1 <- survey_md$strata
+          strata <- survey_md$strata
         } else {
-          stop("'strata1' or 'strata' must be specified or
+          stop("'strata' must be specified or
                available in metadata")
         }
-      } else if (!(arguments$strata1 %in% names(data1))){
-        stop("'strata1' must be a column name of the dataframe in the
+      } else if (!(arguments$strata %in% names(data))){
+        stop("'strata' must be a column name of the dataframe in the
          'data' slot of the previous wave")
       } else{
-        strata1 <- arguments$strata1
+        strata <- arguments$strata
       }
 
-      # strata2. Can be "strata2" or "strata" in metadata. Will check in
+      # design_strata. Can be "design_strata" or "strata" in metadata. Will check in
       #that order.
-      if (is.null(arguments$strata2)){
-        if("strata2" %in% names(wave_md) & class(wave_md$strata2)
+      if (is.null(arguments$design_strata)){
+        if("design_strata" %in% names(wave_md) & class(wave_md$design_strata)
            == "character"){
-          strata2 <- wave_md$strata2
-        } else if("strata2" %in% names(phase_md) &
-                  class(phase_md$strata2) == "character"){
-          strata2 <- phase_md$strata2
-        } else if("strata2" %in% names(survey_md) &
-                  class(survey_md$strata2) == "character"){
-          strata2 <- survey_md$strata2
+          design_strata <- wave_md$design_strata
+        } else if("design_strata" %in% names(phase_md) &
+                  class(phase_md$design_strata) == "character"){
+          design_strata <- phase_md$design_strata
+        } else if("design_strata" %in% names(survey_md) &
+                  class(survey_md$design_strata) == "character"){
+          design_strata <- survey_md$design_strata
         } else if("strata" %in% names(wave_md) &
                   class(wave_md$strata) == "character"){
-          strata2 <- wave_md$strata
+          design_strata <- wave_md$strata
         } else if("strata" %in% names(phase_md) &
                   class(phase_md$strata) == "character"){
-          strata2 <- phase_md$strata
+          design_strata <- phase_md$strata
         } else if("strata" %in% names(survey_md) &
                   class(survey_md$strata) == "character"){
-          strata2 <- survey_md$strata
+          design_strata <- survey_md$strata
         } else {
-          strata2 <- "strata"
+          design_strata <- "strata"
         }
       } else{
-        strata2 <- arguments$strata2
+        design_strata <- arguments$design_strata
       }
 
-      if (!(strata2 %in% names(data2))){
-        stop("'strata2' must be a column name of the dataframe in the
+      if (!(design_strata %in% names(design_data))){
+        stop("'design_strata' must be a column name of the dataframe in the
          'design' slot of the specified wave.")
       }
 
@@ -474,7 +465,7 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
         id <- arguments$id
       }
 
-      if (!(id %in% names(data1))){
+      if (!(id %in% names(data))){
         stop("'id' must be a column name of the dataframe in the
         'data' slot of the previous wave.")
       }
@@ -498,7 +489,7 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
       }
 
       if (!is.null(wave2a)){
-        if(!(wave2a %in% names(data1))){
+        if(!(wave2a %in% names(data))){
           stop("'wave2a' must be a column name of the dataframe in the
           'data' slot of the previous wave.")
         }
@@ -517,7 +508,7 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
           n_allocated <- survey_md$n_allocated
         } else {
           n_allocated <- "n_to_sample"
-          if (!(n_allocated %in% names(data2))){
+          if (!(n_allocated %in% names(design_data))){
             n_allocated <- "n_to_sample"
           }
         }
@@ -525,14 +516,15 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
         n_allocated <- arguments$n_allocated
       }
 
-      if (!(n_allocated %in% names(data2))){
+      if (!(n_allocated %in% names(design_data))){
         stop("'n_allocated' must be a column name of the dataframe in the
         'design' slot of the specified wave.")
       }
 
-      output <- sample_strata(data1 = data1, id = id,
-                              strata1 = strata1, wave2a = wave2a,
-                              data2 = data2, strata2 = strata2,
+      output <- sample_strata(data = data, id = id,
+                              strata = strata, wave2a = wave2a,
+                              design_data = design_data,
+                              design_strata = design_strata,
                               n_allocated = n_allocated)
 
       x_updated <- x
