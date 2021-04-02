@@ -130,7 +130,9 @@ In the design described by McIsaac and Cook, a large phase-I sample is first tak
 
 <center>
 
-```{r, fig.align='center', echo=FALSE}
+![](../inst/images/MultiwaveFlowchart.png){width=55%}
+
+```{r, fig.align='center', echo=FALSE, include = F}
 DiagrammeR::grViz("digraph {
   graph [layout = dot, rankdir = TB]
   
