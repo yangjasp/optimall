@@ -14,26 +14,26 @@ License: GPL-3
 URL: https://github.com/yangjasp/optimall
 BugReports: https://github.com/yangjasp/optimall/issues
 Depends: 
-    R (>= 2.10)
+    R (>= 3.2.0)
 Imports: 
-    bslib,
+    bslib (>= 0.2.4),
     datasets,
-    DiagrammeR,
-    dplyr,
-    glue,
+    DiagrammeR (>= 1.0.0),
+    dplyr (>= 1.0.5),
+    glue (>= 1.4.0),
     here,
-    magrittr,
-    methods,
+    magrittr (>= 2.0.0),
+    methods (>= 4.0.0),
     rlang,
-    shiny,
-    stats,
-    survey,
-    survival,
-    tibble
+    shiny (>= 1.6.0),
+    stats (>= 4.0.2),
+    survey (>= 4.0),
+    survival (>= 3.2.3),
+    tibble (>= 1.4.2)
 Suggests: 
-    knitr,
-    rmarkdown,
-    testthat
+    knitr (>= 1.28),
+    rmarkdown (>= 2.7),
+    testthat (>= 3.0.2)
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
