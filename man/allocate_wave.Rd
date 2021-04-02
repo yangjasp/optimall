@@ -64,8 +64,8 @@ These details are all available from
 Returns a dataframe with one row for each stratum and
 columns specifying the stratum name ("strata"), population stratum size
 (\code{"npop"}), cumulative sample in that strata
-(\code{"nsampled_total"}), prior number sampled in that
-strata (\code{"nsampled_prior"}), and the optimally allocated
+(\code{"nsample_actual"}), prior number sampled in that
+strata (\code{"nsample_prior"}), and the optimally allocated
 number of units in each strata for the next wave (\code{"n_to_sample"}).
 }
 \description{

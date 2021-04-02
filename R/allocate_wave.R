@@ -77,8 +77,8 @@
 #' @return Returns a dataframe with one row for each stratum and
 #' columns specifying the stratum name ("strata"), population stratum size
 #' (\code{"npop"}), cumulative sample in that strata
-#' (\code{"nsampled_total"}), prior number sampled in that
-#' strata (\code{"nsampled_prior"}), and the optimally allocated
+#' (\code{"nsample_actual"}), prior number sampled in that
+#' strata (\code{"nsample_prior"}), and the optimally allocated
 #' number of units in each strata for the next wave (\code{"n_to_sample"}).
 #' @importFrom rlang enquo
 #' @importFrom rlang sym
@@ -91,7 +91,7 @@ allocate_wave <- function(data,
                           method = "iterative",
                           detailed = FALSE){
     key <- stratum_size <- wave1_size <- npop <- difference <-
-      nsample_prior <- n_to_sample <- nsample_total <-
+      nsample_prior <- n_to_sample <- nsample_actual <-
       nsample_optimal <- sd <- NULL # bind global vars as necessary
     if (is.matrix(data)) {
       data <- data.frame(data)
@@ -172,15 +172,15 @@ allocate_wave <- function(data,
           nsample_prior = wave1_size,
           n_to_sample = difference
         ) %>%
-        dplyr::mutate(nsample_total = nsample_prior + n_to_sample)
+        dplyr::mutate(nsample_actual = nsample_prior + n_to_sample)
       if (detailed == FALSE) {
         comp_df <- comp_df %>%
-          dplyr::select("strata" = group, npop, nsample_total,
+          dplyr::select("strata" = group, npop, nsample_actual,
                         nsample_prior, n_to_sample)
       } else if (detailed == TRUE) {
         comp_df <- comp_df %>%
           dplyr::select("strata" = group, npop, nsample_optimal,
-                        nsample_total, nsample_prior,
+                        nsample_actual, nsample_prior,
                         n_to_sample, sd)
       }
       return(comp_df)
@@ -216,12 +216,12 @@ allocate_wave <- function(data,
         ) %>%
         dplyr::mutate(
           n_to_sample = difference,
-          nsample_total = nsample_prior + n_to_sample
+          nsample_actual = nsample_prior + n_to_sample
         ) %>%
         dplyr::select(
           "strata" = group,
           npop,
-          nsample_total,
+          nsample_actual,
           nsample_prior,
           n_to_sample)
 
@@ -232,12 +232,12 @@ allocate_wave <- function(data,
         ) %>%
         dplyr::mutate(
           n_to_sample = 0,
-          nsample_total = nsample_prior
+          nsample_actual = nsample_prior
         ) %>%
         dplyr::select(
           "strata" = group,
           npop,
-          nsample_total,
+          nsample_actual,
           nsample_prior,
           n_to_sample)
 
@@ -254,7 +254,7 @@ allocate_wave <- function(data,
         )
         output_df <- dplyr::select(
           output_df, strata, npop, nsample_optimal,
-          nsample_total, nsample_prior, n_to_sample, sd
+          nsample_actual, nsample_prior, n_to_sample, sd
         )
       }
       output_df <- dplyr::arrange(output_df, strata)
@@ -312,10 +312,10 @@ allocate_wave <- function(data,
         ) %>%
         dplyr::mutate(
           n_to_sample = difference,
-          nsample_total = nsample_prior + n_to_sample
+          nsample_actual = nsample_prior + n_to_sample
         ) %>%
         dplyr::select(
-          "strata" = group, npop, nsample_total, nsample_prior,
+          "strata" = group, npop, nsample_actual, nsample_prior,
           n_to_sample)
 
       closed_output <- closed_groups_df %>%
@@ -325,10 +325,10 @@ allocate_wave <- function(data,
         ) %>%
         dplyr::mutate(
           n_to_sample = 0,
-          nsample_total = nsample_prior
+          nsample_actual = nsample_prior
         ) %>%
         dplyr::select(
-          "strata" = group, npop, nsample_total, nsample_prior,
+          "strata" = group, npop, nsample_actual, nsample_prior,
           n_to_sample)
       output_df <- rbind(closed_output, open_output)
       if (detailed == TRUE) {
@@ -343,7 +343,7 @@ allocate_wave <- function(data,
         )
         output_df <- dplyr::select(
           output_df, strata, npop, nsample_optimal,
-          nsample_total, nsample_prior, n_to_sample, sd
+          nsample_actual, nsample_prior, n_to_sample, sd
         )
       }
       output_df <- dplyr::arrange(output_df, strata)
