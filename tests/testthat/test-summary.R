@@ -1,5 +1,7 @@
 context("test-summary.multiwave")
 
+library(optimall)
+
 MySurvey <- new_multiwave(phases = 2, waves = c(1,2))
 get_data(MySurvey, phase = 1, slot = "data") <-
   data.frame(a = c(1,2,3,4), b = c(2,3,4,5))
