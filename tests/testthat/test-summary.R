@@ -10,7 +10,7 @@ get_data(MySurvey, phase = 2, wave = 2, slot = "data") <-
 
 test_that("summary works", {
   expect_output(summary(MySurvey), "object with 2 phases containing 1, 2 wav")
-  expect_output(summary(MySurvey), "4 observations of 2 vars: a, b")
-  expect_output(summary(MySurvey), "3 observations of 2 vars: a, b")
+  expect_output(summary(MySurvey), "4 obs. of 2 vars: a, b")
+  expect_output(summary(MySurvey), "3 obs. of 2 vars: a, b")
 
 })
