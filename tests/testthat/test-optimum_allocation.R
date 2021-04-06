@@ -102,3 +102,66 @@ test_that("Error if not enough non-NA observations in a stratum",{
                                   allow.na = TRUE),
                "Function requires at least two observations per stratum")
 })
+
+##  Tests for simple version with N_h and sd_h
+
+short_data <- data.frame(strata = c("a", "b", "c"),
+                         size = c(15, 15, 12),
+                         sd = c(sd(data[data$strata == "a","y"]),
+                                sd(data[data$strata == "b","y"]),
+                                sd(data[data$strata == "c","y"])))
+nsd_vec <- short_data$size * short_data$sd
+
+test_that("Neyman Allocation works", {
+  expect_equal(optimum_allocation(data = short_data, strata = "strata",
+                                  sd_h = "sd",
+                                  N_h = "size", method = "Neyman")$n_sd,
+               round(nsd_vec,digits = 2))
+  expect_equal(optimum_allocation(data = short_data, strata = "strata",
+                                  sd_h = "sd",
+                                  N_h = "size",
+                                  method = "Neyman")$stratum_fraction,
+               round(nsd_vec/sum(nsd_vec), digits = 2))
+})
+
+test_that("WrightI and WrightII work", {
+  expect_equal(optimum_allocation(data = short_data, strata = "strata",
+                                  N_h = "size", sd_h = "sd", nsample = 10,
+                                  method = "WrightI")$stratum_size,
+               optimum_allocation(data = short_data, strata = "strata",
+                                  N_h = "size", sd_h = "sd", nsample = 10,
+                                  method = "WrightII")$stratum_size,
+               optimum_allocation(data = data, strata = "strata",
+                                  y = "y", nsample = 10,
+                                  method = "Neyman")$stratum_size)
+  # Should agree in this simple case
+  expect_equal(sum(optimum_allocation(data = data, strata = "strata",
+                                      y = "y", nsample = 15,
+                                      method = "WrightII")$stratum_size),
+               15)
+})
+
+test_that("Errors work for sd_h and N_h version",{
+  short_data3 <- short_data
+  short_data3$y <- c(34,20,30)
+  expect_error(optimum_allocation(short_data3, strata = "strata",
+                                  y = "y",
+                                  sd_h = "sd",
+                                  N_h = "size"),
+               "One and only one of")
+  expect_error(optimum_allocation(short_data3, strata = "strata",
+                                  y = "y",
+                                  N_h = "size"),
+               "If 'sd_h' is NULL, 'N_h' should also be NULL")
+  new_row <- c("b",15, 0.953, 25)
+  short_data3 <- rbind(short_data3, new_row)
+  short_data3$size <- as.numeric(short_data3$size)
+  short_data3$sd <- as.numeric(short_data3$sd)
+  expect_error(optimum_allocation(short_data3, strata = "strata",
+                                  sd_h = "sd",
+                                  N_h = "size"),
+               "data must only contain one row per stratum")
+
+})
+
+

@@ -7,7 +7,9 @@
 optimum_allocation(
   data,
   strata,
-  y,
+  y = NULL,
+  sd_h = NULL,
+  N_h = NULL,
   nsample = NULL,
   ndigits = 2,
   method = "WrightII",
@@ -15,10 +17,18 @@ optimum_allocation(
 )
 }
 \arguments{
-\item{data}{A data frame or matrix with one row for each
-sampled unit, one column specifying each unit's stratum, and
-one column holding the value of the continuous variable for
-which the sample mean variance should be minimized.}
+\item{data}{A data frame or matrix with at least one column specifying
+each unit's stratum, and either 1) a second column holding the value of the
+continuous variable for which the sample mean variance should be minimized
+(\code{y}) or 2) two columns: one holding the the within-stratum
+standard deviation for the variable of interest (\code{sd_h}) and another
+holding the stratum sample sizes (\code{N_h}).
+If \code{data} contains a column \code{y} holding values for
+the variable of interest, then \code{data} should have one row for
+each sampled unit. If \code{data} holds \code{sd_h} and {N_h}, the
+within-stratum standard deviations and population sizes, then \code{data}
+should have one row per stratum.
+Other columns are allowed but will be ignored.}
 
 \item{strata}{a character string or vector of character strings
 specifying the name(s) of columns which specify the stratum
@@ -27,9 +37,22 @@ provided, each unique combination of values in these columns
 is taken to define one stratum.}
 
 \item{y}{a character string specifying the name of the
-continuous variable for which the variance should be minimized.}
+continuous variable for which the variance should be minimized.
+Defaults to \code{NULL} and should be left as \code{NULL} when \code{data}
+holds stratum standard deviations and sample sizes instead of individual
+sampling units.}
 
-\item{nsample}{the desired total sample size. Defaults to NULL.}
+\item{sd_h}{a character string specifying the name of the
+column holding the within-stratum standard deviations for each stratum.
+Defaults to \code{NULL} and should be left as \code{NULL} when \code{data}
+holds individual sampling units.}
+
+\item{N_h}{a character string specifying the name of the
+column holding the population stratum sizes for each stratum.
+Defaults to \code{NULL} and should be left as \code{NULL} when \code{data}
+holds individual sampling units.}
+
+\item{nsample}{the desired total sample size. Defaults to \code{NULL}.}
 
 \item{ndigits}{a numeric value specifying the number of digits
 to which the standard deviation and stratum fraction should be rounded.
