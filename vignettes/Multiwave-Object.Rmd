@@ -152,9 +152,12 @@ At any point during the multi-wave sampling workflow, `optimall` allows users to
 multiwave_diagram(MySurvey)
 ```
 <center>
-```{r, fig.align='center', fig.height = 5.5, fig.width = 5.5, echo= FALSE}
+```{r, fig.align='center', fig.height = 5.5, fig.width = 5.5, echo= FALSE, eval = F}
 multiwave_diagram(MySurvey)
 ```
+
+![](../inst/images/Diagram1.png){width=55%}
+
 </center>
 Notice that the title of the survey, "Maternal Weight Survey", was found from the overall survey metadata and that boxes are colored based on whether they have been filled yet. Slots that have been filled are blue and contain a short description of their contents. This function enables users to track their progress during a multiwave sampling survey.
 
@@ -274,9 +277,12 @@ get_data(MySurvey, phase = 2, wave = 1) <-
 multiwave_diagram(MySurvey)
 ```
 <center>
-```{r, fig.align='center', fig.height = 5.5, fig.width = 5.5, echo= FALSE}
+```{r, fig.align='center', fig.height = 5.5, fig.width = 5.5, echo= FALSE, eval = F}
 multiwave_diagram(MySurvey)
 ```
+
+![](../inst/images/Diagram2.png){width=55%}
+
 </center>
 It does! Now that we have sampled data which we can use to estimate stratum standard deviations, we can use `allocate_wave` to allocate samples optimally for the next wave. When applied to a multiwave object using `apply_multiwave`, `allocate_wave` will find the data from the previous wave (now the previous wave is Wave 1 of Phase 2) and will look for other function arguments for `allocate_wave` in the metadata. The output will be placed in the `"design"` slot of the specified wave:
 
