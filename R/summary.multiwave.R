@@ -65,11 +65,13 @@ setMethod("summary", "Multiwave", function(object) {
                 ifelse(length(names(object@phases[[i]]@waves[[j]]@data)) > 5,
                        "... \n","\n")," \n", sep = ' ')
         }
-        metadata_list[[j]] <- paste("list of length",
-                                    paste0(length(object@phases[[i]]@waves[[j]]@metadata),
+        metadata_list[[j]] <- paste(
+          "list of length",
+          paste0(length(object@phases[[i]]@waves[[j]]@metadata),
                                            ":"),"\n")
-        design_list[[j]] <- if (nrow(object@phases[[i]]@waves[[j]]@design) == 0 &
-                                ncol(object@phases[[i]]@waves[[j]]@design) == 0){
+        design_list[[j]] <- if (
+          nrow(object@phases[[i]]@waves[[j]]@design) == 0 &
+            ncol(object@phases[[i]]@waves[[j]]@design) == 0){
           paste0(" NA \n")
         } else{
           paste(" df with",
@@ -89,7 +91,8 @@ setMethod("summary", "Multiwave", function(object) {
             paste0(" NA \n")
           } else{
             paste(" vector of length",
-                  as.character(length(object@phases[[i]]@waves[[j]]@samples)),"\n",
+                  as.character(
+                    length(object@phases[[i]]@waves[[j]]@samples)),"\n",
                   sep = ' ')
           }
         sampled_data_list[[j]] <-
@@ -98,15 +101,18 @@ setMethod("summary", "Multiwave", function(object) {
             paste0(" NA \n")
           } else{
             paste(" df with",
-                  as.character(nrow(object@phases[[i]]@waves[[j]]@sampled_data)),
+                  as.character(nrow(
+                    object@phases[[i]]@waves[[j]]@sampled_data)),
                   "obs. of",
-                  as.character(ncol(object@phases[[i]]@waves[[j]]@sampled_data)),
+                  as.character(ncol(
+                    object@phases[[i]]@waves[[j]]@sampled_data)),
                   "vars:",
                   paste(names(object@phases[[i]]@waves[[j]]@sampled_data)
                         [1:min(5,length(names(object@phases[[i]]
                                               @waves[[j]]@sampled_data)))],
                         collapse = ", "),
-                  ifelse(length(names(object@phases[[i]]@waves[[j]]@sampled_data)) > 5,
+                  ifelse(length(
+                    names(object@phases[[i]]@waves[[j]]@sampled_data)) > 5,
                          "... \n","\n"), sep = ' ')
           }
         wave_data[[j]] <- c(paste0("Wave ",j,": \n",

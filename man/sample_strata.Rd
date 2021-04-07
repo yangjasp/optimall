@@ -52,7 +52,8 @@ whether each unit should be sampled.
 \description{
 Requires two dataframes or matrices: \code{data} with a column
 \code{strata} which specifies stratum membership for each unit in
-the population and a second dataframe \code{design_data} with one #' row per strata level with a column \code{design_strata} that
+the population and a second dataframe \code{design_data} with one
+row per strata level with a column \code{design_strata} that
 indicates the unique levels of \code{strata} in \code{data} and
 \code{n_allocated} that specifies the
 number to be sampled from each stratum.
