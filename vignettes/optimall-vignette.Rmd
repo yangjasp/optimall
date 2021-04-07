@@ -99,6 +99,18 @@ sampling_design <- optimum_allocation(data = iris, strata = "Species",
 sampling_design
 ```
 
+If we have a dataframe that holds the $N_h$ and $sd_h$ for each stratum instead of data for each individual unit, we can still use `optimum_allocation`:
+
+```{r}
+iris_summary <- data.frame(strata = unique(iris$Species),
+                           size = c(50, 50, 50),
+                           sd = c(0.3791, 0.3138, 0.3225))
+
+optimum_allocation(data = iris_summary, strata = "strata",
+                   sd_h = "sd", N_h = "size", 
+                   nsample = 40, method = "WrightII")
+```
+
 ## Selecting IDs to Sample
 
 With the number of units to sample per stratum specified in a dataframe, `optimall` can randomly select the IDs of the units to be sampled with the function `sample_strata`:
@@ -200,7 +212,7 @@ wave2_design <- allocate_wave(data = wave1_data,
 wave2_design
 ```
 
-Notice that in this case, `"n_sample_optimal"` does not match `"n_sample_actual"` for every stratum in the outputted design dataframe. This occurred because we *oversampled* from the virginica stratum in wave 1, meaning that the optimum stratum sample size among 40 total samples was smaller than the amount of samples already taken in that group. When oversampling occurs, `allocate_wave` recalculates the optimum allocation among the non-oversampled strata and uses that result to allocate the specified number of samples as optimally as possible. When no oversampling occurs, `"nsample_optimal"` will match `"nsample_actual"` for every stratum.
+Notice that in this case, `"nsample_optimal"` does not match `"nsample_actual"` for every stratum in the outputted design dataframe. This occurred because we *oversampled* from the virginica stratum in wave 1, meaning that the optimum stratum sample size among 40 total samples was smaller than the amount of samples already taken in that group. When oversampling occurs, `allocate_wave` recalculates the optimum allocation among the non-oversampled strata and uses that result to allocate the specified number of samples as optimally as possible. When no oversampling occurs, `"nsample_optimal"` will match `"nsample_actual"` for every stratum.
 
 ## Examples: Using `optimall` to Determine Study Design and Sample Data
 
