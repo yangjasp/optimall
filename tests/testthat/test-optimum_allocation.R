@@ -164,4 +164,58 @@ test_that("Errors work for sd_h and N_h version",{
 
 })
 
+test_that("Output agrees whether input is matrix, df, or tibble",{
+  data_mat <- as.matrix(data.frame("strata" = c(1, 2, 3),
+                                   "size" = c(15, 15, 12),
+                                   "sd" =
+                                     c(sd(data[data$strata == "a","y"]),
+                                       sd(data[data$strata == "b","y"]),
+                                       sd(data[data$strata == "c","y"]))))
+  data_tib <- dplyr::as_tibble(short_data)
+
+  expect_equal(optimum_allocation(data = short_data, strata = "strata",
+                                  N_h = "size",
+                                  sd_h = "sd",
+                                  nsample = 10)$stratum_size,
+               optimum_allocation(data = data_mat, strata = "strata",
+                                  N_h = "size",
+                                  sd_h = "sd",
+                                  nsample = 10)$stratum_size,
+               optimum_allocation(data = data_tib, strata = "strata",
+                                  N_h = "size",
+                                  sd_h = "sd",
+                                  nsample = 10)$stratum_size)
+})
+
+test_that("'nsample' argument of optimum_allocation can't be less than
+          or equal to zero, but it can be larger than the population of
+          the dataset if the method is Neyman",{
+            expect_error(optimum_allocation(data = short_data,
+                                            N_h = "size",
+                                            sd_h = "sd",
+                                            strata = "strata",
+                                            method = "WrightII",
+                                            nsample = 0),
+                         "'nsample' is too small for this method")
+            expect_error(optimum_allocation(data = short_data,
+                                            N_h = "size",
+                                            sd_h = "sd",
+                                            strata = "strata",
+                                            method = "WrightII",
+                                            nsample = 50),
+                         "'nsample' is larger than population size")
+          })
+
+test_that("multiple strings in  the 'strata' argument lead to the
+          creation of new strata based on their interaction",{
+            short_data4 <- rbind(short_data, short_data)
+            short_data4$strata2 <- c(0, 1, 0, 1, 0, 1)
+            expect_equal(as.character(optimum_allocation(
+              data = short_data4,
+              strata = c("strata", "strata2"),
+              N_h = "size", sd_h = "sd",
+              nsample = 30)$strata),
+                         c("a.0","b.0","c.0","a.1","b.1","c.1"))
+          })
+
 
