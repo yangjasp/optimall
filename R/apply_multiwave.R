@@ -414,8 +414,9 @@ setMethod("apply_multiwave", c(x = "Multiwave"),
         strata <- arguments$strata
       }
 
-      # design_strata. Can be "design_strata" or "strata" in metadata. Will check in
-      #that order.
+      # design_strata. Can be "design_strata" or "strata" in metadata.
+      # Will check in that order.
+
       if (is.null(arguments$design_strata)){
         if("design_strata" %in% names(wave_md) & class(wave_md$design_strata)
            == "character"){
