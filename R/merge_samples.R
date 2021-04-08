@@ -46,155 +46,165 @@
 #' library(datasets)
 #' iris <- data.frame(iris, id = 1:150)
 #'
-#' MySurvey <- new_multiwave(phases = 2, waves = c(1,3))
+#' MySurvey <- new_multiwave(phases = 2, waves = c(1, 3))
 #' get_data(MySurvey, phase = 1, slot = "data") <-
-#' data.frame(dplyr::select(iris, -Sepal.Width))
+#'   data.frame(dplyr::select(iris, -Sepal.Width))
 #' get_data(MySurvey, phase = 2, wave = 1, slot = "sampled_data") <-
-#' dplyr::select(iris, id, Sepal.Width)[1:40,]
+#'   dplyr::select(iris, id, Sepal.Width)[1:40, ]
 #' MySurvey <- merge_samples(MySurvey, phase = 2, wave = 1, id = "id")
 #' @importFrom rlang :=
 setGeneric("merge_samples", function(x, phase, wave,
-                                  id = NULL,
-                                  sampled_ind = "already_sampled_ind")
-  standardGeneric("merge_samples"))
-setMethod("merge_samples", c(x = "Multiwave"),
-          function(x, phase, wave,id = NULL,
-                   sampled_ind = "already_sampled_ind"){
-
-  if(!is.numeric(phase) |
-     !(phase %in% c(seq_len(length(x@phases))) & phase > 1)){
+                                     id = NULL,
+                                     sampled_ind = "already_sampled_ind") {
+  standardGeneric("merge_samples")
+})
+setMethod(
+  "merge_samples", c(x = "Multiwave"),
+  function(x, phase, wave, id = NULL,
+           sampled_ind = "already_sampled_ind") {
+    if (!is.numeric(phase) |
+      !(phase %in% c(seq_len(length(x@phases))) & phase > 1)) {
       stop("'phase' must be a numeric value specifying a valid phase
       in 'x'")
-     }
-  if(!is.numeric(wave) |
-      !(wave %in% c(seq_len(length(x@phases[[phase]]@waves))))){
+    }
+    if (!is.numeric(wave) |
+      !(wave %in% c(seq_len(length(x@phases[[phase]]@waves))))) {
       stop("'wave' must be a numeric value specifying a valid wave in
       'phase' in 'x'")
     }
-  if(!is.character(sampled_ind) | length(sampled_ind) != 1){
-    stop("'sampled_ind' must be a character value specifying the desired
+    if (!is.character(sampled_ind) | length(sampled_ind) != 1) {
+      stop("'sampled_ind' must be a character value specifying the desired
     name of the column in the newly merged data that should hold a
     binary indicator for whether each unit has been sampled in the current
     wave.")
-  }
+    }
 
-  #Get previous wave data
+    # Get previous wave data
 
-  if((phase == 2 | phase == "phase2") & (wave == 1 | wave == "wave1")){
-    previous_wave_data <- x@phases$phase1$data
-  } else if(wave == 1 | wave == "wave1"){
-    previous_wave_data <- x@phases[[phase - 1]]@waves[[
+    if ((phase == 2 | phase == "phase2") & (wave == 1 | wave == "wave1")) {
+      previous_wave_data <- x@phases$phase1$data
+    } else if (wave == 1 | wave == "wave1") {
+      previous_wave_data <- x@phases[[phase - 1]]@waves[[
       length(x@phases[[phase - 1]]@waves)]]@data
-  } else if(wave != 1 ){
-    previous_wave_data <- x@phases[[phase]]@waves[[
+    } else if (wave != 1) {
+      previous_wave_data <- x@phases[[phase]]@waves[[
       wave - 1]]@data
-  }
+    }
 
-  #Get id if given id is NULL
-  if (is.null(id)){
-    if("id" %in% names(x@phases[[phase]]@waves[[wave]]@metadata) #&
-       #class(x@phases[[phase]]@waves[[wave]]@metadata$id) ==
-       #"character"
-       ){
-      id <- x@phases[[phase]]@waves[[wave]]@metadata$id
-    } else if("id" %in% names(x@phases[[phase]]@metadata) #&
-              #class(x@phases[[phase]]@waves[[wave]]@metadata$id) ==
-              #"character"
-              ){
-      id <- x@phases[[phase]]@metadata$id
-    } else if("id" %in% names(x@metadata)  #&
-              #class(x@phases[[phase]]@waves[[wave]]@metadata$id) ==
-              #"character"
-              ){
-      id <- x@metadata$id
-    } else{
-      stop("Could not find character element with name
+    # Get id if given id is NULL
+    if (is.null(id)) {
+      if ("id" %in% names(x@phases[[phase]]@waves[[wave]]@metadata) # &
+        # class(x@phases[[phase]]@waves[[wave]]@metadata$id) ==
+        # "character"
+      ) {
+        id <- x@phases[[phase]]@waves[[wave]]@metadata$id
+      } else if ("id" %in% names(x@phases[[phase]]@metadata) # &
+        # class(x@phases[[phase]]@waves[[wave]]@metadata$id) ==
+        # "character"
+      ) {
+        id <- x@phases[[phase]]@metadata$id
+      } else if ("id" %in% names(x@metadata) # &
+        # class(x@phases[[phase]]@waves[[wave]]@metadata$id) ==
+        # "character"
+      ) {
+        id <- x@metadata$id
+      } else {
+        stop("Could not find character element with name
       'id' in metadata. Add
            or specify in function call.")
+      }
     }
-  }
 
-  if(!(id %in% names(x@phases[[phase]]@waves[[wave]]@sampled_data))|
-     !(id %in% names(previous_wave_data))){
-    stop("'id' must be a character value specifying the name of the
+    if (!(id %in% names(x@phases[[phase]]@waves[[wave]]@sampled_data)) |
+      !(id %in% names(previous_wave_data))) {
+      stop("'id' must be a character value specifying the name of the
          column that holds unit ids in both 'sampled_data' of this wave
          and 'data' of the previous wave")
-  }
+    }
 
-  #Print warning about ids if necessary
-  if(!(all(
-    x@phases[[phase]]@waves[[wave]]@sampled_data[[id]] %in%
-    previous_wave_data[[id]]))) {
-    warning("sampled_data is introducing new ids to the data")
-  }
+    # Print warning about ids if necessary
+    if (!(all(
+      x@phases[[phase]]@waves[[wave]]@sampled_data[[id]] %in%
+        previous_wave_data[[id]]
+    ))) {
+      warning("sampled_data is introducing new ids to the data")
+    }
 
-  #Perform merge
-  output_data <-
-    dplyr::full_join(previous_wave_data,
-                     x@phases[[phase]]@waves[[wave]]@sampled_data,
-                     by = "id")
+    # Perform merge
+    output_data <-
+      dplyr::full_join(previous_wave_data,
+        x@phases[[phase]]@waves[[wave]]@sampled_data,
+        by = "id"
+      )
 
-  # Fix duplicate columns
-  dup_cols <- names(previous_wave_data)[
-    names(previous_wave_data) %in% names(
-      x@phases[[phase]]@waves[[wave]]@sampled_data
-    )]
-  dup_cols <- dup_cols[dup_cols != id]
+    # Fix duplicate columns
+    dup_cols <- names(previous_wave_data)[
+      names(previous_wave_data) %in% names(
+        x@phases[[phase]]@waves[[wave]]@sampled_data
+      )
+    ]
+    dup_cols <- dup_cols[dup_cols != id]
 
 
-  if(length(dup_cols > 0)){
-    for (i in seq_along(dup_cols)){
-      # Warning if non-NA for both values for any row
-      if(any(!is.na(sort(previous_wave_data[
-                previous_wave_data$id %in%
-                x@phases[[phase]]@waves[[wave]]@sampled_data[,id],
-                  dup_cols[i]])) &
-             !is.na(sort(x@phases[[phase]]@waves[[wave]]@sampled_data[
-                         ,dup_cols[i]])))){
-        warning("Some units in 'sampled_data' have non-NA values already in
+    if (length(dup_cols > 0)) {
+      for (i in seq_along(dup_cols)) {
+        # Warning if non-NA for both values for any row
+        if (any(!is.na(sort(previous_wave_data[
+          previous_wave_data$id %in%
+            x@phases[[phase]]@waves[[wave]]@sampled_data[, id],
+          dup_cols[i]
+        ])) &
+          !is.na(sort(x@phases[[phase]]@waves[[wave]]@sampled_data[
+            , dup_cols[i]
+          ])))) {
+          warning("Some units in 'sampled_data' have non-NA values already in
                 columns that are being merged. The old values will be
                 overwritten by the values in 'sampled_data' for these
                 units.")
+        }
+
+        new_col_name <- as.character(dup_cols[i])
+        new_col_namex <- paste0(new_col_name, ".x")
+        new_col_namey <- paste0(new_col_name, ".y")
+        new_col_name_sym <- enquo(new_col_name)
+        new_col_namex_sym <- enquo(new_col_namex)
+        new_col_namey_sym <- enquo(new_col_namey)
+        output_data <- output_data %>%
+          dplyr::mutate(!!new_col_name := dplyr::coalesce(
+            !!sym(new_col_namey),
+            !!sym(new_col_namex)
+          )) %>%
+          dplyr::select(
+            -paste0(new_col_name, ".x"),
+            -paste0(new_col_name, ".y")
+          )
       }
-
-      new_col_name <- as.character(dup_cols[i])
-      new_col_namex <- paste0(new_col_name, ".x")
-      new_col_namey <- paste0(new_col_name, ".y")
-      new_col_name_sym <- enquo(new_col_name)
-      new_col_namex_sym <- enquo(new_col_namex)
-      new_col_namey_sym <- enquo(new_col_namey)
-  output_data <- output_data %>%
-    dplyr::mutate(!!new_col_name := dplyr::coalesce(
-      !!sym(new_col_namey),
-      !!sym(new_col_namex))) %>%
-    dplyr::select(-paste0(new_col_name, ".x"),
-                  -paste0(new_col_name, ".y"))
     }
-  }
 
-  #Add indicator for already sampled
+    # Add indicator for already sampled
 
-  already_sampled_ids <- list()
+    already_sampled_ids <- list()
 
-  for (i in seq_len(wave)){
-    already_sampled_ids[[i]] <- get_data(x,
-                                         phase = phase,
-                                         wave = i,
-                                         slot = "samples")
-  }
+    for (i in seq_len(wave)) {
+      already_sampled_ids[[i]] <- get_data(x,
+        phase = phase,
+        wave = i,
+        slot = "samples"
+      )
+    }
 
-  if(any(sapply(already_sampled_ids, length) == 0)){
-    warning("some 'samples' slots of previous waves in this phase are
+    if (any(sapply(already_sampled_ids, length) == 0)) {
+      warning("some 'samples' slots of previous waves in this phase are
             empty. The `sampled_ind` column of the newly merged data may
             be inaccurate.")
+    }
+
+    already_sampled_ids <- unlist(already_sampled_ids)
+
+    output_data[, sampled_ind] <-
+      ifelse(output_data$id %in% already_sampled_ids, 1, 0)
+
+    get_data(x, phase = phase, wave = wave) <- output_data
+    return(x)
   }
-
-  already_sampled_ids <- unlist(already_sampled_ids)
-
-  output_data[,sampled_ind] <-
-    ifelse(output_data$id %in% already_sampled_ids, 1, 0)
-
-  get_data(x, phase = phase, wave = wave) <- output_data
-  return(x)
-
-})
+)

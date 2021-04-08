@@ -14,8 +14,10 @@
 #' new stratum name.
 
 #' @examples
-#' x <- merge_strata(iris, strata = "Species",
-#' merge = c("virginica", "versicolor"), name = "v_species")
+#' x <- merge_strata(iris,
+#'   strata = "Species",
+#'   merge = c("virginica", "versicolor"), name = "v_species"
+#' )
 #' @export
 #' @return Returns the input dataframe with a new column named
 #' 'new_strata' that holds the name of the stratum that each sample

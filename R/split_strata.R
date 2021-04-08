@@ -132,8 +132,10 @@ split_strata <- function(data, strata, split = NULL,
   if (is.null(split) == FALSE) {
     # split <- match.arg(split, unique(data[,"old_strata"]))
     if (all(split %in% data[, "old_strata"]) == FALSE) {
-      stop(paste(paste("'", split, "'", sep = ""),
-                 "does not match any value in 'strata'"))
+      stop(paste(
+        paste("'", split, "'", sep = ""),
+        "does not match any value in 'strata'"
+      ))
     }
   } else if (is.null(split) == TRUE) {
     split <- sort(unique(data[, "old_strata"]))
@@ -158,11 +160,17 @@ split_strata <- function(data, strata, split = NULL,
 
   names(data)[names(data) == split_var] <- "split_variable"
   data$old_strata <- as.character(data$old_strata)
-  type <- match.arg(type,
-                    c("global quantile", "local quantile",
-                      "value", "categorical"))
-  if (type %in% c("global quantile", "local quantile", "value",
-                  "categorical") == FALSE) {
+  type <- match.arg(
+    type,
+    c(
+      "global quantile", "local quantile",
+      "value", "categorical"
+    )
+  )
+  if (type %in% c(
+    "global quantile", "local quantile", "value",
+    "categorical"
+  ) == FALSE) {
     stop("'type' must be one of 'global quantile',
          'local quantile', 'value', 'categorical'")
   }
@@ -177,8 +185,10 @@ split_strata <- function(data, strata, split = NULL,
     if (is.numeric(trunc) & trunc > 0) {
       new_name <- substr(split_var, 1, trunc)
     } else if (is.numeric(trunc) & trunc < 0) {
-      new_name <- substr(split_var, nchar(split_var) + trunc + 1,
-                         nchar(split_var))
+      new_name <- substr(
+        split_var, nchar(split_var) + trunc + 1,
+        nchar(split_var)
+      )
     } else if (is.character(trunc)) {
       new_name <- trunc
     } else {
@@ -195,14 +205,14 @@ split_strata <- function(data, strata, split = NULL,
   }
 
   if (type %in% c("global quantile", "local quantile", "value") &
-      length(split) <= 1) {
+    length(split) <= 1) {
     if (is.numeric(data$split_variable) == FALSE) {
       stop("'split_var' must be a column of 'data' holding numeric
            values. If you want to split on a categorical variable,
            use type = 'categorical'.")
     }
     if (type == "global quantile" |
-        (is.null(split) & type == "local quantile")) {
+      (is.null(split) & type == "local quantile")) {
       cut_point <- sort(stats::quantile(
         data[, "split_variable"],
         split_at
@@ -210,22 +220,27 @@ split_strata <- function(data, strata, split = NULL,
     }
     if (type == "local quantile" & is.null(split) == FALSE) {
       cut_point <- sort(stats::quantile(
-        data[data$old_strata == split, "split_variable"], split_at))
+        data[data$old_strata == split, "split_variable"], split_at
+      ))
     }
     if (type == "value") {
       cut_point <- sort(split_at)
       if (is.null(split) == FALSE) {
-        if (any(split_at < min(data[data$old_strata == split,
-                                    "split_variable"])) |
-            any(split_at > max(data[data$old_strata == split,
-                                    "split_variable"]))) {
+        if (any(split_at < min(data[
+          data$old_strata == split,
+          "split_variable"
+        ])) |
+          any(split_at > max(data[
+            data$old_strata == split,
+            "split_variable"
+          ]))) {
           warning("value(s) of 'split_at' are outside of the range
                   of values in 'split'")
         }
       }
       if (is.null(split)) {
         if (any(split_at < min(data$split_variable)) |
-            any(split_at > max(data$split_variable))) {
+          any(split_at > max(data$split_variable))) {
           warning("value(s) of 'split_at' are outside of the range
                   of values in 'split'")
         }
@@ -241,22 +256,31 @@ split_strata <- function(data, strata, split = NULL,
 
     if (length(cut_point) == 1) {
       data_filtered <- data_filtered %>%
-        dplyr::mutate(split_var_updated =
-                        ifelse(split_variable <= cut_point[1],
-          paste(new_name,
-            paste("[", round(min(data_filtered$split_variable),
-                             digits = 2), ",",
-                  round(cut_point[1], digits = 2), "]", sep = ""),
-            sep = "_"
-          ),
-          paste(new_name,
-            paste("(", round(cut_point[1],
-                             digits = 2), ",",
-                  round(max(data_filtered$split_variable),
-                        digits = 2), "]", sep = ""),
-            sep = "_"
-          )
-        ))
+        dplyr::mutate(
+          split_var_updated =
+            ifelse(split_variable <= cut_point[1],
+              paste(new_name,
+                paste("[", round(min(data_filtered$split_variable),
+                  digits = 2
+                ), ",",
+                round(cut_point[1], digits = 2), "]",
+                sep = ""
+                ),
+                sep = "_"
+              ),
+              paste(new_name,
+                paste("(", round(cut_point[1],
+                  digits = 2
+                ), ",",
+                round(max(data_filtered$split_variable),
+                  digits = 2
+                ), "]",
+                sep = ""
+                ),
+                sep = "_"
+              )
+            )
+        )
     }
     if (length(cut_point) > 1) {
       cut_point <- c(
@@ -266,47 +290,58 @@ split_strata <- function(data, strata, split = NULL,
       )
       data_filtered$split_var_updated <- data_filtered$split_variable
       data_filtered <- data_filtered %>%
-        dplyr::mutate(split_var_updated =
-                        ifelse(split_variable <= cut_point[2],
-          paste(new_name,
-            paste("[", round(cut_point[1], digits = 2),
+        dplyr::mutate(
+          split_var_updated =
+            ifelse(split_variable <= cut_point[2],
+              paste(new_name,
+                paste("[", round(cut_point[1], digits = 2),
                   ",", round(cut_point[2], digits = 2), "]",
-                  sep = ""),
-            sep = "_"
-          ),
-          "other"
-        ))
+                  sep = ""
+                ),
+                sep = "_"
+              ),
+              "other"
+            )
+        )
       for (i in 3:length(cut_point)) {
         data_filtered <- data_filtered %>%
-          dplyr::mutate(split_var_updated =
-                          ifelse(split_variable > cut_point[1] &
-                                   split_variable > cut_point[i - 1] &
-                                   split_variable <= cut_point[i],
-                                 paste(new_name,
-                                       paste("(",
-                                             round(cut_point[i - 1],
-                                                   digits = 2),
-                                             ",",
-                                             round(cut_point[i],
-                                                   digits = 2), "]",
-                                             sep = ""),
-                                       sep = "_"),
-                                 split_var_updated
-          ))
+          dplyr::mutate(
+            split_var_updated =
+              ifelse(split_variable > cut_point[1] &
+                split_variable > cut_point[i - 1] &
+                split_variable <= cut_point[i],
+              paste(new_name,
+                paste("(",
+                  round(cut_point[i - 1],
+                    digits = 2
+                  ),
+                  ",",
+                  round(cut_point[i],
+                    digits = 2
+                  ), "]",
+                  sep = ""
+                ),
+                sep = "_"
+              ),
+              split_var_updated
+              )
+          )
       }
     }
-    new_strata <- interaction(dplyr::select(data_filtered, old_strata,
-                                            split_var_updated))
+    new_strata <- interaction(dplyr::select(
+      data_filtered, old_strata,
+      split_var_updated
+    ))
     small_df <- cbind(new_strata, data_filtered)
     small_df <- dplyr::select(small_df, -split_var_updated)
   }
 
   if (type %in% c("global quantile", "local quantile", "value") &
-      length(split) > 1) {
+    length(split) > 1) {
     if (is.numeric(data$split_variable) == FALSE) {
       stop(strwrap("'split_var' must be a column of 'data' holding
       numeric values. If you want to split on a categorical variable,
-      use type = 'categorical'.", prefix = " ",initial = ""))
+      use type = 'categorical'.", prefix = " ", initial = ""))
     }
     if (type == "global quantile") {
       cut_point_list <- list()
@@ -319,8 +354,10 @@ split_strata <- function(data, strata, split = NULL,
     }
     if (type == "local quantile") {
       get_cuts <- function(x) {
-        sort(stats::quantile(data[data$old_strata == x,
-                                  "split_variable"], split_at))
+        sort(stats::quantile(data[
+          data$old_strata == x,
+          "split_variable"
+        ], split_at))
       }
       cut_point_list <- lapply(split, get_cuts)
     }
@@ -331,13 +368,18 @@ split_strata <- function(data, strata, split = NULL,
         # Find cut points, which are the same everywhere here.
       }
       # Warning if some cut points are outside of limits of some strata
-      if (any(split_at < min(data[data$old_strata %in% split,
-                                  "split_variable"])) |
-          any(split_at > max(data[data$old_strata %in% split,
-                                  "split_variable"]))) {
+      if (any(split_at < min(data[
+        data$old_strata %in% split,
+        "split_variable"
+      ])) |
+        any(split_at > max(data[
+          data$old_strata %in% split,
+          "split_variable"
+        ]))) {
         warning(strwrap(paste0("value(s) of 'split_at' are outside of
                                the range of values in ", split),
-                        prefix = " ",initial = ""))
+          prefix = " ", initial = ""
+        ))
       }
     }
     # Now perform splits. Each element of split gets the process
@@ -355,23 +397,31 @@ split_strata <- function(data, strata, split = NULL,
       if (length(cut_point_list[[j]]) == 1) {
         cut_point <- cut_point_list[[j]]
         data_filtered <- data_filtered %>%
-          dplyr::mutate(split_var_updated =
-                          ifelse(split_variable <= cut_point[1],
-            paste(new_name,
-              paste("[", round(min(data_filtered$split_variable),
-                               digits = 2), ",",
-                    round(cut_point[1], digits = 2), "]", sep = ""),
-              sep = "_"
-            ),
-            paste(new_name,
-              paste("(", round(cut_point[1],
-                               digits = 2), ",",
-                    round(max(data_filtered$split_variable),
-                          digits = 2), "]",
-                    sep = ""),
-              sep = "_"
-            )
-          ))
+          dplyr::mutate(
+            split_var_updated =
+              ifelse(split_variable <= cut_point[1],
+                paste(new_name,
+                  paste("[", round(min(data_filtered$split_variable),
+                    digits = 2
+                  ), ",",
+                  round(cut_point[1], digits = 2), "]",
+                  sep = ""
+                  ),
+                  sep = "_"
+                ),
+                paste(new_name,
+                  paste("(", round(cut_point[1],
+                    digits = 2
+                  ), ",",
+                  round(max(data_filtered$split_variable),
+                    digits = 2
+                  ), "]",
+                  sep = ""
+                  ),
+                  sep = "_"
+                )
+              )
+          )
       }
 
       if (length(cut_point_list[[j]]) > 1) {
@@ -383,39 +433,51 @@ split_strata <- function(data, strata, split = NULL,
         )
         data_filtered$split_var_updated <- data_filtered$split_variable
         data_filtered <- data_filtered %>%
-          dplyr::mutate(split_var_updated =
-                          ifelse(split_variable <= cut_point[2],
-            paste(new_name,
-              paste("[", round(cut_point[1], digits = 2), ",",
-                    round(cut_point[2], digits = 2), "]", sep = ""),
-              sep = "_"
-            ),
-            "other"
-          ))
+          dplyr::mutate(
+            split_var_updated =
+              ifelse(split_variable <= cut_point[2],
+                paste(new_name,
+                  paste("[", round(cut_point[1], digits = 2), ",",
+                    round(cut_point[2], digits = 2), "]",
+                    sep = ""
+                  ),
+                  sep = "_"
+                ),
+                "other"
+              )
+          )
         for (i in 3:length(cut_point)) {
           data_filtered <- data_filtered %>%
-            dplyr::mutate(split_var_updated =
-                            ifelse(split_variable > cut_point[1] &
-                                     split_variable > cut_point[i - 1] &
-                                     split_variable <= cut_point[i],
-                                   paste(new_name,
-                                         paste("(",
-                                               round(cut_point[i - 1],
-                                                     digits = 2), ",",
-                                               round(cut_point[i],
-                                                     digits = 2), "]",
-                                               sep = ""),
-                                         sep = "_" ),
-                                   split_var_updated
-            ))
+            dplyr::mutate(
+              split_var_updated =
+                ifelse(split_variable > cut_point[1] &
+                  split_variable > cut_point[i - 1] &
+                  split_variable <= cut_point[i],
+                paste(new_name,
+                  paste("(",
+                    round(cut_point[i - 1],
+                      digits = 2
+                    ), ",",
+                    round(cut_point[i],
+                      digits = 2
+                    ), "]",
+                    sep = ""
+                  ),
+                  sep = "_"
+                ),
+                split_var_updated
+                )
+            )
         }
       }
       data_filtered_list[[j]] <- data_filtered
     }
     data_filtered_df <- dplyr::bind_rows(data_filtered_list)
-    new_strata <- interaction(dplyr::select(data_filtered_df,
-                                            old_strata,
-                                            split_var_updated))
+    new_strata <- interaction(dplyr::select(
+      data_filtered_df,
+      old_strata,
+      split_var_updated
+    ))
     small_df <- cbind(new_strata, data_filtered_df)
     small_df <- dplyr::select(small_df, -split_var_updated)
   }
@@ -429,14 +491,18 @@ split_strata <- function(data, strata, split = NULL,
       data_filtered <- dplyr::filter(data, old_strata %in% split)
     }
     data_filtered <- data_filtered %>%
-      dplyr::mutate(split_var_updated =
-                      ifelse(split_variable %in% split_at,
-        paste0(new_name, "_1"),
-        paste0(new_name, "_0")
-      ))
-    new_strata <- interaction(dplyr::select(data_filtered,
-                                            old_strata,
-                                            split_var_updated))
+      dplyr::mutate(
+        split_var_updated =
+          ifelse(split_variable %in% split_at,
+            paste0(new_name, "_1"),
+            paste0(new_name, "_0")
+          )
+      )
+    new_strata <- interaction(dplyr::select(
+      data_filtered,
+      old_strata,
+      split_var_updated
+    ))
     data_filtered <- cbind(new_strata, data_filtered)
     small_df <- dplyr::select(data_filtered, -split_var_updated)
   }
@@ -457,12 +523,14 @@ split_strata <- function(data, strata, split = NULL,
   }
   names(output_df)[names(output_df) == "split_variable"] <- split_var
   column_names_other <- names(output_df)[names(output_df) !=
-                                           "old_strata" &
-                                           names(output_df) !=
-                                           "new_strata"]
+    "old_strata" &
+    names(output_df) !=
+      "new_strata"]
   column_names_other <- enquo(column_names_other)
-  output_df <- dplyr::select(output_df, new_strata,
-                             old_strata, !!column_names_other)
+  output_df <- dplyr::select(
+    output_df, new_strata,
+    old_strata, !!column_names_other
+  )
   if (is.numeric(output_df$new_strata) == FALSE) {
     output_df$new_strata <- as.character(output_df$new_strata)
   }

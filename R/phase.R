@@ -1,4 +1,4 @@
-#'Phase Class for Multi-Wave Sampling Organization
+#' Phase Class for Multi-Wave Sampling Organization
 #'
 #' \pkg{optimall} defines three S4 classes for organizing the
 #' multi-wave sampling workflow: \code{Wave}, \code{Phase},
@@ -16,5 +16,7 @@
 #' @export Phase
 #' @exportClass Phase
 
-Phase <- setClass("Phase", slots = list(metadata = "list",
-                               waves = "list"))
+Phase <- setClass("Phase", slots = list(
+  metadata = "list",
+  waves = "list"
+))

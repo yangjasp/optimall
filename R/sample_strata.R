@@ -40,23 +40,28 @@
 #' @importFrom magrittr %>%
 #' @examples
 #' # Define a design dataframe
-#' design <- data.frame(strata = c("setosa", "virginica", "versicolor"),
-#' n_to_sample = c(5, 5, 5))
+#' design <- data.frame(
+#'   strata = c("setosa", "virginica", "versicolor"),
+#'   n_to_sample = c(5, 5, 5)
+#' )
 #'
 #' # Make sure there is an id column
 #' iris$id <- 1:nrow(iris)
 #'
 #' # Run
-#' sample_strata(data = iris, strata = "Species", id = "id",
-#' design_data = design, design_strata = "strata", n_allocated = "n_to_sample")
+#' sample_strata(
+#'   data = iris, strata = "Species", id = "id",
+#'   design_data = design, design_strata = "strata", n_allocated = "n_to_sample"
+#' )
 #'
 #' # If some units had already been samples
 #' iris$already_sampled <- rbinom(nrow(iris), 1, 0.25)
 #'
-#' sample_strata(data = iris, strata = "Species", id = "id",
-#' wave2a = "already_sampled",
-#' design_data = design, design_strata = "strata", n_allocated = "n_to_sample")
-
+#' sample_strata(
+#'   data = iris, strata = "Species", id = "id",
+#'   wave2a = "already_sampled",
+#'   design_data = design, design_strata = "strata", n_allocated = "n_to_sample"
+#' )
 sample_strata <- function(data, strata, id, wave2a = NULL,
                           design_data, design_strata = "strata",
                           n_allocated = "n_to_sample") {
@@ -77,19 +82,19 @@ sample_strata <- function(data, strata, id, wave2a = NULL,
          column name of 'design_data'")
   }
   if (length(unique(design_data[, design_strata])) !=
-      length(design_data[, design_strata])) {
+    length(design_data[, design_strata])) {
     stop("'design_data' may only contain one row per stratum")
   }
   if (any(design_data[, design_strata] %in% data[, strata] == FALSE)) {
     stop("strata names in 'design_data' must all match strata names
          in 'data'.")
   }
-  if (is.numeric(design_data[,n_allocated]) == FALSE) {
+  if (is.numeric(design_data[, n_allocated]) == FALSE) {
     stop("'n_allocated' must specify a numeric column in 'design_data'
     containing only whole number values")
   }
-  if (is.numeric(design_data[,n_allocated]) == TRUE &
-      any(design_data[,n_allocated]%%1 != 0)){
+  if (is.numeric(design_data[, n_allocated]) == TRUE &
+    any(design_data[, n_allocated] %% 1 != 0)) {
     stop("'n_allocated' must specify a numeric column in 'design_data'
     containing only whole number values")
   }
@@ -105,13 +110,13 @@ sample_strata <- function(data, strata, id, wave2a = NULL,
            unit was already sampled.")
     }
     if (("Y" %in% data[, wave2a] == FALSE & 1 %in%
-         data[, wave2a] == FALSE) | any(is.na(data[, wave2a]))) {
+      data[, wave2a] == FALSE) | any(is.na(data[, wave2a]))) {
       stop("'wave2a' column must contain '1' (numeric) or 'Y'
            (string) as indicators that a unit was sampled in a
            previous wave and cannot contain NAs")
     }
     if (nsample + sum(data[, wave2a] == "Y") +
-        sum(data[, wave2a] == 1) > length(data[, wave2a])) {
+      sum(data[, wave2a] == 1) > length(data[, wave2a])) {
       stop("Total sample size across waves, taken as nsampled in
            wave2a + n to allocate in this sample, is larger than
            the population size.")
@@ -122,8 +127,10 @@ sample_strata <- function(data, strata, id, wave2a = NULL,
     for (i in seq_len(nrow(design_data))) {
       stratum <- design_data[, design_strata][i]
       strata_data <- data[data[, strata] == stratum, c(id, strata)]
-      sampled_ids[[i]] <- sample(x = strata_data[, id],
-                                 size = design_data[, n_allocated][i])
+      sampled_ids[[i]] <- sample(
+        x = strata_data[, id],
+        size = design_data[, n_allocated][i]
+      )
     }
   }
   if (is.null(wave2a) == FALSE) {
@@ -134,9 +141,11 @@ sample_strata <- function(data, strata, id, wave2a = NULL,
         & data[, wave2a] != "Y"
         & data[, wave2a] != 1,
         c(id, strata)
-        ]
-      sampled_ids[[i]] <- sample(x = strata_data[, id],
-                                 size = design_data[, n_allocated][i])
+      ]
+      sampled_ids[[i]] <- sample(
+        x = strata_data[, id],
+        size = design_data[, n_allocated][i]
+      )
     }
   }
   sampled_ids <- unlist(sampled_ids)
@@ -144,5 +153,4 @@ sample_strata <- function(data, strata, id, wave2a = NULL,
   output_df <- data %>%
     dplyr::mutate(sample_indicator = ifelse(id %in% sampled_ids, 1, 0))
   return(output_df)
-
 }

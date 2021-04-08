@@ -66,14 +66,17 @@
 #' )
 #'
 #' # Or if input data is summary of strata sd and N:
-#' iris_summary <- data.frame(strata = unique(iris$Species),
-#' size = c(50, 50, 50),
-#' sd = c(0.3791, 0.3138, 0.3225))
+#' iris_summary <- data.frame(
+#'   strata = unique(iris$Species),
+#'   size = c(50, 50, 50),
+#'   sd = c(0.3791, 0.3138, 0.3225)
+#' )
 #'
-#' optimum_allocation(data = iris_summary, strata = "strata",
-#'                   sd_h = "sd", N_h = "size",
-#'                   nsample = 40, method = "WrightII")
-#'
+#' optimum_allocation(
+#'   data = iris_summary, strata = "strata",
+#'   sd_h = "sd", N_h = "size",
+#'   nsample = 40, method = "WrightII"
+#' )
 #' @export
 #' @references Wright, T. (2014). A Simple Method of Exact Optimal
 #' Sample Allocation under Stratification with any Mixed
@@ -92,8 +95,8 @@ optimum_allocation <- function(data, strata,
                                nsample = NULL,
                                ndigits = 2, method = "WrightII",
                                allow.na = FALSE) {
-  n_sd <- sd <- n <- npop <- stratum_fraction <-  NULL
-    # bind local vars as necessary
+  n_sd <- sd <- n <- npop <- stratum_fraction <- NULL
+  # bind local vars as necessary
   if (is.matrix(data) | tibble::is_tibble(data)) {
     data <- data.frame(data)
   }
@@ -108,15 +111,14 @@ optimum_allocation <- function(data, strata,
     stop("Columns specifying strata contain NAs")
   }
   if ((is.null(y) & is.null(sd_h)) |
-      (!is.null(y) & !is.null(sd_h))){
+    (!is.null(y) & !is.null(sd_h))) {
     stop("One and only one of 'y' or 'sd_h' must be provided. If 'sd_h' is
     provided, then 'N_h' must be as well. Use ?optimum_allocation for help")
   }
 
   # Start if y is given and sd is NULL
-  if (is.null(sd_h)){
-
-    if (!is.null(N_h)){
+  if (is.null(sd_h)) {
+    if (!is.null(N_h)) {
       stop("If 'sd_h' is NULL, 'N_h' should also be NULL.")
     }
 
@@ -139,9 +141,10 @@ optimum_allocation <- function(data, strata,
       stop("Data contains NAs. If this is intentional, set allow.na to TRUE.")
     }
     if (min(dplyr::count(
-          dplyr::filter(output_df, !(is.na(y))), strata)[, "n"]) < 2 |
-        length(unique(dplyr::filter(output_df, !(is.na(y)))$strata)) !=
-          length(unique(output_df$strata))) {
+      dplyr::filter(output_df, !(is.na(y))), strata
+    )[, "n"]) < 2 |
+      length(unique(dplyr::filter(output_df, !(is.na(y)))$strata)) !=
+        length(unique(output_df$strata))) {
       stop("Function requires at least two observations per stratum")
     }
     if (method == "Neyman") {
@@ -231,7 +234,7 @@ optimum_allocation <- function(data, strata,
         stratum_size <- rowSums(Wright_output >= cutoff) + 1
         final_output <- cbind(
           output_df[, c("strata", "n", "sd", "n_sd")], stratum_size
-          )
+        )
         final_output <- final_output %>%
           dplyr::mutate(
             stratum_fraction = round(stratum_size / nsample,
@@ -242,7 +245,8 @@ optimum_allocation <- function(data, strata,
           )
         final_output <- final_output[c(
           "strata", "n", "sd", "n_sd", "stratum_fraction",
-          "stratum_size")]
+          "stratum_size"
+        )]
         names(final_output)[names(final_output) == "n"] <- "npop"
         final_output <- dplyr::arrange(final_output, strata)
         return(final_output)
@@ -301,7 +305,8 @@ optimum_allocation <- function(data, strata,
         ))[n_minus_2H]
         stratum_size <- rowSums(Wright_output >= cutoff) + 2
         final_output <- cbind(
-          output_df[, c("strata", "n", "sd", "n_sd")], stratum_size)
+          output_df[, c("strata", "n", "sd", "n_sd")], stratum_size
+        )
         final_output <- final_output %>%
           dplyr::mutate(
             stratum_fraction = round(stratum_size / nsample,
@@ -311,8 +316,11 @@ optimum_allocation <- function(data, strata,
             n_sd = round(n_sd, digits = ndigits)
           )
         final_output <- final_output[
-          c("strata", "n", "sd", "n_sd", "stratum_fraction",
-            "stratum_size")]
+          c(
+            "strata", "n", "sd", "n_sd", "stratum_fraction",
+            "stratum_size"
+          )
+        ]
         names(final_output)[names(final_output) == "n"] <- "npop"
         final_output <- dplyr::arrange(final_output, strata)
         return(final_output)
@@ -324,17 +332,17 @@ optimum_allocation <- function(data, strata,
           'Neyman'.")
     }
 
-  # End if y is given and sd/N is NULL
+    # End if y is given and sd/N is NULL
   }
 
   # Start if sd/N is given and y is NULL
-  if(is.null(y)){
+  if (is.null(y)) {
     if (sd_h %in% names(data) == FALSE | N_h %in% names(data) == FALSE) {
       stop("'sd_h' and 'N_h' must be character strings
            matching column names of 'data'.")
     }
     if (is.numeric(data[, sd_h]) == FALSE |
-        is.numeric(data[, N_h]) == FALSE) {
+      is.numeric(data[, N_h]) == FALSE) {
       stop("'sd_h' and 'N_h' must be numeric.")
     }
     method <- match.arg(method, c("WrightI", "WrightII", "Neyman"))
@@ -346,8 +354,8 @@ optimum_allocation <- function(data, strata,
     strata <- interaction(dplyr::select(output_df, -!!N_h, -!!sd_h))
     output_df <- cbind(strata, output_df)
     output_df <- output_df[, c(1, ncol(output_df) - 1, ncol(output_df))]
-      # Only columns of interest
-    names(output_df) <- c("strata", "N_h" ,"sd_h")
+    # Only columns of interest
+    names(output_df) <- c("strata", "N_h", "sd_h")
     if (any(table(output_df$strata) > 1)) {
       stop("If using 'sd_h' and 'N_h' instead of 'y',
       data must only contain one row per stratum.")
@@ -362,7 +370,7 @@ optimum_allocation <- function(data, strata,
         ) %>%
         dplyr::mutate(
           stratum_fraction = round(n_sd / sum(n_sd),
-                                   digits = ndigits
+            digits = ndigits
           ),
           sd = round(sd_h, digits = ndigits),
           n = N_h,
@@ -372,16 +380,18 @@ optimum_allocation <- function(data, strata,
       names(output_df)[names(output_df) == "n"] <- "npop"
       if (is.null(nsample)) {
         output_df <- dplyr::arrange(output_df, strata)
-        output_df <- dplyr::select(output_df,
-                                   strata, npop, sd, n_sd,
-                                   stratum_fraction)
+        output_df <- dplyr::select(
+          output_df,
+          strata, npop, sd, n_sd,
+          stratum_fraction
+        )
         return(output_df)
       }
       else {
         output_df <- output_df %>%
           dplyr::mutate(
             stratum_size = round(nsample * n_sd / sum(n_sd),
-                                 digits = 0
+              digits = 0
             ),
             sd = round(sd, digits = ndigits),
             n_sd = round(n_sd, digits = ndigits)
@@ -407,8 +417,10 @@ optimum_allocation <- function(data, strata,
             sd = sd_h,
             n_sd = n * sd
           )
-        output_df <- tibble::as_tibble(dplyr::select(output_df,
-                                             strata, n, sd, n_sd))
+        output_df <- tibble::as_tibble(dplyr::select(
+          output_df,
+          strata, n, sd, n_sd
+        ))
         if (nsample > sum(output_df$n)) {
           stop("'nsample' is larger than population size")
         }
@@ -416,13 +428,13 @@ optimum_allocation <- function(data, strata,
         for (i in 1:n_strata) {
           priority_array[[i]] <- c(
             rep(output_df[i, "n_sd"],
-                times = min(output_df[i, "n"] - 1, n_minus_H)
+              times = min(output_df[i, "n"] - 1, n_minus_H)
             ),
             rep(NULL,
-                times = ifelse(n_minus_H > (output_df[i, "n"] - 1),
-                               n_minus_H - (output_df[i, "n"] - 1),
-                               0
-                )
+              times = ifelse(n_minus_H > (output_df[i, "n"] - 1),
+                n_minus_H - (output_df[i, "n"] - 1),
+                0
+              )
             )
           )
           # All rows are same length, but zeroes so that n_sample
@@ -439,7 +451,7 @@ optimum_allocation <- function(data, strata,
           Wright_output[, i] <- Wright_output[, i] * mult_vec[i]
         }
         cutoff <- (sort(unlist(Wright_output, use.names = FALSE),
-                        decreasing = TRUE
+          decreasing = TRUE
         ))[n_minus_H]
         stratum_size <- rowSums(Wright_output >= cutoff) + 1
         final_output <- cbind(
@@ -448,14 +460,15 @@ optimum_allocation <- function(data, strata,
         final_output <- final_output %>%
           dplyr::mutate(
             stratum_fraction = round(stratum_size / nsample,
-                                     digits = ndigits
+              digits = ndigits
             ),
             sd = round(sd, digits = ndigits),
             n_sd = round(n_sd, digits = ndigits)
           )
         final_output <- final_output[c(
           "strata", "n", "sd", "n_sd", "stratum_fraction",
-          "stratum_size")]
+          "stratum_size"
+        )]
         names(final_output)[names(final_output) == "n"] <- "npop"
         final_output <- dplyr::arrange(final_output, strata)
         return(final_output)
@@ -478,8 +491,10 @@ optimum_allocation <- function(data, strata,
             sd = sd_h,
             n_sd = n * sd
           )
-        output_df <- tibble::as_tibble(dplyr::select(output_df,
-                                             strata, n, sd, n_sd))
+        output_df <- tibble::as_tibble(dplyr::select(
+          output_df,
+          strata, n, sd, n_sd
+        ))
         if (nsample > sum(output_df$n)) {
           stop("'nsample' is larger than population size")
         }
@@ -487,13 +502,13 @@ optimum_allocation <- function(data, strata,
         for (i in 1:n_strata) {
           priority_array[[i]] <- c(
             rep(output_df[i, "n_sd"],
-                times = min(output_df[i, "n"] - 2, n_minus_2H)
+              times = min(output_df[i, "n"] - 2, n_minus_2H)
             ),
             rep(output_df[i, "n_sd"] * 0,
-                times = ifelse(n_minus_2H > (output_df[i, "n"] - 2),
-                               n_minus_2H - (output_df[i, "n"] - 2),
-                               0
-                )
+              times = ifelse(n_minus_2H > (output_df[i, "n"] - 2),
+                n_minus_2H - (output_df[i, "n"] - 2),
+                0
+              )
             )
           )
           # All rows are same length, but zeroes so that n_sample
@@ -511,22 +526,26 @@ optimum_allocation <- function(data, strata,
           Wright_output[, i] <- Wright_output[, i] * mult_vec[i]
         }
         cutoff <- (sort(unlist(Wright_output, use.names = FALSE),
-                        decreasing = TRUE
+          decreasing = TRUE
         ))[n_minus_2H]
         stratum_size <- rowSums(Wright_output >= cutoff) + 2
         final_output <- cbind(
-          output_df[, c("strata", "n", "sd", "n_sd")], stratum_size)
+          output_df[, c("strata", "n", "sd", "n_sd")], stratum_size
+        )
         final_output <- final_output %>%
           dplyr::mutate(
             stratum_fraction = round(stratum_size / nsample,
-                                     digits = ndigits
+              digits = ndigits
             ),
             sd = round(sd, digits = ndigits),
             n_sd = round(n_sd, digits = ndigits)
           )
         final_output <- final_output[
-          c("strata", "n", "sd", "n_sd", "stratum_fraction",
-            "stratum_size")]
+          c(
+            "strata", "n", "sd", "n_sd", "stratum_fraction",
+            "stratum_size"
+          )
+        ]
         names(final_output)[names(final_output) == "n"] <- "npop"
         final_output <- dplyr::arrange(final_output, strata)
         return(final_output)
