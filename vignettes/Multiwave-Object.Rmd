@@ -152,7 +152,7 @@ At any point during the multi-wave sampling workflow, `optimall` allows users to
 multiwave_diagram(MySurvey)
 ```
 <center>
-```{r, fig.align='center', fig.height = 5.5, fig.width = 5.5, echo= FALSE, eval = F}
+```{r, fig.align='center', fig.height = 5.5, fig.width = 5.5, echo= FALSE, eval = TRUE}
 multiwave_diagram(MySurvey)
 ```
 
@@ -277,7 +277,7 @@ get_data(MySurvey, phase = 2, wave = 1) <-
 multiwave_diagram(MySurvey)
 ```
 <center>
-```{r, fig.align='center', fig.height = 5.5, fig.width = 5.5, echo= FALSE, eval = F}
+```{r, fig.align='center', fig.height = 5.5, fig.width = 5.5, echo= FALSE, eval = FALSE}
 multiwave_diagram(MySurvey)
 ```
 
