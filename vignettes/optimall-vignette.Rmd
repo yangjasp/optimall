@@ -537,7 +537,7 @@ Multi-wave adaptive sampling using optimum allocation efficiently minimizes the 
 
 In many cases, deciding which strata to split and where is a difficult task. `split_strata` makes this job easier, but it is designed more for situations where the strata and split values have already been decided by the user. Running it iteratively to experiment with different splits is possible yet tedious. 
 
-To help users make these difficult decisions, `optimall` includes an R Shiny application that reacts in realtime to user selections of splitting parameters. It can be called using `optimall_shiny()`. See the screenshot below:
+To help users make these difficult decisions, `optimall` includes an R Shiny application that reacts in real time to user selections of splitting parameters. It can be called using `optimall_shiny()`. See the screenshot below:
 <center>
 <br />
 ![](../inst/shiny-app/optimall_shiny/Screenshots/Screenshot1.png){width=80%}
