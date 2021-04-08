@@ -34,15 +34,16 @@ multiwave objects may only have one wave in Phase 1.
 }
 \examples{
 
-#Initialize a multiwave object for a two-phase sampling design that will
-#sample over three waves in the second phase
-multiwave_object <- new_multiwave(phases = 2, waves = c(1,3))
+# Initialize a multiwave object for a two-phase sampling design that will
+# sample over three waves in the second phase
+multiwave_object <- new_multiwave(phases = 2, waves = c(1, 3))
 
-#If we already have the phase 1 data and want to add a title to the survey
-#metadata, we can initialize the object with these included.
+# If we already have the phase 1 data and want to add a title to the survey
+# metadata, we can initialize the object with these included.
 
 library(datasets)
-multiwave_object <- new_multiwave(phases = 2, waves = c(1,3),
-metadata = list(title = "my two-phase survey"), phase1 = iris)
-
+multiwave_object <- new_multiwave(
+  phases = 2, waves = c(1, 3),
+  metadata = list(title = "my two-phase survey"), phase1 = iris
+)
 }

@@ -99,14 +99,17 @@ optimum_allocation(
 )
 
 # Or if input data is summary of strata sd and N:
-iris_summary <- data.frame(strata = unique(iris$Species),
-size = c(50, 50, 50),
-sd = c(0.3791, 0.3138, 0.3225))
+iris_summary <- data.frame(
+  strata = unique(iris$Species),
+  size = c(50, 50, 50),
+  sd = c(0.3791, 0.3138, 0.3225)
+)
 
-optimum_allocation(data = iris_summary, strata = "strata",
-                  sd_h = "sd", N_h = "size",
-                  nsample = 40, method = "WrightII")
-
+optimum_allocation(
+  data = iris_summary, strata = "strata",
+  sd_h = "sd", N_h = "size",
+  nsample = 40, method = "WrightII"
+)
 }
 \references{
 Wright, T. (2014). A Simple Method of Exact Optimal

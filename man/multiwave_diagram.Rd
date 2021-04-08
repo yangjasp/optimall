@@ -21,6 +21,6 @@ in the plotting window. Red boxes indicate slots that have not yet been
 filled, blue boxes indicate that the slot is filled.
 }
 \examples{
-MySurvey <- new_multiwave(phases = 2, waves = c(1,3))
+MySurvey <- new_multiwave(phases = 2, waves = c(1, 3))
 multiwave_diagram(MySurvey)
 }

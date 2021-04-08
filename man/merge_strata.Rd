@@ -32,6 +32,8 @@ strata names is retained and given the name 'old_strata'.
 Merges multiple pre-defined sampling strata into a single stratum.
 }
 \examples{
-x <- merge_strata(iris, strata = "Species",
-merge = c("virginica", "versicolor"), name = "v_species")
+x <- merge_strata(iris,
+  strata = "Species",
+  merge = c("virginica", "versicolor"), name = "v_species"
+)
 }

@@ -40,14 +40,15 @@ class \code{Multiwave}. It can be used to access or write slots.
 
 \examples{
 # Intiate multiwave object
-MySurvey <- new_multiwave(phases = 2, waves = c(1,3))
+MySurvey <- new_multiwave(phases = 2, waves = c(1, 3))
 
 # To access overall metadata
 get_data(MySurvey, phase = NA, slot = "metadata")
 
 # To write overall metadata
 get_data(MySurvey, phase = NA, slot = "metadata") <- list(
- title = "Maternal Weight Survey")
+  title = "Maternal Weight Survey"
+)
 
 # To access Phase 2 metadata
 get_data(MySurvey, phase = 2, slot = "metadata")

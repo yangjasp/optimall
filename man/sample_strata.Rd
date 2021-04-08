@@ -64,20 +64,26 @@ or \code{optimum_allocation}.
 }
 \examples{
 # Define a design dataframe
-design <- data.frame(strata = c("setosa", "virginica", "versicolor"),
-n_to_sample = c(5, 5, 5))
+design <- data.frame(
+  strata = c("setosa", "virginica", "versicolor"),
+  n_to_sample = c(5, 5, 5)
+)
 
 # Make sure there is an id column
 iris$id <- 1:nrow(iris)
 
 # Run
-sample_strata(data = iris, strata = "Species", id = "id",
-design_data = design, design_strata = "strata", n_allocated = "n_to_sample")
+sample_strata(
+  data = iris, strata = "Species", id = "id",
+  design_data = design, design_strata = "strata", n_allocated = "n_to_sample"
+)
 
 # If some units had already been samples
 iris$already_sampled <- rbinom(nrow(iris), 1, 0.25)
 
-sample_strata(data = iris, strata = "Species", id = "id",
-wave2a = "already_sampled",
-design_data = design, design_strata = "strata", n_allocated = "n_to_sample")
+sample_strata(
+  data = iris, strata = "Species", id = "id",
+  wave2a = "already_sampled",
+  design_data = design, design_strata = "strata", n_allocated = "n_to_sample"
+)
 }
