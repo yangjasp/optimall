@@ -250,8 +250,10 @@ multiwave_diagram <- function(x, height = NULL, width = NULL) {
             )
           )
 
-        recs[[(j - 1) * 6 + start + 2]] <- paste(metadata_rec, md_text, md_color)
-        recs[[(j - 1) * 6 + start + 3]] <- paste(design_rec, des_text, des_color)
+        recs[[(j - 1) * 6 + start + 2]] <- paste(metadata_rec, md_text,
+                                                 md_color)
+        recs[[(j - 1) * 6 + start + 3]] <- paste(design_rec, des_text,
+                                                 des_color)
         recs[[(j - 1) * 6 + start + 4]] <- paste(
           samples_rec, samples_text,
           samples_color
@@ -261,7 +263,8 @@ multiwave_diagram <- function(x, height = NULL, width = NULL) {
           sampled_df_text,
           sampled_df_color
         )
-        recs[[(j - 1) * 6 + start + 6]] <- paste(data_rec, data_text, data_color)
+        recs[[(j - 1) * 6 + start + 6]] <- paste(data_rec, data_text,
+                                                 data_color)
       }
     }
     recs_vec <- unlist(recs)

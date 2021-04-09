@@ -128,7 +128,8 @@ setMethod(
       # Check for args to optimum_allocation in the metadata.
       # Start in wave and move up
       if (is.null(arguments$strata)) {
-        if ("strata" %in% names(wave_md) & class(wave_md$strata) == "character") {
+        if ("strata" %in% names(wave_md) &
+            class(wave_md$strata) == "character") {
           strata <- wave_md$strata
         } else if ("strata" %in% names(phase_md) &
           class(phase_md$strata) == "character") {
@@ -162,7 +163,8 @@ setMethod(
       }
 
       if (is.null(arguments$method)) {
-        if ("method" %in% names(wave_md) & class(wave_md$method) == "character") {
+        if ("method" %in% names(wave_md) &
+            class(wave_md$method) == "character") {
           method <- wave_md$method
         } else if ("method" %in% names(phase_md) &
           class(phase_md$method) == "character") {
@@ -178,7 +180,8 @@ setMethod(
       }
 
       if (is.null(arguments$nsample)) {
-        if ("nsample" %in% names(wave_md) & class(wave_md$nsample) == "numeric") {
+        if ("nsample" %in% names(wave_md) &
+            class(wave_md$nsample) == "numeric") {
           nsample <- wave_md$nsample
         } else if ("nsample" %in% names(phase_md) &
           class(phase_md$nsample) == "numeric") {
@@ -194,7 +197,8 @@ setMethod(
       }
 
       if (is.null(arguments$ndigits)) {
-        if ("ndigits" %in% names(wave_md) & class(wave_md$ndigits) == "numeric") {
+        if ("ndigits" %in% names(wave_md) &
+            class(wave_md$ndigits) == "numeric") {
           ndigits <- wave_md$ndigits
         } else if ("ndigits" %in% names(phase_md) &
           class(phase_md$ndigits) == "numeric") {
@@ -260,9 +264,11 @@ setMethod(
       phase_md <- x@phases[[phase]]@metadata
       survey_md <- x@metadata
 
-      # Check for args to allocate_wave in the metadata. Start in wave and move up
+      # Check for args to allocate_wave in the metadata.
+      # Start in wave and move up
       if (is.null(arguments$strata)) {
-        if ("strata" %in% names(wave_md) & class(wave_md$strata) == "character") {
+        if ("strata" %in% names(wave_md) &
+            class(wave_md$strata) == "character") {
           strata <- wave_md$strata
         } else if ("strata" %in% names(phase_md) &
           class(phase_md$strata) == "character") {
@@ -292,7 +298,8 @@ setMethod(
         y <- arguments$y
       }
       if (is.null(arguments$wave2a)) {
-        if ("wave2a" %in% names(wave_md) & class(wave_md$wave2a) == "character") {
+        if ("wave2a" %in% names(wave_md) &
+            class(wave_md$wave2a) == "character") {
           wave2a <- wave_md$wave2a
         } else if ("wave2a" %in% names(phase_md) &
           class(phase_md$wave2a) == "character") {
@@ -309,7 +316,8 @@ setMethod(
       }
 
       if (is.null(arguments$method)) {
-        if ("method" %in% names(wave_md) & class(wave_md$method) == "character") {
+        if ("method" %in% names(wave_md) &
+            class(wave_md$method) == "character") {
           method <- wave_md$method
         } else if ("method" %in% names(phase_md) &
           class(phase_md$method) == "character") {
@@ -325,7 +333,8 @@ setMethod(
       }
 
       if (is.null(arguments$nsample)) {
-        if ("nsample" %in% names(wave_md) & class(wave_md$nsample) == "numeric") {
+        if ("nsample" %in% names(wave_md) &
+            class(wave_md$nsample) == "numeric") {
           nsample <- wave_md$nsample
         } else if ("nsample" %in% names(phase_md) &
           class(phase_md$nsample) == "numeric") {
@@ -341,7 +350,8 @@ setMethod(
       }
 
       if (is.null(arguments$detailed)) {
-        if ("detailed" %in% names(wave_md) & class(wave_md$detailed) == "logical") {
+        if ("detailed" %in% names(wave_md) &
+            class(wave_md$detailed) == "logical") {
           detailed <- wave_md$detailed
         } else if ("detailed" %in% names(phase_md) &
           class(phase_md$detailed) == "logical") {

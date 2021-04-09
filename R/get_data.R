@@ -51,7 +51,8 @@ get_data <- function(x, phase = 1, wave = NA, slot = "data") {
   & !is.na(phase) & slot != "metadata") {
     stop("must specify wave number unless getting phase 1 or
          survey metadata")
-  } else if ((phase == 1 | phase == "phase1") & slot %in% c("data", "metadata")) {
+  } else if ((phase == 1 | phase == "phase1") & slot %in% c("data",
+                                                            "metadata")) {
     x@phases$phase1[[slot]]
   } else if ((phase > 1 | (!is.na(phase) & phase != "phase1")) &
     is.na(wave) & slot == "metadata") {
@@ -100,7 +101,8 @@ setMethod("get_data<-", c(x = "Multiwave"), function(x, phase = 1, wave = NA,
   & !is.na(phase) & slot != "metadata") {
     stop("must specify wave number unless getting phase 1 or
          survey metadata")
-  } else if ((phase == 1 | phase == "phase1") & slot %in% c("data", "metadata")) {
+  } else if ((phase == 1 | phase == "phase1") & slot %in% c("data",
+                                                            "metadata")) {
     x@phases$phase1[[slot]] <- value
   } else if ((phase > 1 | (!is.na(phase) & phase != "phase1")) &
     is.na(wave) & slot == "metadata") {
