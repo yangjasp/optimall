@@ -18,10 +18,8 @@ knitr::opts_chunk$set(
 library(optimall)
 library(DiagrammeR)
 library(survey)
-library(survival)
 library(datasets)
 library(dplyr)
-library(here)
 
 data(MatWgt_Sim, package = "optimall")
 ```
@@ -113,7 +111,7 @@ optimum_allocation(data = iris_summary, strata = "strata",
 
 ## Selecting IDs to Sample
 
-With the number of units to sample per stratum specified in a dataframe, `optimall` can randomly select the IDs of the units to be sampled with the function `sample_strata`:
+With the number of units to sample per stratum specified in a dataframe, `optimall` can select the IDs of the units to be sampled using simple random sampling within strata with the function `sample_strata`:
 
 ```{r}
 iris$id <- 1:150
@@ -122,16 +120,23 @@ set.seed(743)
 iris <- sample_strata(data = iris, strata = "Species", id = "id",
                                design_data = sampling_design, design_strata = "strata",
                                n_allocated = "stratum_size")
+```
 
-# Created new column called "sample_indicator"
+The output of `sample_strata` is the same input dataframe with a new column called `"sample_indicator" that holds a binary indicator for whether each unit should be sampled in the specified wave:
+
+```{r}
 head(iris)
+```
 
+From this dataframe, we can easily extract a vector of the ids to sample:
+
+```{r}
 ids_to_sample <- iris$id[iris$sample_indicator == 1]
 head(ids_to_sample)
 length(ids_to_sample)
 ```
 
-Note that `"design_data"` is the output of `optimum_allocation` in this example, but in practice it can be any dataframe that has one row per stratum and one column specifying each stratum's desired sample size.
+Note that `design_data` is the output of `optimum_allocation` in this example, but in practice it can be any dataframe that has one row per stratum and one column specifying each stratum's desired sample size. As such, any method of allocating samples to strata can be implemented by `sample_strata` as long as the design dataframe is specified and simple random sampling within strata is used. 
 
 ## Adaptive, Multi-Wave Sampling
 When measuring variables of interest is expensive or difficult, it can be advantageous to employ a multi-phase design, where cheaper variables are collected from the entire population and expensive variables are collected from subsamples selected through adaptive, multi-wave sampling. This approach, which is documented in McIsaac and Cook (2015), involves multiple waves of sampling where information from prior waves is used to inform the optimum sampling design of subsequent ones. With the understanding that both Neyman and Wright's optimum allocation methods depend heavily on standard deviation estimates for the variable of interest, the benefit of multi-wave sampling is clear to see. Sample allocations based on prior waves will use updated estimates of nuisance parameters that incorporate data accumulated in the prior sampling waves. The optimal sampling proportion is updated at the end of each wave, and this update guides the sampling of the next wave. As the phase II data accumulate, the necessary within-strata SD estimates, and thus the estimated optimal sampling proportions, are expected to be closer to their true value.
@@ -454,84 +459,6 @@ phase2c <- phase2c %>%
 We have now validated 750 samples! 
 
 As this example shows, there are quite a few moving parts to keep track of in the multi-wave sampling workflow. When performing a multi-wave sampling design, you may also want to consider using `optimall's` multiwave object to organize and visualize the process. This feature is described in detail in the package vignette titled "The Multiwave Object".
-
-#### Conclusion: Assessing the Efficiency of the Multi-wave Design
-
-With all of our 750 samples allocated, we can generate an estimate of the mean true maternal weight change using the `survey` package.
-
-```{r}
-# Create dataset with only validated IDs
-validated_data <- dplyr::filter(phase2c, id %in% c(ids_to_sample2a,
-                                                   ids_to_sample2b,
-                                                   ids_to_sample2c))
-# Initially set survey design
-data_svy <- survey::svydesign(ids = ~ 1, data = validated_data)
-
-# Population strata proportions
-pop_strata <- as.data.frame(table(phase2c$new_strata)) 
-names(pop_strata)[1] <- "new_strata"
-
-# Use rake to fit weights to validated data using population proportions
-data_svy_rake <- survey::rake(design = data_svy,
-                      sample.margins = list(~new_strata),
-                      population.margins = list(pop_strata))
-
-# Mean and SE
-survey::svymean(validated_data$mat_weight_true,data_svy_rake) 
-```
-
-For comparison, we can also generate estimates for the mean and standard errors using simple random sampling:
-
-```{r}
-# Take a simple random sample of IDs:
-ids <- sample(1:10335, size = 750)
-
-# Generate SRS_data with sampled IDs stratified into our final strata
-SRS_data <- MatWgt_Sim %>%
-  dplyr::filter(id %in% ids) %>%
-  dplyr::left_join(dplyr::select(phase2c, id, new_strata), by = "id")
-
-# Find weighted mean
-data_svySRS <- survey::svydesign(ids = ~ 1, data = SRS_data)
-data_svy_rakeSRS <- survey::rake(design = data_svySRS,
-                              sample.margins = list(~new_strata),
-                              population.margins = list(pop_strata))
-
-# Mean and SE
-survey::svymean(SRS_data$mat_weight_true,data_svy_rakeSRS)
-```
-
-We see that the standard error is much larger in this case. Similar results come if we use a single wave of proportional stratified sampling:
-
-```{r}
-#Make Prop_data and sample proportionally to population proportions
-
-Prop_data <- MatWgt_Sim %>%
-  dplyr::left_join(dplyr::select(phase2c, id, new_strata), by = "id")
-
-design_df <- data.frame(
-  strata = names(table(Prop_data$new_strata)), 
-  n = as.vector(round(750*table(Prop_data$new_strata)/nrow(Prop_data)))
-  ) 
-sum(design_df$n)
-design_df
-
-
-Prop_data <- sample_strata(data = Prop_data,  strata = "new_strata", id = "id", design_data = design_df, design_strata = "strata", n_allocated = "n")
-ids <- dplyr::filter(Prop_data, sample_indicator == 1)$id
-Prop_data <- dplyr::filter(Prop_data, id %in% ids)
-
-# Make survey data
-data_svyProp <- survey::svydesign(ids = ~ 1, data = Prop_data)
-data_svy_rakeProp <- survey::rake(design = data_svyProp,
-                              sample.margins = list(~new_strata),
-                              population.margins = list(pop_strata))
-
-# Mean and SE
-survey::svymean(Prop_data$mat_weight_true,data_svy_rakeProp)
-```
-
-Multi-wave adaptive sampling using optimum allocation efficiently minimizes the variance of an estimate, and it is thus useful in epidemiological studies where one or more covariates is difficult to measure. `Optimall` streamlines the adaptive sampling workflow in R, providing users with a simple framework for study design and analysis.
 
 ## Splitting Strata Efficiently with `optimall_shiny`
 
