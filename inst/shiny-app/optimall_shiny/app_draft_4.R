@@ -110,7 +110,7 @@ server <- function(input, output, session) {
   output$type <- renderUI({
     shiny::req(input$data)
     radioButtons(inputId = "type",
-                 label = "Split Type:",
+                 label = "Split Type",
                  list("global quantile","local quantile",
                       "value", "categorical"))
   })
@@ -133,7 +133,7 @@ server <- function(input, output, session) {
   output$split_at <- renderUI({
     shiny::req(input$data)
     if(type_vals$type %in% c("global quantile","local quantile")){
-      sliderInput(inputId = "split_at", label = "Split At:",
+      sliderInput(inputId = "split_at", label = "Split At",
                   min = 0,
                   max = 1,
                   value = 0.5,
@@ -217,8 +217,7 @@ server <- function(input, output, session) {
        (type_vals$type == "categorical" & length(input$split_at) == 1)){
       myValues$dList <- c(isolate(myValues$dList),
                           isolate(paste0(
-                            "split_strata(data = 'df_name',
-                            strata = '",
+                            "split_strata(data = 'df_name', strata = '",
                             input$strata,"', split = ",
                             ifelse(is.null(strata_to_split$split),
                                    "NULL",
