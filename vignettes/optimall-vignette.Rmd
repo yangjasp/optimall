@@ -462,7 +462,7 @@ As this example shows, there are quite a few moving parts to keep track of in th
 
 ## Splitting Strata Efficiently with `optimall_shiny`
 
-In many cases, deciding which strata to split and where is a difficult task. `split_strata` makes this job easier, but it is designed more for situations where the strata and split values have already been decided by the user. Running it iteratively to experiment with different splits is possible yet tedious. 
+In many cases, deciding which strata to split and where is a difficult task. `split_strata` makes this job easier, but it is designed for situations where the strata and split values have already been decided by the user. Running it iteratively to experiment with different splits is possible yet tedious. 
 
 To help users make these difficult decisions, `optimall` includes an R Shiny application that reacts in real time to user selections of splitting parameters. It can be called using `optimall_shiny()`. See the screenshot below:
 <center>

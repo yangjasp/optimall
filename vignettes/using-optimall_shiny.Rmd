@@ -24,7 +24,7 @@ The function `optimall_shiny`, located within the package `optimall`, launches a
 
 ## Uploading Data
 
-The first step in using `optimall_shiny` is uploading data. The data must be in the same format that the rest of `optimall`'s functions require, meaning that each row must correspond to one sampling unit. If you have already updated an existing dataset in your R workflow, you will have to save the updated dataframe to a .csv file in order to work with it in `optimall_shiny`.
+The first step in using `optimall_shiny` is uploading data. The data must be in the same format that the rest of `optimall`'s functions require, meaning that each row must corresponds to one sampling unit. If you have already updated an existing dataset in your R workflow, you will have to save the updated dataframe to a .csv file in order to work with it in `optimall_shiny`.
 
 <center>
 <br />
