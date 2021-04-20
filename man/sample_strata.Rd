@@ -8,7 +8,7 @@ sample_strata(
   data,
   strata,
   id,
-  wave2a = NULL,
+  already_sampled = NULL,
   design_data,
   design_strata = "strata",
   n_allocated = "n_to_sample"
@@ -26,7 +26,7 @@ in \code{data} which indicates stratum membership.}
 \item{id}{a character string specifying the name of the column
 in \code{data} that uniquely identifies each unit.}
 
-\item{wave2a}{a character sting specifying the name of the
+\item{already_sampled}{a character sting specifying the name of the
 column in \code{data} which indicates (1/0 or Y/N) whether a
 unit has already been sampled in a prior wave. Defaults to NULL
 which means that none have been sampled yet.}
@@ -83,7 +83,7 @@ iris$already_sampled <- rbinom(nrow(iris), 1, 0.25)
 
 sample_strata(
   data = iris, strata = "Species", id = "id",
-  wave2a = "already_sampled",
+  already_sampled = "already_sampled",
   design_data = design, design_strata = "strata", n_allocated = "n_to_sample"
 )
 }

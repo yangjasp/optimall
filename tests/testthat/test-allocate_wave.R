@@ -12,12 +12,12 @@ data <- data.frame(
   "y" = c(rnorm(30, sd = 1), rnorm(12, sd = 2)),
   "key" = rbinom(42, 1, 0.2)
 )
-data$key[c(1, 16, 31)] <- 1 # To make sure no group gets zero in wave2a
+data$key[c(1, 16, 31)] <- 1 # To make sure no group gets zero in already_sampled
 
 test_that("the output of allocate_wave is as expected", {
   output <- allocate_wave(
     data = data, strata = "strata",
-    wave2a = "key", y = "y", nsample = 20
+    already_sampled = "key", y = "y", nsample = 20
   )
   expect_equal(
     output$nsample_actual,
@@ -27,7 +27,7 @@ test_that("the output of allocate_wave is as expected", {
       nsample = sum(data$key) + 20
     )$stratum_size
   )
-  # Only works if no oversampling in wave2a
+  # Only works if no oversampling in already_sampled
   expect_equal(sum(output$n_to_sample), 20)
   expect_equal(
     sum(output$n_to_sample) + sum(output$nsample_prior),
@@ -49,7 +49,7 @@ test_that("If there is oversampling, allocate_wave does keeps strata
   # Total prior nsample is 22.
   output_over <- allocate_wave(
     data = data,
-    strata = "strata", wave2a = "key",
+    strata = "strata", already_sampled = "key",
     y = "y", nsample = 8
   )
   expect_equal(sum(output_over$nsample_actual), 30)
@@ -60,7 +60,7 @@ test_that("If there is oversampling, allocate_wave does keeps strata
   )
   output_over_simple <- allocate_wave(
     data = data, strata = "strata",
-    wave2a = "key", y = "y",
+    already_sampled = "key", y = "y",
     nsample = 8, method = "simple"
   )
   # and for simple method
@@ -79,7 +79,7 @@ test_that("the output of allocate_wave matches the output of
   data2$key2 <- c(rep(1, times = 10), rbinom(32, 1, 0.2))
   output_wave <- allocate_wave(
     data = data2, strata = "strata",
-    wave2a = "key2", y = "y", nsample = 12,
+    already_sampled = "key2", y = "y", nsample = 12,
     detailed = TRUE
   )
   output_opt <- optimum_allocation(
@@ -107,7 +107,7 @@ test_that("y must be numeric, as it has to be for optimum_allocation", {
   expect_error(
     allocate_wave(
       data = data2, strata = "strata",
-      wave2a = "key", y = "y", nsample = 20
+      already_sampled = "key", y = "y", nsample = 20
     ),
     "'y' must be numeric."
   )
@@ -116,7 +116,7 @@ test_that("y must be numeric, as it has to be for optimum_allocation", {
 test_that("nsample cannot be larger than npop - n_sampled_prior", {
   expect_error(allocate_wave(
     data = data, strata = "strata",
-    wave2a = "key", y = "y", nsample = 39
+    already_sampled = "key", y = "y", nsample = 39
   ),
   "Total sample size across waves, taken as",
   fixed = TRUE
@@ -128,7 +128,7 @@ test_that("error if data available for less than two samples", {
     dplyr::mutate(y2 = ifelse(strata == "a", NA, y))
   expect_error(allocate_wave(
     data = data3, strata = "strata",
-    wave2a = "key", y = "y2", nsample = 15
+    already_sampled = "key", y = "y2", nsample = 15
   ),
   "Function requires at least two observations",
   fixed = TRUE
@@ -138,7 +138,7 @@ test_that("error if data available for less than two samples", {
 test_that("detailed = TRUE gives all columns of interest", {
   output <- allocate_wave(
     data = data, strata = "strata",
-    wave2a = "key", y = "y", nsample = 20,
+    already_sampled = "key", y = "y", nsample = 20,
     detailed = TRUE
   )
   expect_equal(
@@ -154,21 +154,21 @@ test_that("basic errors work", {
   expect_error(
     allocate_wave(
       data = data, strata = "strata",
-      wave2a = "key", y = "y_wrong", nsample = 20
+      already_sampled = "key", y = "y_wrong", nsample = 20
     ),
     "'y' must be a character string"
   )
   expect_error(
     allocate_wave(
       data = data, strata = "strata",
-      wave2a = "key_wrong", y = "y", nsample = 20
+      already_sampled = "key_wrong", y = "y", nsample = 20
     ),
-    "'wave2a' must be a character string"
+    "'already_sampled' must be a character string"
   )
   expect_error(
     allocate_wave(
       data = data, strata = "strata_wrong",
-      wave2a = "key", y = "y", nsample = 20
+      already_sampled = "key", y = "y", nsample = 20
     ),
     "'strata' must be a character string"
   )
@@ -177,7 +177,7 @@ test_that("basic errors work", {
   expect_error(
     allocate_wave(
       data = bad_data, strata = "strata",
-      wave2a = "key_wrong", y = "y", nsample = 20
+      already_sampled = "key_wrong", y = "y", nsample = 20
     ),
     "has a binary indicator for whether each unit"
   )
@@ -185,7 +185,7 @@ test_that("basic errors work", {
   expect_error(
     allocate_wave(
       data = bad_data, strata = "strata",
-      wave2a = "key", y = "y", nsample = 20
+      already_sampled = "key", y = "y", nsample = 20
     ),
     "cannot contain NAs"
   )

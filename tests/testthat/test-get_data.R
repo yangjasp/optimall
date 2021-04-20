@@ -114,7 +114,7 @@ test_that("Design, samples, sampled_data, data work", {
   test <- apply_multiwave(test,
     phase = 2, wave = 2, fun = "allocate_wave",
     y = "Sepal.Width",
-    wave2a = "already_sampled_ind", nsample = 30,
+    already_sampled = "already_sampled_ind", nsample = 30,
     detailed = TRUE
   )
 

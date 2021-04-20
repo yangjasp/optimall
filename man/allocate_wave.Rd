@@ -8,7 +8,7 @@ allocate_wave(
   data,
   strata,
   y,
-  wave2a,
+  already_sampled,
   nsample,
   method = "iterative",
   detailed = FALSE
@@ -19,7 +19,7 @@ allocate_wave(
 sampling unit, one column specifying each unit's stratum,
 one column holding the value of the continuous variable for
 which the variance should be minimized, and one column
-containing a binary indicator, \code{wave2a},
+containing a binary indicator, \code{already_sampled},
 specifying whether each unit has already been sampled.}
 
 \item{strata}{A character string or vector of character strings
@@ -29,7 +29,7 @@ each unit belongs to.}
 \item{y}{A character string specifying the name of the
 continuous variable for which the variance should be minimized.}
 
-\item{wave2a}{A character string specifying the name of a
+\item{already_sampled}{A character string specifying the name of a
 column that contains a binary (\code{Y}/\code{N} or \code{1}
 /\code{0}) indicator specifying whether each unit has already
 been sampled in a previous wave.}
@@ -91,7 +91,7 @@ output the \emph{most} optimal allocation possible for the next wave.
 \dontrun{
 x <- allocate_wave(
   data = iris, strata = "Species",
-  y = "Sepal.Width", wave2a = "BinaryIndAlreadySampled",
+  y = "Sepal.Width", already_sampled = "BinaryIndAlreadySampled",
   nsample = 20, method = "simple"
 )
 }

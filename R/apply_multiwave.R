@@ -297,22 +297,22 @@ setMethod(
       } else {
         y <- arguments$y
       }
-      if (is.null(arguments$wave2a)) {
-        if ("wave2a" %in% names(wave_md) &
-            class(wave_md$wave2a) == "character") {
-          wave2a <- wave_md$wave2a
-        } else if ("wave2a" %in% names(phase_md) &
-          class(phase_md$wave2a) == "character") {
-          wave2a <- phase_md$wave2a
-        } else if ("wave2a" %in% names(survey_md) &
-          class(survey_md$wave2a) == "character") {
-          wave2a <- survey_md$wave2a
+      if (is.null(arguments$already_sampled)) {
+        if ("already_sampled" %in% names(wave_md) &
+            class(wave_md$already_sampled) == "character") {
+          already_sampled <- wave_md$already_sampled
+        } else if ("already_sampled" %in% names(phase_md) &
+          class(phase_md$already_sampled) == "character") {
+          already_sampled <- phase_md$already_sampled
+        } else if ("already_sampled" %in% names(survey_md) &
+          class(survey_md$already_sampled) == "character") {
+          already_sampled <- survey_md$already_sampled
         } else {
-          stop("'wave2a' must be specified or available in metadata. If no
+          stop("'already_sampled' must be specified or available in metadata. If no
              samples have been taken yet, use 'optimum_allocation'")
         }
       } else {
-        wave2a <- arguments$wave2a
+        already_sampled <- arguments$already_sampled
       }
 
       if (is.null(arguments$method)) {
@@ -368,7 +368,7 @@ setMethod(
 
       output <- allocate_wave(
         data = data, y = y,
-        wave2a = wave2a, strata = strata,
+        already_sampled = already_sampled, strata = strata,
         nsample = nsample, method = method,
         detailed = detailed
       )
@@ -490,27 +490,27 @@ setMethod(
         'data' slot of the previous wave.")
       }
 
-      # wave2a
-      if (is.null(arguments$wave2a)) {
-        if ("wave2a" %in% names(wave_md) &
-          class(wave_md$wave2a) == "character") {
-          wave2a <- wave_md$wave2a
-        } else if ("wave2a" %in% names(phase_md) &
-          class(phase_md$wave2a) == "character") {
-          wave2a <- phase_md$wave2a
-        } else if ("wave2a" %in% names(survey_md) &
-          class(survey_md$wave2a) == "character") {
-          wave2a <- survey_md$wave2a
+      # already_sampled
+      if (is.null(arguments$already_sampled)) {
+        if ("already_sampled" %in% names(wave_md) &
+          class(wave_md$already_sampled) == "character") {
+          already_sampled <- wave_md$already_sampled
+        } else if ("already_sampled" %in% names(phase_md) &
+          class(phase_md$already_sampled) == "character") {
+          already_sampled <- phase_md$already_sampled
+        } else if ("already_sampled" %in% names(survey_md) &
+          class(survey_md$already_sampled) == "character") {
+          already_sampled <- survey_md$already_sampled
         } else {
-          wave2a <- NULL
+          already_sampled <- NULL
         }
       } else {
-        wave2a <- arguments$wave2a
+        already_sampled <- arguments$already_sampled
       }
 
-      if (!is.null(wave2a)) {
-        if (!(wave2a %in% names(data))) {
-          stop("'wave2a' must be a column name of the dataframe in the
+      if (!is.null(already_sampled)) {
+        if (!(already_sampled %in% names(data))) {
+          stop("'already_sampled' must be a column name of the dataframe in the
           'data' slot of the previous wave.")
         }
       }
@@ -543,7 +543,7 @@ setMethod(
 
       output <- sample_strata(
         data = data, id = id,
-        strata = strata, wave2a = wave2a,
+        strata = strata, already_sampled = already_sampled,
         design_data = design_data,
         design_strata = design_strata,
         n_allocated = n_allocated

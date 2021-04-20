@@ -14,18 +14,18 @@ data <- data.frame(
   "key" = rbinom(42, 1, 0.2),
   "id" = seq(1:42)
 )
-data$key[c(1, 16, 31)] <- 1 # To make sure no group gets zero in wave2a
+data$key[c(1, 16, 31)] <- 1 # To make sure no group gets zero in already_sampled
 
 df <- allocate_wave(
   data = data, strata = "strata",
-  wave2a = "key", y = "y", nsample = 15
+  already_sampled = "key", y = "y", nsample = 15
 )
 
 set.seed(384)
 sampled_data <- sample_strata(
   data = data, strata = "strata",
   id = "id", design_data = df,
-  wave2a = "key", design_strata = "strata",
+  already_sampled = "key", design_strata = "strata",
   n_allocated = "n_to_sample"
 )
 
@@ -39,7 +39,7 @@ test_that("samples are properly allocated", {
   )
 })
 
-test_that("no samples in wave2a are again sampled", {
+test_that("no samples in already_sampled are again sampled", {
   expect_equal(any(sampled_data[sampled_data$sample_indicator == 1, ]$id %in%
     data[data$key == 1, ]$id), FALSE)
 })
@@ -49,7 +49,7 @@ test_that("same thing with new seed yields different sample", {
   sampled_design_data <- sample_strata(
     data = data, strata = "strata",
     id = "id", design_data = df,
-    wave2a = "key", design_strata = "strata",
+    already_sampled = "key", design_strata = "strata",
     n_allocated = "n_to_sample"
   )
   expect_equal(
@@ -61,7 +61,7 @@ test_that("same thing with new seed yields different sample", {
   )
 })
 
-test_that("works if wave2a is NULL", {
+test_that("works if already_sampled is NULL", {
   design_data <- data
   design_data$key <- rep(0, times = 42)
   df2 <- optimum_allocation(
@@ -72,7 +72,7 @@ test_that("works if wave2a is NULL", {
   sampled_design_data <- sample_strata(
     data = design_data, strata = "strata",
     id = "id", design_data = df2,
-    wave2a = NULL, design_strata = "strata",
+    already_sampled = NULL, design_strata = "strata",
     n_allocated = "stratum_size"
   )
   expect_equal(sum(sampled_design_data$sample_indicator == 1), 15)
@@ -91,7 +91,7 @@ test_that("Error messages displayed as necessary", {
       data = x,
       strata = "strata",
       id = "id", design_data = df,
-      wave2a = "key",
+      already_sampled = "key",
       design_strata = "strata",
       n_allocated = "n_to_sample"
     ),
@@ -102,7 +102,7 @@ test_that("Error messages displayed as necessary", {
       data = data,
       strata = "strata_wrong",
       id = "id", design_data = df,
-      wave2a = "key",
+      already_sampled = "key",
       design_strata = "strata",
       n_allocated = "n_to_sample"
     ),
@@ -113,7 +113,7 @@ test_that("Error messages displayed as necessary", {
       data = data,
       strata = "strata",
       id = "id", design_data = df,
-      wave2a = "key",
+      already_sampled = "key",
       design_strata = "strata_wrong",
       n_allocated = "n_to_sample"
     ),
@@ -126,7 +126,7 @@ test_that("Error messages displayed as necessary", {
       strata = "strata",
       id = "id",
       design_data = df_extra_row,
-      wave2a = "key",
+      already_sampled = "key",
       design_strata = "strata",
       n_allocated = "n_to_sample"
     ),
@@ -138,11 +138,11 @@ test_that("Error messages displayed as necessary", {
       strata = "strata",
       id = "id",
       design_data = df,
-      wave2a = "key_wrong",
+      already_sampled = "key_wrong",
       design_strata = "strata",
       n_allocated = "n_to_sample"
     ),
-    "If not NULL, 'wave2a' must be a character string"
+    "If not NULL, 'already_sampled' must be a character string"
   )
   data$three_key <- rep(c(1, 2, 3), times = dim(data)[1] / 3)
   expect_error(
@@ -151,7 +151,7 @@ test_that("Error messages displayed as necessary", {
       strata = "strata",
       id = "id",
       design_data = df,
-      wave2a = "three_key",
+      already_sampled = "three_key",
       design_strata = "strata",
       n_allocated = "n_to_sample"
     ),
@@ -164,11 +164,11 @@ test_that("Error messages displayed as necessary", {
       strata = "strata",
       id = "id",
       design_data = df,
-      wave2a = "wrong_two_key",
+      already_sampled = "wrong_two_key",
       design_strata = "strata",
       n_allocated = "n_to_sample"
     ),
-    "'wave2a' column must contain '1'"
+    "'already_sampled' column must contain '1'"
   )
   data$wrong_two_key <- c(
     rep(1, times = dim(data)[1] - 6), 0, 0, 0,
@@ -180,7 +180,7 @@ test_that("Error messages displayed as necessary", {
       strata = "strata",
       id = "id",
       design_data = df,
-      wave2a = "wrong_two_key",
+      already_sampled = "wrong_two_key",
       design_strata = "strata",
       n_allocated = "n_to_sample"
     ),
@@ -201,7 +201,7 @@ test_that("Error messages displayed as necessary", {
       strata = "strata",
       id = "id",
       design_data = df_wrong_strata_name,
-      wave2a = "key",
+      already_sampled = "key",
       design_strata = "strata_new",
       n_allocated = "n_to_sample"
     ),
@@ -215,7 +215,7 @@ test_that("works if input is a matrix", {
     strata = "strata",
     id = "id",
     design_data = data.matrix(df),
-    wave2a = "key",
+    already_sampled = "key",
     design_strata = "strata",
     n_allocated = "n_to_sample"
   )
@@ -228,7 +228,7 @@ test_that("returns error if n_allocated is not a whole number", {
     sample_strata(
       data = data, strata = "strata",
       id = "id", design_data = df,
-      wave2a = "key", design_strata = "strata",
+      already_sampled = "key", design_strata = "strata",
       n_allocated = "n_to_sample"
     ),
     "must specify a numeric column"
@@ -238,7 +238,7 @@ test_that("returns error if n_allocated is not a whole number", {
     sample_strata(
       data = data, strata = "strata",
       id = "id", design_data = df,
-      wave2a = "key", design_strata = "strata",
+      already_sampled = "key", design_strata = "strata",
       n_allocated = "n_to_sample"
     ),
     "must specify a numeric column"

@@ -198,7 +198,7 @@ test_that("allocate_wave runs with args provided", {
     phase = 2, wave = 2,
     fun = "allocate_wave", strata = "Species",
     y = "Sepal.Width",
-    wave2a = "already_sampled_ind",
+    already_sampled = "already_sampled_ind",
     nsample = 30, detailed = TRUE
   )
   expect_equal(
@@ -247,7 +247,7 @@ test_that("allocate_wave runs with args in metadata", {
   )
   get_data(MySurvey, phase = NA, slot = "metadata") <- list(
     y = "Sepal.Width",
-    wave2a = "already_sampled_ind",
+    already_sampled = "already_sampled_ind",
     strata = "Species",
     nsample = 30, detailed = TRUE
   )
@@ -274,7 +274,7 @@ test_that("allocate_wave runs with args in metadata", {
   # but metadata in phase overrides
   get_data(MySurvey, phase = 2, slot = "metadata") <- list(
     y = "Sepal.Width",
-    wave2a = "already_sampled_ind",
+    already_sampled = "already_sampled_ind",
     strata = "Species",
     nsample = 32, detailed = TRUE
   )
@@ -303,7 +303,7 @@ test_that("allocate_wave runs with args in metadata", {
     slot = "metadata"
   ) <- list(
     y = "Sepal.Width",
-    wave2a = "already_sampled_ind",
+    already_sampled = "already_sampled_ind",
     strata = "Species",
     nsample = 33, detailed = TRUE
   )
@@ -375,7 +375,7 @@ test_that("errors if args are not specified", {
       phase = 2, wave = 2,
       fun = "allocate_wave",
       y = "Sepal.Width",
-      wave2a = "already_sampled_ind",
+      already_sampled = "already_sampled_ind",
       nsample = 30, detailed = TRUE
     ),
     "must be specified or available in metadata"
@@ -397,7 +397,7 @@ test_that("errors if args are not specified", {
       phase = 2, wave = 2,
       fun = "allocate_wave",
       y = "Sepal.Width",
-      wave2a = "already_sampled_ind",
+      already_sampled = "already_sampled_ind",
       strata = "Species", detailed = TRUE
     ),
     "must be specified or available in metadata"
@@ -408,7 +408,7 @@ test_that("errors if args are not specified", {
       phase = 2, wave = 2,
       fun = "allocate_wave",
       strata = "Species",
-      wave2a = "already_sampled_ind",
+      already_sampled = "already_sampled_ind",
       nsample = 30, detailed = TRUE
     ),
     "must be specified or available in metadata"
@@ -632,7 +632,7 @@ test_that("errors in sample_strata if args don't match", {
       phase = 2, wave = 1,
       fun = "sample_strata", strata = "Species",
       design_strata = "strata",
-      wave2a = NULL,
+      already_sampled = NULL,
       id = "id",
       n_allocated = "wrong"
     ),
@@ -643,7 +643,7 @@ test_that("errors in sample_strata if args don't match", {
       phase = 2, wave = 1,
       fun = "sample_strata", strata = "Species",
       design_strata = "strata",
-      wave2a = "wrong",
+      already_sampled = "wrong",
       id = "id"
     ),
     "must be a column name"

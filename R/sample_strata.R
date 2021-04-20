@@ -19,7 +19,7 @@
 #' in `data` which indicates stratum membership.
 #' @param id a character string specifying the name of the column
 #' in `data` that uniquely identifies each unit.
-#' @param wave2a a character sting specifying the name of the
+#' @param already_sampled a character sting specifying the name of the
 #' column in \code{data} which indicates (1/0 or Y/N) whether a
 #' unit has already been sampled in a prior wave. Defaults to NULL
 #' which means that none have been sampled yet.
@@ -59,10 +59,10 @@
 #'
 #' sample_strata(
 #'   data = iris, strata = "Species", id = "id",
-#'   wave2a = "already_sampled",
+#'   already_sampled = "already_sampled",
 #'   design_data = design, design_strata = "strata", n_allocated = "n_to_sample"
 #' )
-sample_strata <- function(data, strata, id, wave2a = NULL,
+sample_strata <- function(data, strata, id, already_sampled = NULL,
                           design_data, design_strata = "strata",
                           n_allocated = "n_to_sample") {
   if (is.matrix(data) | is.matrix(design_data)) {
@@ -99,31 +99,31 @@ sample_strata <- function(data, strata, id, wave2a = NULL,
     containing only whole number values")
   }
   nsample <- sum(design_data[, n_allocated])
-  if (is.null(wave2a) == FALSE) {
-    if (wave2a %in% names(data) == FALSE) {
-      stop("If not NULL, 'wave2a' must be a character string matching
+  if (is.null(already_sampled) == FALSE) {
+    if (already_sampled %in% names(data) == FALSE) {
+      stop("If not NULL, 'already_sampled' must be a character string matching
       a column name of 'data'.")
     }
-    if (length(table(data[, wave2a])) != 2) {
-      stop("'wave2a' must be a character string matching a column
+    if (length(table(data[, already_sampled])) != 2) {
+      stop("'already_sampled' must be a character string matching a column
            in 'data' that has a binary indicator for whether each
            unit was already sampled.")
     }
-    if (("Y" %in% data[, wave2a] == FALSE & 1 %in%
-      data[, wave2a] == FALSE) | any(is.na(data[, wave2a]))) {
-      stop("'wave2a' column must contain '1' (numeric) or 'Y'
+    if (("Y" %in% data[, already_sampled] == FALSE & 1 %in%
+      data[, already_sampled] == FALSE) | any(is.na(data[, already_sampled]))) {
+      stop("'already_sampled' column must contain '1' (numeric) or 'Y'
            (string) as indicators that a unit was sampled in a
            previous wave and cannot contain NAs")
     }
-    if (nsample + sum(data[, wave2a] == "Y") +
-      sum(data[, wave2a] == 1) > length(data[, wave2a])) {
+    if (nsample + sum(data[, already_sampled] == "Y") +
+      sum(data[, already_sampled] == 1) > length(data[, already_sampled])) {
       stop("Total sample size across waves, taken as nsampled in
-           wave2a + n to allocate in this sample, is larger than
+           already_sampled + n to allocate in this sample, is larger than
            the population size.")
     }
   }
   sampled_ids <- list()
-  if (is.null(wave2a) == TRUE) {
+  if (is.null(already_sampled) == TRUE) {
     for (i in seq_len(nrow(design_data))) {
       stratum <- design_data[, design_strata][i]
       strata_data <- data[data[, strata] == stratum, c(id, strata)]
@@ -133,13 +133,13 @@ sample_strata <- function(data, strata, id, wave2a = NULL,
       )
     }
   }
-  if (is.null(wave2a) == FALSE) {
+  if (is.null(already_sampled) == FALSE) {
     for (i in seq_len(nrow(design_data))) {
       stratum <- design_data[, design_strata][i]
       strata_data <- data[
         data[, strata] == stratum
-        & data[, wave2a] != "Y"
-        & data[, wave2a] != 1,
+        & data[, already_sampled] != "Y"
+        & data[, already_sampled] != 1,
         c(id, strata)
       ]
       sampled_ids[[i]] <- sample(

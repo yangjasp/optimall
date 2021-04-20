@@ -210,7 +210,7 @@ table(is.na(wave1_data$Sepal.Width), wave1_data$Species)
 wave2_design <- allocate_wave(data = wave1_data,
                               strata = "Species", 
                               y = "Sepal.Width",
-                              wave2a = "sample_indicator",
+                              already_sampled = "sample_indicator",
                               nsample = 10, 
                               detailed = TRUE)
 
@@ -342,7 +342,7 @@ phase2b$already_sampled <- ifelse(phase2b$id %in% ids_to_sample2a, 1, 0)
 # Make design 
 phase2b_design <- allocate_wave(data = phase2b, strata = "new_strata",
                              y = "mat_weight_true",
-                             wave2a = "already_sampled", 
+                             already_sampled = "already_sampled", 
                              nsample = 250,
                              detailed = TRUE)
 phase2b_design
@@ -369,7 +369,7 @@ With our strata now more balanced in size, we can re-run `allocate_wave` to make
 phase2b_design <- allocate_wave(data = phase2b, 
                              strata = "new_strata",
                              y = "mat_weight_true",
-                             wave2a = "already_sampled",
+                             already_sampled = "already_sampled",
                              nsample = 250)
 phase2b_design
 
@@ -377,7 +377,7 @@ phase2b_design
 ids_to_sample2b <- sample_strata(data = phase2b, 
                                  strata = "new_strata", 
                                  id = "id", 
-                                 wave2a = "already_sampled", 
+                                 already_sampled = "already_sampled", 
                                  design_data = phase2b_design,
                                  design_strata = "strata", 
                                  n_allocated = "n_to_sample")
@@ -426,7 +426,7 @@ phase2c$already_sampled <- ifelse(phase2b$id %in% c(ids_to_sample2a,
 # Make Design
 phase2c_design <- allocate_wave(data = phase2c, strata = "new_strata",
                              y = "mat_weight_true",
-                             wave2a = "already_sampled", 
+                             already_sampled = "already_sampled", 
                              nsample = 250,
                              detailed = TRUE)
 phase2c_design
@@ -435,7 +435,7 @@ phase2c_design
 ids_to_sample2c <- sample_strata(data = phase2c, 
                                  strata = "new_strata", 
                                  id = "id", 
-                                 wave2a = "already_sampled", 
+                                 already_sampled = "already_sampled", 
                                  design_data = phase2c_design,
                                  design_strata = "strata", 
                                  n_allocated = "n_to_sample")

@@ -20,14 +20,14 @@
 #' sampling unit, one column specifying each unit's stratum,
 #' one column holding the value of the continuous variable for
 #' which the variance should be minimized, and one column
-#' containing a binary indicator, \code{wave2a},
+#' containing a binary indicator, \code{already_sampled},
 #' specifying whether each unit has already been sampled.
 #' @param strata A character string or vector of character strings
 #' specifying the name of columns that indicate the stratum that
 #' each unit belongs to.
 #' @param y A character string specifying the name of the
 #' continuous variable for which the variance should be minimized.
-#' @param wave2a A character string specifying the name of a
+#' @param already_sampled A character string specifying the name of a
 #' column that contains a binary (\code{Y}/\code{N} or \code{1}
 #' /\code{0}) indicator specifying whether each unit has already
 #' been sampled in a previous wave.
@@ -58,7 +58,7 @@
 #' \dontrun{
 #' x <- allocate_wave(
 #'   data = iris, strata = "Species",
-#'   y = "Sepal.Width", wave2a = "BinaryIndAlreadySampled",
+#'   y = "Sepal.Width", already_sampled = "BinaryIndAlreadySampled",
 #'   nsample = 20, method = "simple"
 #' )
 #' }
@@ -86,7 +86,7 @@
 
 allocate_wave <- function(data,
                           strata,
-                          y, wave2a,
+                          y, already_sampled,
                           nsample,
                           method = "iterative",
                           detailed = FALSE) {
@@ -106,34 +106,34 @@ allocate_wave <- function(data,
   if (y %in% names(data) == FALSE) {
     stop("'y' must be a character string matching a column name of data.")
   }
-  if (wave2a %in% names(data) == FALSE) {
-    stop("'wave2a' must be a character string matching a column name of
+  if (already_sampled %in% names(data) == FALSE) {
+    stop("'already_sampled' must be a character string matching a column name of
            data.")
   }
   if (class(detailed) != "logical") {
     stop("'detailed' must be a logical value.")
   }
-  if (length(table(data[, wave2a])) != 2) {
-    stop("'wave2a' must be a character string matching a column in
+  if (length(table(data[, already_sampled])) != 2) {
+    stop("'already_sampled' must be a character string matching a column in
          'data' that has a binary indicator for whether each unit
          was already sampled. If no units have been sampled yet,
          use 'optimum_allocation'.")
   }
-  if (("Y" %in% data[, wave2a] == FALSE & 1 %in%
-    data[, wave2a] == FALSE) | any(is.na(data[, wave2a]))) {
-    stop("'wave2a' column must contain '1' (numeric) or 'Y'
+  if (("Y" %in% data[, already_sampled] == FALSE & 1 %in%
+    data[, already_sampled] == FALSE) | any(is.na(data[, already_sampled]))) {
+    stop("'already_sampled' column must contain '1' (numeric) or 'Y'
          (character) as indicators that a unit was sampled in a
          previous wave and cannot contain NAs. If no units have
          been sample, use 'optimum_allocation.")
   }
-  if (nsample + sum(data[, wave2a] == "Y") +
-    sum(data[, wave2a] == 1) > length(data[, y])) {
+  if (nsample + sum(data[, already_sampled] == "Y") +
+    sum(data[, already_sampled] == 1) > length(data[, y])) {
     stop("Total sample size across waves, taken as nsampled in
-         wave2a + nsample, is larger than the population size.")
+         already_sampled + nsample, is larger than the population size.")
   }
   method <- match.arg(method, c("simple", "iterative"))
   # Find the total sample size and optimally allocate that
-  nsampled <- sum(data[, wave2a] == "Y" | data[, wave2a] == 1)
+  nsampled <- sum(data[, already_sampled] == "Y" | data[, already_sampled] == 1)
   output1 <- optimall::optimum_allocation(
     data = data,
     strata = strata,
@@ -147,7 +147,7 @@ allocate_wave <- function(data,
   # sample size for each
   y <- enquo(y)
   strata <- enquo(strata)
-  key_q <- enquo(wave2a)
+  key_q <- enquo(already_sampled)
   wave1_df <- data %>%
     dplyr::select(!!strata, !!y, !!key_q)
   group <- interaction(dplyr::select(wave1_df, !!strata))
