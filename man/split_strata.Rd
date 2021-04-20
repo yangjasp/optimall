@@ -77,7 +77,10 @@ Splits pre-defined sampling strata based on values of a
 continuous or categorical variable.
 }
 \details{
-The names of the newly created strata for a split generated
+For splits on continuous variables, the new strata are defined
+on left-open intervals. The only exception is the first interval,
+which must include the overall minimum value. The names of the newly
+created strata for a split generated
 from a continuous value are the \code{split_var} column name with
 the range of values defining that stratum appended to the
 old strata name. For a categorical split, the new strata names

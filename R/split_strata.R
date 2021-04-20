@@ -3,7 +3,10 @@
 #' Splits pre-defined sampling strata based on values of a
 #' continuous or categorical variable.
 #'
-#' The names of the newly created strata for a split generated
+#' For splits on continuous variables, the new strata are defined
+#' on left-open intervals. The only exception is the first interval,
+#' which must include the overall minimum value. The names of the newly
+#' created strata for a split generated
 #' from a continuous value are the `split_var` column name with
 #' the range of values defining that stratum appended to the
 #' old strata name. For a categorical split, the new strata names
@@ -13,6 +16,7 @@
 #' If the `split_var` column name is long,
 #' the user can specify a value for `trunc` to prevent the new
 #' strata names from being inconveniently long.
+#'
 #' @param data a dataframe or matrix with one row for each
 #' sampling unit, one column specifying each unit's current
 #' stratum, one column containing the continuous or categorical
