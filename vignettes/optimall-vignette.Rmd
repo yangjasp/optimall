@@ -182,9 +182,9 @@ wave1_design <- data.frame(strata = c("setosa",
                            stratum_size = c(7, 16, 7))
 
 # Collect Sepal.Width from only the 30 samples
-phase1_data <- datasets::iris %>%
-  dplyr::select(-Sepal.Width) %>%
-  dplyr::mutate(id = row_number())
+phase1_data <- subset(datasets::iris, select =  -Sepal.Width)
+
+phase1_data$id <- 1:nrow(phase1_data) #Add id column
 
 set.seed(234)
 phase1_data <- sample_strata(data = phase1_data, 
@@ -195,13 +195,9 @@ phase1_data <- sample_strata(data = phase1_data,
 
 wave1_ids <- iris$id[phase1_data$sample_indicator == 1]
 
-wave1_sampled_data <- iris %>%
-  dplyr::filter(id %in% wave1_ids) %>%
-  dplyr::select(id, Sepal.Width)
+wave1_sampled_data <- iris[iris$id %in% wave1_ids, c("id","Sepal.Width")]
 
-wave1_data <- dplyr::left_join(phase1_data, 
-                               wave1_sampled_data,
-                               by = "id")
+wave1_data <- merge(phase1_data, wave1_sampled_data, by = "id", all.x = TRUE)
 
 # We have our 30 samples
 table(is.na(wave1_data$Sepal.Width), wave1_data$Species)
@@ -262,11 +258,9 @@ For the purpose of our examples, we suppose that we do not have access to this f
 During phase-I, we assume that all 10335 mother-child pairs have been sampled for the inexpensive covariates. Accordingly, we define our phase 1 dataset to be 10335 x 4 with every column of the full `MatWgt_Sim` data excluding the expensive true weight change. In the examples that follow, we will assume the validated maternal weight variable `mat_weight_true` will only be available through phase 2 sampling.
 
 ```{r}
-library(dplyr)
 
 # Get phase 1 data, remove mat_weight_true which we assume is unknown
-phase1 <- MatWgt_Sim %>%
-  dplyr::select(-mat_weight_true)
+phase1 <- subset(MatWgt_Sim, select =  -mat_weight_true)
 dim(phase1)
 ```
 
@@ -281,8 +275,7 @@ phase1$strata <- phase1$child_race #initialize a strata column first
 
 phase1 <- merge_strata(data = phase1, 
                           strata = "child_race",
-                          merge = c("Other",
-                                    "Asian"),
+                          merge = c("Other","Asian"),
                           name = "Other")
 
 phase1 <- split_strata(data = phase1, strata = "new_strata", split = NULL, 
@@ -331,11 +324,10 @@ length(ids_to_sample2a) # 250 ids to sample
 
 We submit these 250 ids for validation. Hypothetically, this involves the hard work of trained nurses, but for our example it involves only a few lines of `dplyr` code. 
 ```{r}
-phase2a_samples <- MatWgt_Sim %>%
-  dplyr::filter(id %in% ids_to_sample2a) %>%
-  dplyr::select(id, mat_weight_true)
+phase2a_samples <- MatWgt_Sim[MatWgt_Sim$id %in% ids_to_sample2a, 
+                              c("id","mat_weight_true")]
 
-phase2a <- dplyr::left_join(phase1, phase2a_samples, by = "id")
+phase2a <- merge(phase1, phase2a_samples, by = "id", all.x = TRUE)
 names(phase2a)
 table(is.na(phase2a$mat_weight_true)) 
 ```
@@ -404,19 +396,24 @@ We can now get the validated maternal weight changes for these 250 subjects.
 
 ```{r, include=TRUE}
 # Take samples from true data
-phase2b_samples <- MatWgt_Sim %>%
-  dplyr::filter(id %in% ids_to_sample2b) %>%
-  dplyr::select(id, mat_weight_true)
+phase2b_samples <- MatWgt_Sim[MatWgt_Sim$id %in% ids_to_sample2b,
+                              c("id","mat_weight_true")]
 
 # Merge extracted samples with our data.
 # Note we use dplyr's coalesce here to merge sampled mat_weight_true with 
-# phase2b, but manner of merging of samples may vary from project to project
+# the mat_weight_true solumn already present in phase2b, but manner of 
+# merging of samples may vary from project to project.
+# For simpler merges, see 'Multiwave Object' vignette.
 
-phase2b <- dplyr::left_join(phase2b, phase2b_samples, by = "id")
-phase2b <- phase2b %>%
-  dplyr::mutate(mat_weight_true = coalesce(mat_weight_true.x,
-                                           mat_weight_true.y))%>%
-  dplyr::select(-mat_weight_true.x, - mat_weight_true.y)
+phase2b <- merge(phase2b, phase2b_samples, by = "id", all.x = TRUE)
+
+library(dplyr)
+
+phase2b$mat_weight_true <- 
+  dplyr::coalesce(phase2b$mat_weight_true.x,
+                  phase2b$mat_weight_true.y)
+phase2b <- subset(phase2b, select = -c(mat_weight_true.x,
+                                       mat_weight_true.y))
 
 table(is.na(phase2b$mat_weight_true)) # All are NA besides already sampled.
 ```
@@ -458,16 +455,16 @@ ids_to_sample2c <-
 length(ids_to_sample2c)
 
 # Sample
-phase2c_samples <- MatWgt_Sim %>%
-  dplyr::filter(id %in% ids_to_sample2c) %>%
-  dplyr::select(id, mat_weight_true)
+phase2c_samples <- MatWgt_Sim[MatWgt_Sim$id %in% ids_to_sample2c,
+                              c("id","mat_weight_true")]
 
 # Add samples to phase2c dataset
-phase2c <- dplyr::left_join(phase2c, phase2c_samples, by = "id")
-phase2c <- phase2c %>%
-  dplyr::mutate(mat_weight_true = coalesce(mat_weight_true.x,
-                                           mat_weight_true.y))%>%
-  dplyr::select(-mat_weight_true.x, - mat_weight_true.y)
+phase2c <- merge(phase2c, phase2c_samples, by = "id", all.x = TRUE)
+phase2c$mat_weight_true <- 
+  dplyr::coalesce(phase2c$mat_weight_true.x,
+                  phase2c$mat_weight_true.y)
+phase2c <- subset(phase2c, select = -c(mat_weight_true.x,
+                                       mat_weight_true.y))
 ```
 
 We have now validated 750 samples! 
