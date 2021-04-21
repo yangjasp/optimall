@@ -170,7 +170,7 @@ DiagrammeR::grViz("digraph {
 
 <br />
 
-`optimall` allows users to input phase-I data and iteratively allocate samples for subsequent waves with the function `allocate_wave`. This function essentially runs integer-valued `optimum_allocation` on a dataset but takes into account previous sampling waves. 
+`optimall` allows users to input phase-I data and iteratively allocate samples for subsequent waves with the function `allocate_wave`. This function runs integer-valued `optimum_allocation` on a dataset according to Wright's Algorithm II, but it takes into account previous sampling waves to determine how the current wave of samples should be allocated. 
 
 For a simple example, suppose that we again want to allocate 40 samples to minimize the variance of `"Sepal.Width"` in the `iris` dataset, but 30 out of the 40 have already been sampled. We assume that the strata are still defined only by `"Species"`, and that 16 of the first 30 samples were taken from the virginica species, 7 from setosa, and 7 from versicolor. Assuming we only have those 30 samples to base our within-stratum standard deviation estimates on, we can allocate the next 10 samples using `allocate_wave`:
 
@@ -218,6 +218,20 @@ wave2_design
 ```
 
 Notice that in this case, `"nsample_optimal"` does not match `"nsample_actual"` for every stratum in the outputted design dataframe. This occurred because we *oversampled* from the virginica stratum in wave 1, meaning that the optimum stratum sample size among 40 total samples was smaller than the amount of samples already taken in that group. When oversampling occurs, `allocate_wave` recalculates the optimum allocation among the non-oversampled strata and uses that result to allocate the specified number of samples as optimally as possible. When no oversampling occurs, `"nsample_optimal"` will match `"nsample_actual"` for every stratum.
+
+Now we can easily get the 10 new ids to sample using the `wave2_design` as the `design_data` in `sample_strata`. Notice that we do not have to specify `design_strata` or `n_allocated` because the default arguments are the column names of the `allocate_wave` output:
+
+```{r}
+ # Run sample_strata
+wave2_data <- sample_strata(data = wave1_data, strata = "Species",
+                            id = "id", already_sampled = "sample_indicator",
+                            design_data = wave2_design)
+
+ # Extract the 10 ids to sample
+wave2_ids <- iris$id[wave2_data$sample_indicator == 1]
+
+wave2_ids
+```
 
 ## Examples: Using `optimall` to Determine Study Design and Sample Data
 
@@ -351,7 +365,7 @@ phase2b_design
 
 Looking at the output of `allocate_wave`, we notice that the optimum sample sizes for the next wave vary greatly between strata, but all are greater than one. Because we set `detailed = TRUE`, we can also see what the optimum allocation for 500 samples would have been ignoring prior wave sizes in the column `"nsample_optimal"`. This column matches `"nsample_actual"` because we did not oversample any strata in phase-IIa.
 
-In other cases when `"n_to_sample"` = 0 for some strata, we may not be so lucky. If the optimum sample size in a stratum is smaller than the amount it was allocated in previous waves (`"nsample_prior"`), we say that that strata has been oversampled. When oversampling occurs, `allocate_wave` "closes" the oversampled strata and re-allocates the remaining samples optimally among the open strata. Under these circumstances, the total sampling allocation is no longer optimal, but `optimall` will output the most optimal allocation from the non-oversampled strata for the next wave.
+In other cases when `"n_to_sample"` = 0 for some strata, we may not be so lucky. If the optimum sample size in a stratum is smaller than the amount it was allocated in previous waves (`"nsample_prior"`), we say that that stratum has been oversampled. When oversampling occurs, `allocate_wave` "closes" the oversampled strata and re-allocates the remaining samples optimally among the open strata. Under these circumstances, the total sampling allocation is no longer optimal, but `optimall` will output the most optimal allocation from the non-oversampled strata for the next wave.
 
 Although we don't see evidence of oversampling, these results suggest that our strata are relatively imbalanced. We decide to split the largest stratum into three similarly-sized strata along mat_weight_est using the `local quantile` option of `split_strata`.  
 
