@@ -78,7 +78,7 @@ sample_strata(
   design_data = design, design_strata = "strata", n_allocated = "n_to_sample"
 )
 
-# If some units had already been samples
+# If some units had already been sampled
 iris$already_sampled <- rbinom(nrow(iris), 1, 0.25)
 
 sample_strata(
