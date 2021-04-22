@@ -292,7 +292,7 @@ MySurvey <- apply_multiwave(MySurvey,
                                     wave = 2, 
                                     fun = "allocate_wave",
                                     nsample = 250,
-                                    wave2a = "already_sampled_ind")
+                                    already_sampled = "already_sampled_ind")
 
 get_data(MySurvey, phase = 2, wave = 2, slot = "design")
 ```
