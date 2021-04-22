@@ -21,14 +21,14 @@ library(dplyr)
 #data
 data(MatWgt_Sim, package = "optimall")
 MatWgt_Sim <- MatWgt_Sim %>%
-  dplyr::mutate(child_race = 
-                  dplyr::case_when(child_race == "Asian" ~ "Other",
-                                   child_race == "Other" ~ "Other",
-                                   child_race == "White" ~ "White",
-                                   child_race == "Black" ~ "Black"))
+  dplyr::mutate(race = 
+                  dplyr::case_when(race == "Asian" ~ "Other",
+                                   race == "Other" ~ "Other",
+                                   race == "White" ~ "White",
+                                   race == "Black" ~ "Black"))
 phase1 <- dplyr::select(MatWgt_Sim, -mat_weight_true)
 
-phase1$strata <- phase1$child_race #initialize a strata column first
+phase1$strata <- phase1$race #initialize a strata column first
 set.seed(452)
 phase1 <- split_strata(data = phase1, strata = "strata", split = NULL, 
                        split_var = "mat_weight_est", 
@@ -39,11 +39,11 @@ phase1 <- split_strata(data = phase1, strata = "strata", split = NULL,
 
 #Make Phase 1 data dict
 phase1_data_dictionary <- data.frame("Variable" = c("id",
-                                                    "child_race",
+                                                    "race",
                                                     "mat_weight_est",
                                                     "diabetes"),
                                      "Description" = c("unique identifier",
-                                                       "race of child",
+                                                       "race of mother",
                                                        "error-prone estimate of maternal weight change during pregnancy",
                                                        "1/0 indicator for diabetes in the mother during pregnancy"))
 ```
@@ -131,9 +131,9 @@ get_data(MySurvey, phase = 1, slot = "data") <- phase1
 
 #Make Phase 1 data dict
 phase1_data_dictionary <- data.frame(
-  "Variable" = c( "id", "child_race", "mat_weight_est", "diabetes"),
+  "Variable" = c( "id", "race", "mat_weight_est", "diabetes"),
   "Description" = c("unique identifier", 
-                    "race of child",
+                    "race of mother",
                     "error-prone estimate of maternal weight change 
                     during pregnancy",
                     "1/0 indicator for diabetes in the mother during 

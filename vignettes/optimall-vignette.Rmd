@@ -270,12 +270,12 @@ dim(phase1)
 We suspect that the true mean maternal weight change may vary with some of the inexpensive covariates in the phase 1 dataset, so we decide to split our population into 9 non-overlapping strata. Each stratum will be defined by a unique combination of child race and global percentile of maternal weight gain (≤25th, 25th - 75th, >75th). We can accomplish this quickly in `optimall` using the `split_strata` function.
 
 ```{r}
-phase1$strata <- phase1$child_race #initialize a strata column first
+phase1$strata <- phase1$race #initialize a strata column first
 
 # Merge the smallest race categories
 
 phase1 <- merge_strata(data = phase1, 
-                          strata = "child_race",
+                          strata = "race",
                           merge = c("Other","Asian"),
                           name = "Other")
 
@@ -323,7 +323,7 @@ ids_to_sample2a <- phase1[phase1$sample_indicator == 1,"id"]
 length(ids_to_sample2a) # 250 ids to sample
 ```
 
-We submit these 250 ids for validation. Hypothetically, this involves the hard work of trained nurses, but for our example it involves only a few lines of `dplyr` code. 
+We submit these 250 ids for validation. Hypothetically, this involves the hard work of trained nurses, but for our example it involves only a few lines of code. 
 ```{r}
 phase2a_samples <- MatWgt_Sim[MatWgt_Sim$id %in% ids_to_sample2a, 
                               c("id","mat_weight_true")]
