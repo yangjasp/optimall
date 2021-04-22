@@ -197,7 +197,8 @@ wave1_ids <- iris$id[phase1_data$sample_indicator == 1]
 
 wave1_sampled_data <- iris[iris$id %in% wave1_ids, c("id","Sepal.Width")]
 
-wave1_data <- merge(phase1_data, wave1_sampled_data, by = "id", all.x = TRUE)
+wave1_data <- merge(phase1_data, wave1_sampled_data, by = "id", 
+                    no.dups =  TRUE, all.x = TRUE)
 
 # We have our 30 samples
 table(is.na(wave1_data$Sepal.Width), wave1_data$Species)
@@ -327,7 +328,8 @@ We submit these 250 ids for validation. Hypothetically, this involves the hard w
 phase2a_samples <- MatWgt_Sim[MatWgt_Sim$id %in% ids_to_sample2a, 
                               c("id","mat_weight_true")]
 
-phase2a <- merge(phase1, phase2a_samples, by = "id", all.x = TRUE)
+phase2a <- merge(phase1, phase2a_samples, by = "id",
+                 no.dups =  TRUE, all.x = TRUE)
 names(phase2a)
 table(is.na(phase2a$mat_weight_true)) 
 ```
@@ -405,7 +407,8 @@ phase2b_samples <- MatWgt_Sim[MatWgt_Sim$id %in% ids_to_sample2b,
 # merging of samples may vary from project to project.
 # For simpler merges, see 'Multiwave Object' vignette.
 
-phase2b <- merge(phase2b, phase2b_samples, by = "id", all.x = TRUE)
+phase2b <- merge(phase2b, phase2b_samples, by = "id", 
+                 no.dups = TRUE, all.x = TRUE)
 
 library(dplyr)
 
@@ -459,7 +462,8 @@ phase2c_samples <- MatWgt_Sim[MatWgt_Sim$id %in% ids_to_sample2c,
                               c("id","mat_weight_true")]
 
 # Add samples to phase2c dataset
-phase2c <- merge(phase2c, phase2c_samples, by = "id", all.x = TRUE)
+phase2c <- merge(phase2c, phase2c_samples, by = "id", 
+                 no.dups = TRUE, all.x = TRUE)
 phase2c$mat_weight_true <- 
   dplyr::coalesce(phase2c$mat_weight_true.x,
                   phase2c$mat_weight_true.y)
