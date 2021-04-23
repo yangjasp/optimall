@@ -21,14 +21,12 @@ Imports:
     DiagrammeR (>= 1.0.0),
     dplyr (>= 1.0.5),
     glue (>= 1.4.0),
-    here (>= 0.1),
     magrittr (>= 2.0.0),
     methods (>= 4.0.0),
     rlang (>= 0.2.2),
     shiny (>= 1.6.0),
     stats (>= 4.0.2),
     survey (>= 4.0),
-    survival (>= 3.2.3),
     tibble (>= 1.4.2)
 Suggests: 
     knitr (>= 1.28),

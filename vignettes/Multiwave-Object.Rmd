@@ -52,7 +52,7 @@ phase1_data_dictionary <- data.frame("Variable" = c("id",
 
 The base functions of `optimall` allow users to efficiently determine optimum allocation, select samples, and split strata during the design of a multi-wave stratified sampling survey. Despite these features, an efficient sampling workflow in R still requires the user to manually organize the many moving parts of the process including design data, a list of samples, data extracted from the samples, and merged data for each wave. When a sampling design involves many waves, these parts can be difficult to keep track of and may be prone to errors. Even more, it may be difficult to go back and reproduce results at the end of a long sampling process.
 
-This vignette describes an addition to `optimall` called the multiwave object which stores the metadata, design, samples, and merged data from each step of the multi-wave sampling process in an accessible format. It is completely optional for the user to use, but it offers the advantages of automatic organization, efficient compatibility with other functions in `optimall`, and an option for a summary of the sampling design to be printed at any point. It is recommended that user thoroughly reads the introductory package vignette title "Using Optimall" before reading this vignette.
+This vignette describes an addition to `optimall` called the multiwave object, which stores the metadata, design, samples, and merged data from each step of the multi-wave sampling process in an accessible format. It is optional for the user to use, but it offers the advantages of automatic organization, efficient compatibility with other functions in `optimall`, and an option for a summary of the sampling design to be printed at any point. It is recommended that user thoroughly reads the introductory package vignette titled "Using Optimall" before reading this vignette.
 
 This addition contributes towards `optimall's` goal of being a tool to streamline the often cumbersome aspects of the multi-wave sampling workflow.
 
@@ -76,7 +76,7 @@ The multiwave object contains three S4 classes:
 
 ## Commands
 
-To work with the multiwave object, users only need to know a few functions. In this section I describe how to initialize an object, how to access and write slots of it, and how to deploy some of its useful features. This will be demonstrated in the context of the same two-phase, multiwave sampling design used in the package vignette.
+To work with the multiwave object, users only need to know a few functions. This section describes how to initialize an object, how to access and write slots of it, and how to deploy some of its useful features. This will be demonstrated in the context of the same two-phase, multiwave sampling design used in the package vignette.
 
 ### Initialize the Multiwave Object
 A multiwave object is initialized by the function `new_multiwave`:
