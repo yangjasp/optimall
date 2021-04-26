@@ -39,13 +39,13 @@ When a study population is composed of heterogeneous subpopulations, stratified 
 
 * Optimally allocate a fixed number of samples to a sampling wave based on results from a prior wave. 
 
-When used together, these functions can automate most of the sampling workflow. This vignette will outline these package features one by one (moving from simple to more complex), introduce the theoretical framework behind the functions, and finally demonstrate how they can be used collectively to perform multi-wave sampling in R. The final section then details how to use `optimall_shiny` to efficiently make decisions about splitting strata.
+When used together, these functions can automate most of the sampling workflow. This vignette will outline these package features one by one (moving from simple to more complex), introduce the theoretical framework behind the functions, and finally demonstrate how they can be used collectively to perform multi-wave sampling in R. The final section then details how to use `optimall_shiny()` to efficiently make decisions about splitting strata.
 
 ## Defining and Refining Strata
 
 In stratified sampling, strata are typically defined on values or quantiles of inexpensive variables available for the entire population. Given a dataset with one row per sampling unit and at least one column containing a variable that can be used to construct strata, `optimall` allows users to easily define, split, and merge strata.
 
-To demonstrate the simple process of refining strata in `optimall`, we use the `iris` dataset from the R package `datasets`. Suppose that we have defined three strata based on `"Species"`, but we want to split two out of the three, setosa and virginica, in half based on the within-stratum median of `"Sepal.Width"`. In `optimall`, we can do this by calling the `split_strata` function:
+To demonstrate the simple process of refining strata in `optimall`, we use the `iris` dataset from the R package `datasets`. Suppose that we have defined three strata based on `"Species"`, but we want to split two out of the three, setosa and virginica, in half based on the within-stratum median of `"Sepal.Width"`. In `optimall`, we can do this by calling the `split_strata()` function:
 
 ```{r}
 library(optimall)
@@ -61,7 +61,7 @@ iris2 <- split_strata(data = iris,
 table(iris2$new_strata)
 ```
 
-Similarly, we can merge strata using the function `merge_strata`:
+Similarly, we can merge strata using the function `merge_strata()`:
 
 ```{r}
 iris3 <- merge_strata(data = iris,
@@ -71,7 +71,7 @@ iris3 <- merge_strata(data = iris,
 table(iris3$new_strata)
 ```
 
-The `split_strata` and `merge_strata` functions are quite versatile. See function documentation for more information.
+The `split_strata` and `merge_strata()` functions are quite versatile. See function documentation for more information.
 
 ## Optimum Allocation
 Assuming that the per-unit sampling cost is the same in each stratum and that $S_h$, the standard deviation of the variable of interest within each stratum, can be estimated, Neyman (1934) presented the following solution to optimally allocate $n$ samples among $H$ strata in order to minimize the variance of the sample mean:  
@@ -86,9 +86,9 @@ While Neyman allocation has a strong theoretical backing, Wright (2014) points o
 
 Wright offers alternative algorithms that solve the optimal problem for a discrete allocation that sums exactly to $n$, which can also be implemented in `optimall`. Essentially, his approaches use linear constraints to optimize the allocation of samples over a space of integer values. He makes use of within-stratum variance and population stratum size to generate priority values, which in turn dictate how many samples should be taken from each stratum. To learn more about the specifics of these algorithms, see Wright (2014).
 
-The `optimall` package allows users to select between Neyman allocation, Wright Algorithm I, and Wright Algorithm II in the `method` argument of the `optimum_allocation` function. The `optimum_allocation` function defaults to using Wright Algorithm II. This algorithm requires that at least 2 samples are taken from each stratum.  In `optimall`, stratum sampling sizes for both Wright algorithms are also constrained from above at $N_h$, the population stratum size, using the methods for constraints that Wright details in Algorithm III. 
+The `optimall` package allows users to select between Neyman allocation, Wright Algorithm I, and Wright Algorithm II in the `method` argument of the `optimum_allocation()` function. The `optimum_allocation()` function defaults to using Wright Algorithm II. This algorithm requires that at least 2 samples are taken from each stratum.  In `optimall`, stratum sampling sizes for both Wright algorithms are also constrained from above at $N_h$, the population stratum size, using the methods for constraints that Wright details in Algorithm III. 
 
-Below is an example of how `optimum_allocation` could be called to optimally allocate 40 samples among `"Species"` in the `iris` dataset, minimizing the variance of the `"Sepal.Width"` sample mean.
+Below is an example of how `optimum_allocation()` could be called to optimally allocate 40 samples among `"Species"` in the `iris` dataset, minimizing the variance of the `"Sepal.Width"` sample mean.
 
 ```{r Example 1}
 sampling_design <- optimum_allocation(data = iris, strata = "Species", 
@@ -97,7 +97,7 @@ sampling_design <- optimum_allocation(data = iris, strata = "Species",
 sampling_design
 ```
 
-If we have a dataframe that holds the $N_h$ and $sd_h$ for each stratum instead of data for each individual unit, we can still use `optimum_allocation`:
+If we have a dataframe that holds the $N_h$ and $sd_h$ for each stratum instead of data for each individual unit, we can still use `optimum_allocation()`:
 
 ```{r}
 iris_summary <- data.frame(strata = unique(iris$Species),
@@ -111,7 +111,7 @@ optimum_allocation(data = iris_summary, strata = "strata",
 
 ## Selecting IDs to Sample
 
-With the number of units to sample per stratum specified in a dataframe, `optimall` can select the IDs of the units to be sampled using simple random sampling within strata with the function `sample_strata`:
+With the number of units to sample per stratum specified in a dataframe, `optimall` can select the IDs of the units to be sampled using simple random sampling within strata with the function `sample_strata()`:
 
 ```{r}
 iris$id <- 1:150
@@ -122,7 +122,7 @@ iris <- sample_strata(data = iris, strata = "Species", id = "id",
                                n_allocated = "stratum_size")
 ```
 
-The output of `sample_strata` is the same input dataframe with a new column called `"sample_indicator" that holds a binary indicator for whether each unit should be sampled in the specified wave:
+The output of `sample_strata()` is the same input dataframe with a new column called `"sample_indicator"` that holds a binary indicator for whether each unit should be sampled in the specified wave:
 
 ```{r}
 head(iris)
@@ -136,7 +136,7 @@ head(ids_to_sample)
 length(ids_to_sample)
 ```
 
-Note that `design_data` is the output of `optimum_allocation` in this example, but in practice it can be any dataframe that has one row per stratum and one column specifying each stratum's desired sample size. As such, any method of allocating samples to strata can be implemented by `sample_strata` as long as the design dataframe is specified and simple random sampling within strata is used. 
+Note that `design_data` is the output of `optimum_allocation()` in this example, but in practice it can be any dataframe that has one row per stratum and one column specifying each stratum's desired sample size. As such, any method of allocating samples to strata can be implemented by `sample_strata()` as long as the design dataframe is specified and simple random sampling within strata is used. 
 
 ## Adaptive, Multi-Wave Sampling
 When measuring variables of interest is expensive or difficult, it can be advantageous to employ a multi-phase design, where cheaper variables are collected from the entire population and expensive variables are collected from subsamples selected through adaptive, multi-wave sampling. This approach, which is documented in McIsaac and Cook (2015), involves multiple waves of sampling where information from prior waves is used to inform the optimum sampling design of subsequent ones. With the understanding that both Neyman and Wright's optimum allocation methods depend heavily on standard deviation estimates for the variable of interest, the benefit of multi-wave sampling is clear to see. Sample allocations based on prior waves will use updated estimates of nuisance parameters that incorporate data accumulated in the prior sampling waves. The optimal sampling proportion is updated at the end of each wave, and this update guides the sampling of the next wave. As the phase II data accumulate, the necessary within-strata SD estimates, and thus the estimated optimal sampling proportions, are expected to be closer to their true value.
@@ -170,9 +170,9 @@ DiagrammeR::grViz("digraph {
 
 <br />
 
-`optimall` allows users to input phase-I data and iteratively allocate samples for subsequent waves with the function `allocate_wave`. This function runs integer-valued `optimum_allocation` on a dataset according to Wright's Algorithm II, but it takes into account previous sampling waves to determine how the current wave of samples should be allocated. 
+`optimall` allows users to input phase-I data and iteratively allocate samples for subsequent waves with the function `allocate_wave()`. This function runs integer-valued `optimum_allocation()` on a dataset according to Wright's Algorithm II, but it takes into account previous sampling waves to determine how the current wave of samples should be allocated. 
 
-For a simple example, suppose that we again want to allocate 40 samples to minimize the variance of `"Sepal.Width"` in the `iris` dataset, but 30 out of the 40 have already been sampled. We assume that the strata are still defined only by `"Species"`, and that 16 of the first 30 samples were taken from the virginica species, 7 from setosa, and 7 from versicolor. Assuming we only have those 30 samples to base our within-stratum standard deviation estimates on, we can allocate the next 10 samples using `allocate_wave`:
+For a simple example, suppose that we again want to allocate 40 samples to minimize the variance of `"Sepal.Width"` in the `iris` dataset, but 30 out of the 40 have already been sampled. We assume that the strata are still defined only by `"Species"`, and that 16 of the first 30 samples were taken from the virginica species, 7 from setosa, and 7 from versicolor. Assuming we only have those 30 samples to base our within-stratum standard deviation estimates on, we can allocate the next 10 samples using `allocate_wave()`:
 
 ```{r}
 # Set up Wave 1
@@ -214,9 +214,9 @@ wave2_design <- allocate_wave(data = wave1_data,
 wave2_design
 ```
 
-Notice that in this case, `"nsample_optimal"` does not match `"nsample_actual"` for every stratum in the outputted design dataframe. This occurred because we *oversampled* from the virginica stratum in wave 1, meaning that the optimum stratum sample size among 40 total samples was smaller than the amount of samples already taken in that group. When oversampling occurs, `allocate_wave` recalculates the optimum allocation among the non-oversampled strata and uses that result to allocate the specified number of samples as optimally as possible. When no oversampling occurs, `"nsample_optimal"` will match `"nsample_actual"` for every stratum.
+Notice that in this case, `"nsample_optimal"` does not match `"nsample_actual"` for every stratum in the outputted design dataframe. This occurred because we *oversampled* from the virginica stratum in wave 1, meaning that the optimum stratum sample size among 40 total samples was smaller than the amount of samples already taken in that group. When oversampling occurs, `allocate_wave()` recalculates the optimum allocation among the non-oversampled strata and uses that result to allocate the specified number of samples as optimally as possible. When no oversampling occurs, `"nsample_optimal"` will match `"nsample_actual"` for every stratum.
 
-Now we can easily get the 10 new ids to sample using the `wave2_design` as the `design_data` in `sample_strata`. Notice that we do not have to specify `design_strata` or `n_allocated` because the default arguments are the column names of the `allocate_wave` output:
+Now we can easily get the 10 new ids to sample using the `wave2_design` as the `design_data` in `sample_strata()`. Notice that we do not have to specify `design_strata` or `n_allocated` because the default arguments are the column names of the `allocate_wave()` output:
 
 ```{r}
  # Run sample_strata
@@ -235,9 +235,9 @@ wave2_ids
 #### *Overview*
 We use the simulated dataset `MatWgt_Sim` to demonstrate how the functions in `optimall` can be used to carry out the necessary tasks of determining study design and sampling. This section includes three examples:
 
-* Example 1: Uses the function `split_strata` to define and refine strata.
+* Example 1: Uses the function `split_strata()` to define and refine strata.
 
-* Example 2: Uses the function `sample_strata` to randomly select units to be sampled based on a specified sampling design. 
+* Example 2: Uses the function `sample_strata()` to randomly select units to be sampled based on a specified sampling design. 
 
 * Example 3: Demonstrates how to conduct an adaptive, multi-wave sampling design that uses an optimal Neyman allocation scheme at each step to allocate the next wave across strata
 
@@ -267,7 +267,7 @@ dim(phase1)
 
 #### *Example 1: Defining Sample Strata*
 
-We suspect that the true mean maternal weight change may vary with some of the inexpensive covariates in the phase 1 dataset, so we decide to split our population into 9 non-overlapping strata. Each stratum will be defined by a unique combination of child race and global percentile of maternal weight gain (≤25th, 25th - 75th, >75th). We can accomplish this quickly in `optimall` using the `split_strata` function.
+We suspect that the true mean maternal weight change may vary with some of the inexpensive covariates in the phase 1 dataset, so we decide to split our population into 9 non-overlapping strata. Each stratum will be defined by a unique combination of child race and global percentile of maternal weight gain (≤25th, 25th - 75th, >75th). We can accomplish this quickly in `optimall` using the `split_strata()` function.
 
 ```{r}
 phase1$strata <- phase1$race #initialize a strata column first
@@ -294,9 +294,9 @@ table(phase1$new_strata) # 9 strata
 ```
 
 #### *Example 2: Create an Initial Phase 2 Subsample: Phase-IIa*
-With the strata now defined by the inexpensive variables sampled in phase-I, we are ready to begin auditing patient records for validation of the true maternal weight changes. Without any validated data to define the optimum phase-IIa sample allocation, we decide to use proportional stratified sampling for the first 250 out of our 750 audits. Conveniently, `optimall` can select this random sample for us with `sample_strata`.
+With the strata now defined by the inexpensive variables sampled in phase-I, we are ready to begin auditing patient records for validation of the true maternal weight changes. Without any validated data to define the optimum phase-IIa sample allocation, we decide to use proportional stratified sampling for the first 250 out of our 750 audits. Conveniently, `optimall` can select this random sample for us with `sample_strata()`.
 
-The `sample_strata` function requires as input two dataframes, one containing the stratum membership of each individual unit (`data`) and a second specifying the sampling design (`design_data`). The `design_data` dataframe must contain at least two columns:
+The `sample_strata()` function requires as input two dataframes, one containing the stratum membership of each individual unit (`data`) and a second specifying the sampling design (`design_data`). The `design_data` dataframe must contain at least two columns:
 
 * `design_strata`: A column holding strata names
 * `n_allocated`: The total $n$ allocated to each stratum.
@@ -312,7 +312,7 @@ phase2a_design <- data.frame(
 sum(phase2a_design$strata_n) 
 phase2a_design
 ```
-We can now call `sample_strata` to randomly draw the specified number samples from each stratum. It will output the same `phase1` dataframe with an extra column indicating which units should be sampled. We can then extract the ids to sample based on this indicator.
+We can now call `sample_strata()` to randomly draw the specified number samples from each stratum. It will output the same `phase1` dataframe with an extra column indicating which units should be sampled. We can then extract the ids to sample based on this indicator.
 
 ```{r}
 phase1 <- sample_strata(data = phase1, strata = "new_strata", 
@@ -339,7 +339,7 @@ We notice that all of the units that were not validated have `NA` values in the 
 #### *Example 3: Optimally Allocate 2nd and 3rd Waves of Phase 2 Sample*
 In phase-IIa, we allocated samples to strata using proportional sampling rather than optimum allocation because we had no prior samples of the true maternal weight change from which to estimate within-stratum variances. Now that we have completed the first wave of validation, we can estimate these variances and will thus use optimum allocation for each of the subsequent sampling waves.
 
-In phase-IIb (wave 2), we will optimally allocate 250 more samples, raising our total number of validated samples to 500. The `allocate_wave` function makes this step simple by calculating the optimum allocation for 500 samples, determining how many units have already been sampled in previous waves (only Phase-IIa in this case), and allocating the 250 samples of the current wave to make up the difference. The output is a design dataframe summarizing the results for each stratum.
+In phase-IIb (wave 2), we will optimally allocate 250 more samples, raising our total number of validated samples to 500. The `allocate_wave()` function makes this step simple by calculating the optimum allocation for 500 samples, determining how many units have already been sampled in previous waves (only Phase-IIa in this case), and allocating the 250 samples of the current wave to make up the difference. The output is a design dataframe summarizing the results for each stratum.
 
 ```{r}
 phase2b <- phase2a
@@ -357,11 +357,11 @@ phase2b_design
 ```
 
 
-Looking at the output of `allocate_wave`, we notice that the optimum sample sizes for the next wave vary greatly between strata, but all are greater than one. Because we set `detailed = TRUE`, we can also see what the optimum allocation for 500 samples would have been ignoring prior wave sizes in the column `"nsample_optimal"`. This column matches `"nsample_actual"` because we did not oversample any strata in phase-IIa.
+Looking at the output of `allocate_wave()`, we notice that the optimum sample sizes for the next wave vary greatly between strata, but all are greater than one. Because we set `detailed = TRUE`, we can also see what the optimum allocation for 500 samples would have been ignoring prior wave sizes in the column `"nsample_optimal"`. This column matches `"nsample_actual"` because we did not oversample any strata in phase-IIa.
 
-In other cases when `"n_to_sample"` = 0 for some strata, we may not be so lucky. If the optimum sample size in a stratum is smaller than the amount it was allocated in previous waves (`"nsample_prior"`), we say that that stratum has been oversampled. When oversampling occurs, `allocate_wave` "closes" the oversampled strata and re-allocates the remaining samples optimally among the open strata. Under these circumstances, the total sampling allocation is no longer optimal, but `optimall` will output the most optimal allocation from the non-oversampled strata for the next wave.
+In other cases when `"n_to_sample"` = 0 for some strata, we may not be so lucky. If the optimum sample size in a stratum is smaller than the amount it was allocated in previous waves (`"nsample_prior"`), we say that that stratum has been oversampled. When oversampling occurs, `allocate_wave()` "closes" the oversampled strata and re-allocates the remaining samples optimally among the open strata. Under these circumstances, the total sampling allocation is no longer optimal, but `optimall` will output the most optimal allocation from the non-oversampled strata for the next wave.
 
-Although we don't see evidence of oversampling, these results suggest that our strata are relatively imbalanced. We decide to split the largest stratum into three similarly-sized strata along mat_weight_est using the `local quantile` option of `split_strata`.  
+Although we don't see evidence of oversampling, these results suggest that our strata are relatively imbalanced. We decide to split the largest stratum into three similarly-sized strata along mat_weight_est using the `local quantile` option of `split_strata()`.  
 
 ```{r}
 phase2b <- split_strata(data = phase2b, 
@@ -371,7 +371,7 @@ phase2b <- split_strata(data = phase2b,
                         type = "local quantile", split_at = c(1/3,2/3))
 ```
 
-With our strata now more balanced in size, we can re-run `allocate_wave` to make a new design dataframe for `sample_strata` to use to determine which ids to sample in phase-IIb. 
+With our strata now more balanced in size, we can re-run `allocate_wave()` to make a new design dataframe for `sample_strata()` to use to determine which ids to sample in phase-IIb. 
 
 ```{r}
 phase2b_design <- allocate_wave(data = phase2b, 
@@ -427,7 +427,7 @@ With these results in, we can move onto our final wave.
 
 After auditing the 250 additional samples in Phase-IIb, we only have 250 left to validate until we reach our goal of 750. We will combine what we have learned in the previous waves of phase-II to optimally assign these final 250 samples in phase-IIc. 
 
-Following the same steps as in phase-IIb, we use `allocate_wave` to find the optimum sample sizes in each stratum based on estimates of the variance using our previous samples. We then determine which ids to sample using `sample_strata`.
+Following the same steps as in phase-IIb, we use `allocate_wave()` to find the optimum sample sizes in each stratum based on estimates of the variance using our previous samples. We then determine which ids to sample using `sample_strata()`.
 
 ```{r}
 phase2c <- phase2b
@@ -475,9 +475,9 @@ We have now validated 750 samples!
 
 As this example shows, there are quite a few moving parts to keep track of in the multi-wave sampling workflow. When performing a multi-wave sampling design, you may also want to consider using `optimall's` multiwave object to organize and visualize the process. This feature is described in detail in the package vignette titled "The Multiwave Object".
 
-## Splitting Strata Efficiently with `optimall_shiny`
+## Splitting Strata Efficiently with `optimall_shiny()`
 
-In many cases, deciding which strata to split and where is a difficult task. `split_strata` makes this job easier, but it is designed for situations where the strata and split values have already been decided by the user. Running it iteratively to experiment with different splits is possible yet tedious. 
+In many cases, deciding which strata to split and where is a difficult task. `split_strata()` makes this job easier, but it is designed for situations where the strata and split values have already been decided by the user. Running it iteratively to experiment with different splits is possible yet tedious. 
 
 To help users make these difficult decisions, `optimall` includes an R Shiny application that reacts in real time to user selections of splitting parameters. It can be called using `optimall_shiny()`. See the screenshot below:
 <center>
@@ -485,7 +485,7 @@ To help users make these difficult decisions, `optimall` includes an R Shiny app
 ![](../inst/shiny-app/optimall_shiny/Screenshots/Screenshot1.png){width=80%}
 </center>
 <br />
-Each time the user updates an input, the parameters of the `split_strata` function are updated accordingly, and the resulting dataframe showing the optimum allocation of samples among the new strata is displayed. Once the user is satsfied with a set of inputs, they can `confirm` the split and the underlying data will be updated. The code used to perform the split will also be displayed.
+Each time the user updates an input, the parameters of the `split_strata()` function are updated accordingly, and the resulting dataframe showing the optimum allocation of samples among the new strata is displayed. Once the user is satsfied with a set of inputs, they can `confirm` the split and the underlying data will be updated. The code used to perform the split will also be displayed.
 
 Note that the data in the Shiny App has to be loaded in from a file, and it is thus separate from data being used in the `optimall` workflow. This means that the user has to return to their R session to make the changes determined in the Shiny app. The app, however, makes this easy by printing the code to perform all of the confirmed changes, so making them in R is as easy as copying and pasting. You may have to update the `"data"` argument. 
 
