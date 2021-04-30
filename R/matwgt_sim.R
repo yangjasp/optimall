@@ -13,14 +13,15 @@
 #' @docType data
 #'
 #' @name MatWgt_Sim
-#' @format \code{MatWgt_Sim:} a data frame with 10335 rows and 5 columns
+#' @format \code{MatWgt_Sim:} a data frame with 10335 rows and 6 columns
 #' \describe{
 #'  \item{\code{id}}{unique ID for each mother-child pair}
 #'  \item{\code{mat_weight_true}}{true (but unknown in phase 1) mother weight
 #'  change during pregnancy}
 #'  \item{\code{mat_weight_est}}{estimated mother weight
 #'  change during pregnancy based on error-prone phase-1 measurement}
-#'  \item{\code{child_race}}{specifies child's race}
+#'  \item{\code{race}}{specifies mother's race}
 #'  \item{\code{diabetes}}{binary indicator for diabetes in the mother}
+#'  \item{\code{obesity} binary indicator for childhood obesity in child}
 #'  }
 NULL
