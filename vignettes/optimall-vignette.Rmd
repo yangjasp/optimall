@@ -233,19 +233,19 @@ wave2_ids
 ## Examples: Using `optimall` to Determine Study Design and Sample Data
 
 #### *Overview*
-We use the simulated dataset `MatWgt_Sim` to demonstrate how the functions in `optimall` can be used to carry out the necessary tasks of determining study design and sampling. This section includes three examples:
+We use the simulated dataset `MatWgt_Sim` to demonstrate how the functions in `optimall` can be used to carry out study design and sampling tasks in R. This section includes three examples, which build upon eachother during the design and execution of a multi-wave survey:
 
 * Example 1: Uses the function `split_strata()` to define and refine strata.
 
 * Example 2: Uses the function `sample_strata()` to randomly select units to be sampled based on a specified sampling design. 
 
-* Example 3: Demonstrates how to conduct an adaptive, multi-wave sampling design that uses an optimal Neyman allocation scheme at each step to allocate the next wave across strata
+* Example 3: Demonstrates how to conduct an adaptive, multi-wave sampling design that uses an optimal Neyman allocation scheme at each step to allocate the next wave across strata.
 
-The dataset contains simulated data based on a real study of the association between maternal weight gain during pregnancy and the risk of childhood obesity after controlling for a number of clinical and demographic covariates. In this hypothetical example, the study data are obtained from electronic health records, which are known to be error-prone and do not have all the variables of interested available without manual chart review. In a perfect world, chart review would be used to validate and obtain the necessary variables on every observation in our sample, but chart review is an expensive and difficult task. Researchers determined that they could only reasonably afford to validate 750 out of the 10,335 child-mother pairs. We refer to the 10,335 as the phase 1 sample, for which we have error-prone observations on all, and we refer to the 750 as the phase II sample, which will be designed using tools in the package optimall. For simplicity, suppose that we want to use these 750 samples to estimate the true population mean of maternal weight change during pregnancy with minimal variance. This goal will be accomplished in our last example through an adaptive, multi-wave sampling design.
+The dataset contains simulated data based on a real study of the association between maternal weight gain during pregnancy and the risk of childhood obesity after controlling for a number of clinical and demographic covariates. In this hypothetical example, the study data are obtained from electronic health records, which are known to be error-prone and do not have all the variables of interested available without manual chart review. In a perfect world, chart review would be used to validate and obtain the necessary variables on every observation in our sample, but chart review is an expensive and difficult task. Researchers determined that they could only reasonably afford to validate 750 out of the 10,335 child-mother pairs. We refer to the 10,335 as the phase 1 sample, for which we have error-prone observations on all, and we refer to the 750 as the phase II sample, which will be designed using tools in the `optimall` package. For simplicity, suppose that we want to use these 750 samples to estimate the true population mean of maternal weight change during pregnancy with minimal variance. This goal will be accomplished in our last example through an adaptive, multi-wave sampling design.
 
 #### *Data Set Up*
 
-The simulated data used in this example is included with `optimall`. The dataset `MatWgt_Sim` contains 10335 rows, one for each mother-child pair, and 5 columns containing ID numbers and covariates which we see below:
+The simulated data used in this example is included with `optimall`. The dataset `MatWgt_Sim` contains 10335 rows, one for each mother-child pair, and 6 columns containing ID numbers and covariates which we see below:
 
 ```{r first view of data}
 data(MatWgt_Sim, package = "optimall")
@@ -256,7 +256,7 @@ Three of the covariates, child race, diabetes, and estimated maternal weight, ar
 
 For the purpose of our examples, we suppose that we do not have access to this full dataset. Instead, we must sample from it to optimally estimate the mean of the true maternal weight changes.
 
-During phase-I, we assume that all 10335 mother-child pairs have been sampled for the inexpensive covariates. Accordingly, we define our phase 1 dataset to be 10335 x 4 with every column of the full `MatWgt_Sim` data excluding the expensive true weight change. In the examples that follow, we will assume the validated maternal weight variable `mat_weight_true` will only be available through phase 2 sampling.
+During phase-I, we assume that all 10335 mother-child pairs have been sampled for the inexpensive covariates. Accordingly, we define our phase 1 dataset to be 10335 x 5 with every column of the full `MatWgt_Sim` data excluding the expensive true weight change. In the examples that follow, we will assume the validated maternal weight variable `mat_weight_true` will only be available through phase 2 sampling.
 
 ```{r}
 
@@ -267,7 +267,7 @@ dim(phase1)
 
 #### *Example 1: Defining Sample Strata*
 
-We suspect that the true mean maternal weight change may vary with some of the inexpensive covariates in the phase 1 dataset, so we decide to split our population into 9 non-overlapping strata. Each stratum will be defined by a unique combination of child race and global percentile of maternal weight gain (≤25th, 25th - 75th, >75th). We can accomplish this quickly in `optimall` using the `split_strata()` function.
+We suspect that the true mean maternal weight change may vary with some of the inexpensive covariates in the phase 1 dataset, so we decide to split our population into 9 non-overlapping strata. Each stratum will be defined by a unique combination of race and global percentile of maternal weight gain (≤25th, 25th - 75th, >75th). We can accomplish this quickly in `optimall` using the `split_strata()` function.
 
 ```{r}
 phase1$strata <- phase1$race #initialize a strata column first
