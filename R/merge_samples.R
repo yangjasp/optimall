@@ -134,7 +134,7 @@ setMethod(
     output_data <-
       dplyr::full_join(previous_wave_data,
         x@phases[[phase]]@waves[[wave]]@sampled_data,
-        by = "id"
+        by = id
       )
 
     # Fix duplicate columns
