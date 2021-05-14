@@ -22,6 +22,6 @@
 #'  change during pregnancy based on error-prone phase-1 measurement}
 #'  \item{\code{race}}{specifies mother's race}
 #'  \item{\code{diabetes}}{binary indicator for diabetes in the mother}
-#'  \item{\code{obesity} binary indicator for childhood obesity in child}
+#'  \item{\code{obesity}}{binary indicator for childhood obesity in child}
 #'  }
 NULL
