@@ -59,8 +59,8 @@ indicates the unique levels of \code{strata} in \code{data} and
 number to be sampled from each stratum.
 \code{sample_strata} selects the units to sample by
 selecting a random sample of the desired size within each
-stratum. The second dataframe can be the output of \code{allocate_wave}
-or \code{optimum_allocation}.
+stratum. The second dataframe can be the output of \code{allocate_wave()}
+or \code{optimum_allocation()}.
 }
 \examples{
 # Define a design dataframe

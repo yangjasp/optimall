@@ -9,7 +9,7 @@
 #' number to be sampled from each stratum.
 #' \code{sample_strata} selects the units to sample by
 #' selecting a random sample of the desired size within each
-#' stratum. The second dataframe can be the output of \code{allocate_wav()e}
+#' stratum. The second dataframe can be the output of \code{allocate_wave()}
 #' or \code{optimum_allocation()}.
 #' @param data A data frame or matrix with one row for each
 #' sampling unit in the population, one column specifying each
