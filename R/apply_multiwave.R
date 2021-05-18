@@ -308,8 +308,8 @@ setMethod(
           class(survey_md$already_sampled) == "character") {
           already_sampled <- survey_md$already_sampled
         } else {
-          stop("'already_sampled' must be specified or available in metadata. If no
-             samples have been taken yet, use 'optimum_allocation'")
+          stop("'already_sampled' must be specified or available in metadata.
+          If no samples have been taken yet, use 'optimum_allocation'")
         }
       } else {
         already_sampled <- arguments$already_sampled
