@@ -2,11 +2,23 @@ Type: Package
 Package: optimall
 Title: Allocate Samples Among Strata
 Version: 0.1.0
-Authors@R:
-    person(given = "Jasper",
-           family = "Yang",
-           role = c("aut", "cre"),
-           email = "jasper.yang@pennmedicine.upenn.edu")
+Authors@R: c(
+	person(given = "Jasper",
+               family = "Yang",
+               role = c("aut", "cre"),
+               email = "jasper.yang@pennmedicine.upenn.edu"),
+	person(given = "Pamela",
+      	       family = "Shaw",
+	       role = "aut"),
+	person(given = "Bryan",
+	       family = "Shepherd",
+	       role = "ctb"),
+	person(given = "Thomas",
+	       family = "Lumley",
+	       role = "ctb"),
+	person(given = "Gustavo",
+	       family = "Amorim",
+	       role = "rev"))
 Maintainer: Jasper Yang <jasper.yang@pennmedicine.upenn.edu>
 Description: A collection of functions accompanied by an R Shiny
     application to streamline multi-wave adaptive sampling workflows.
