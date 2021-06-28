@@ -58,7 +58,7 @@ Once the dataset has been uploaded, options for the user to select inputs will a
 
 <center>
 <br />
-![Alt text](../inst/shiny-app/optimall_shiny/Screenshots/Screenshot4.png){width=80%}
+![Alt text](../inst/shiny-app/optimall_shiny/Screenshots/Screenshot4.png){width=98%}
 </center>
 <br />
 
