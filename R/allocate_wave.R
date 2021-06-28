@@ -63,7 +63,7 @@
 #' )
 #' }
 #' @export
-#' @references McIsaac MA, Cook RJ. Adaptive sampling in two‐phase designs:
+#' @references McIsaac MA, Cook RJ. Adaptive sampling in two-phase designs:
 #' a biomarker study for progression in arthritis. Statistics in medicine.
 #' 2015 Sep 20;34(21):2899-912.
 #' @references Reilly, M., & Pepe, M. S. (1995). A mean score method for

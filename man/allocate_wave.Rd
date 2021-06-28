@@ -97,7 +97,7 @@ x <- allocate_wave(
 }
 }
 \references{
-McIsaac MA, Cook RJ. Adaptive sampling in two‐phase designs:
+McIsaac MA, Cook RJ. Adaptive sampling in two-phase designs:
 a biomarker study for progression in arthritis. Statistics in medicine.
 2015 Sep 20;34(21):2899-912.
 
