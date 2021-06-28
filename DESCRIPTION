@@ -6,7 +6,7 @@ Authors@R: c(
 	person(given = "Jasper",
                family = "Yang",
                role = c("aut", "cre"),
-               email = "jasper.yang@pennmedicine.upenn.edu"),
+               email = "yangjasp@grinnell.edu"),
 	person(given = "Pamela",
       	       family = "Shaw",
 	       role = "aut"),
@@ -19,7 +19,7 @@ Authors@R: c(
 	person(given = "Gustavo",
 	       family = "Amorim",
 	       role = "rev"))
-Maintainer: Jasper Yang <jasper.yang@pennmedicine.upenn.edu>
+Maintainer: Jasper Yang <yangjasp@grinnell.edu>
 Description: A collection of functions accompanied by an R Shiny
     application to streamline multi-wave adaptive sampling workflows.
 License: GPL-3
