@@ -368,8 +368,4 @@ allocate_wave <- function(data,
     output_df <- dplyr::arrange(output_df, strata)
     return(output_df)
   }
-  else {
-    stop("'Method' must be a character string that matches or
-         partially matches one of 'simple' or 'iterative'.")
-  }
 }
