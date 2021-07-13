@@ -88,13 +88,24 @@ allocation is no longer optimal, but \code{optimall} will
 output the \emph{most} optimal allocation possible for the next wave.
 }
 \examples{
-\dontrun{
+# Create dataframe with a column specifying strata, a variable of interest
+# and an indicator for whether each unit was already sampled
+set.seed(234)
+mydata <- data.frame(Strata = c(rep(1, times = 20),
+                                rep(2, times = 20),
+                                rep(3, times = 20)),
+                     Var = c(rnorm(20, 1, 0.5),
+                             rnorm(20, 1, 0.9),
+                             rnorm(20, 1.5, 0.9)),
+                     AlreadySampled = rep(c(rep(1, times = 5),
+                                            rep(0, times = 15)),
+                                          times = 3))
+
 x <- allocate_wave(
-  data = iris, strata = "Species",
-  y = "Sepal.Width", already_sampled = "BinaryIndAlreadySampled",
+  data = mydata, strata = "Strata",
+  y = "Var", already_sampled = "AlreadySampled",
   nsample = 20, method = "simple"
 )
-}
 }
 \references{
 McIsaac MA, Cook RJ. Adaptive sampling in two-phase designs:
