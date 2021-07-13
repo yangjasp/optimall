@@ -4,7 +4,14 @@
 \alias{optimall_shiny}
 \title{Visualize Strata}
 \usage{
-optimall_shiny()
+optimall_shiny(...)
+}
+\arguments{
+\item{...}{Optional arguments to pass to \code{shiny::runApp}.
+\code{display.mode} is already set to normal.}
+}
+\value{
+Launches an R Shiny application locally.
 }
 \description{
 Launches an R Shiny application locally. This app can be used to
