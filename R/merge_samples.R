@@ -94,18 +94,18 @@ setMethod(
     # Get id if given id is NULL
     if (is.null(id)) {
       if ("id" %in% names(x@phases[[phase]]@waves[[wave]]@metadata) # &
-        # class(x@phases[[phase]]@waves[[wave]]@metadata$id) ==
-        # "character"
+        # inherits(x@phases[[phase]]@waves[[wave]]@metadata$id,
+        # "character")
       ) {
         id <- x@phases[[phase]]@waves[[wave]]@metadata$id
       } else if ("id" %in% names(x@phases[[phase]]@metadata) # &
-        # class(x@phases[[phase]]@waves[[wave]]@metadata$id) ==
-        # "character"
+        # inherits(x@phases[[phase]]@waves[[wave]]@metadata$id,
+        # "character")
       ) {
         id <- x@phases[[phase]]@metadata$id
       } else if ("id" %in% names(x@metadata) # &
-        # class(x@phases[[phase]]@waves[[wave]]@metadata$id) ==
-        # "character"
+        # inherits(x@phases[[phase]]@waves[[wave]]@metadata$id,
+        # "character")
       ) {
         id <- x@metadata$id
       } else {

@@ -110,7 +110,7 @@ sample_strata <- function(data, strata, id, already_sampled = NULL,
            unit was already sampled.")
     }
     if (("Y" %in% data[, already_sampled] == FALSE & 1 %in%
-      data[, already_sampled] == FALSE) | any(is.na(data[, already_sampled]))) {
+      data[, already_sampled] == FALSE) | anyNA(data[, already_sampled])) {
       stop("'already_sampled' column must contain '1' (numeric) or 'Y'
            (string) as indicators that a unit was sampled in a
            previous wave and cannot contain NAs")

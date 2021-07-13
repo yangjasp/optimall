@@ -110,7 +110,7 @@ allocate_wave <- function(data,
     stop("'already_sampled' must be a character string matching a column name of
            data.")
   }
-  if (class(detailed) != "logical") {
+  if (inherits(detailed, "logical") == FALSE) {
     stop("'detailed' must be a logical value.")
   }
   if (length(table(data[, already_sampled])) != 2) {
@@ -120,7 +120,7 @@ allocate_wave <- function(data,
          use 'optimum_allocation'.")
   }
   if (("Y" %in% data[, already_sampled] == FALSE & 1 %in%
-    data[, already_sampled] == FALSE) | any(is.na(data[, already_sampled]))) {
+    data[, already_sampled] == FALSE) | anyNA(data[, already_sampled])) {
     stop("'already_sampled' column must contain '1' (numeric) or 'Y'
          (character) as indicators that a unit was sampled in a
          previous wave and cannot contain NAs. If no units have

@@ -14,7 +14,7 @@
 #' multiwave_diagram(MySurvey)
 #' @export
 multiwave_diagram <- function(x, height = NULL, width = NULL) {
-  if (class(x) != "Multiwave") {
+  if (inherits(x, "Multiwave") == FALSE) {
     stop("'x' must be an object of class Multiwave")
   }
   title_char <- n_phases <- n_waves <- metadata_rec <- design_rec <-

@@ -107,7 +107,7 @@ optimum_allocation <- function(data, strata,
     stop("'Strata' must be a string or vector of strings matching
          column names of data.")
   }
-  if (any(is.na(data[, strata]))) {
+  if (anyNA(data[, strata])) {
     stop("Columns specifying strata contain NAs")
   }
   if ((is.null(y) & is.null(sd_h)) |
