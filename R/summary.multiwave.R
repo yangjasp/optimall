@@ -1,5 +1,6 @@
 #' Method for summary for class Multiwave
 #' @param object object of class "Multiwave"
+#' @return Prints a summary of the specified multiwave object in the console.
 #' @aliases summary,Multiwave-method
 #' @export
 

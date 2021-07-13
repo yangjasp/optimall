@@ -9,6 +9,9 @@
 \arguments{
 \item{object}{object of class "Multiwave"}
 }
+\value{
+Prints a summary of the specified multiwave object in the console.
+}
 \description{
 Method for summary for class Multiwave
 }
