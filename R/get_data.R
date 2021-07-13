@@ -12,6 +12,7 @@
 #' \code{"samples"}, \code{"sampled_data"}, \code{"data"}. Defaults to
 #' \code{"data"}. See class documentation or package vignettes for more
 #'  information about slots.
+#' @return If accessing a multiwave object slot, returns the specified slot.
 #'
 #' @name get_data
 #'
