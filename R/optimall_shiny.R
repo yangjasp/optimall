@@ -283,6 +283,6 @@ optimall_shiny <- function( ...){
     stop("Please install DT: install.packages('DT')")}
   if (! requireNamespace("bslib", quietly = TRUE)) {
     stop("Please install bslib: install.packages('bslib')")}
-  app <- shiny::shinyApp(ui = ui, server = server)
+  app <- shiny::shinyApp(ui = shiny_ui, server = shiny_server)
   shiny::runApp(app, ...)
 }
