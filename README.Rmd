@@ -51,7 +51,7 @@ If the strata or values to split at are not obvious, it may be useful to try a f
 
 <b>Screenshot:</b>
 
-![Alt text](inst/shiny-app/optimall_shiny/Screenshots/Screenshot1.png)
+![Alt text](inst/shiny-app/optimall_shiny/Screenshots/Screenshot4.png)
 
 We can then use `optimum_allocation` to calculate the optimum allocation a fixed number of samples to our strata in order to minimize the variance of a variable of interest.
 

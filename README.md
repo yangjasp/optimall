@@ -56,7 +56,7 @@ changes inside of R becomes as easy as a copy and paste\!
 
 <b>Screenshot:</b>
 
-![Alt text](inst/shiny-app/optimall_shiny/Screenshots/Screenshot1.png)
+![Alt text](inst/shiny-app/optimall_shiny/Screenshots/Screenshot4.png)
 
 We can then use `optimum_allocation` to calculate the optimum allocation
 a fixed number of samples to our strata in order to minimize the
