@@ -278,7 +278,7 @@ shiny_server <- function(input, output, session) {
 #' \code{display.mode} is already set to normal.
 #' @return Launches an R Shiny application locally.
 #' @export
-optimall_shiny_run <- function( ...){
+optimall_shiny <- function( ...){
   if (! requireNamespace("DT", quietly = TRUE)) {
     stop("Please install DT: install.packages('DT')")}
   if (! requireNamespace("bslib", quietly = TRUE)) {
