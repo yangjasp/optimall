@@ -339,44 +339,27 @@ multiwave_diagram <- function(x, height = NULL, width = NULL) {
     # Combine into vec
     edges_vec <- unlist(edges)
   }
-  # Attach what we will be passing to GrViz
-  title_char <<- title_char
-  default_rec <<- default_rec
-  recs_vec <<- recs_vec
-  edges_vec <<- edges_vec
 
+  # Use glue to write text input to be passed to Diagrammer::GrViz
+  diagram <- glue("digraph {{
+                  graph [layout = dot, rankdir = LR]
+                  node [shape = rectangle, fixedsize= true, width = 4.5,
+                  height = 1.5, fontname = Helvetica, fontsize = 20]
+                  {title_char}
+                  {default_rec}
+                  {recs_vec}
+                  # edge definitions with node ids
+                  rec1 -> rec2
+                  rec1 -> rec3 -> {{rec4 rec5}}
+                  {edges_vec}
+                  }}", title_char  = paste(title_char, collapse = " "),
+                  default_rec = paste(default_rec, collapse = " "),
+                  recs_vec = paste(recs_vec, collapse = " "),
+                  edges_vec =  paste(edges_vec, collapse = " "))
 
+  # Make diagram
+  output <- DiagrammeR::grViz(diagram, width = width, height = height)
 
-  # Diagram using DiagrammeR
-  output <- DiagrammeR::grViz("digraph {
-  graph [layout = dot, rankdir = LR]
-
-  node [shape = rectangle, fixedsize = true, width = 4.5, height = 1.5, fontname = Helvetica, fontsize  = 20]
-  @@1
-  @@2
-  @@3
-  # edge definitions with the node IDs
-  rec1 -> rec2
-  rec1 -> rec3 -> {rec4 rec5}
-  @@4
-  # from code
-
-  }
-
-  [1]: paste(title_char)
-  [2]: paste(default_rec, collapse = ' ')
-  [3]: paste(recs_vec, collapse = ' ')
-  [4]: paste(edges_vec, collapse = ' ')
-
-  ",
-    height = height, width = width
-  )
   # Print
   return(output)
-
-  # Remove assignments
-  rm(title_char)
-  rm(default_rec)
-  rm(recs_vec)
-  rm(edges_vec)
 }
