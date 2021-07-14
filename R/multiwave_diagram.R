@@ -341,7 +341,7 @@ multiwave_diagram <- function(x, height = NULL, width = NULL) {
   }
 
   # Use glue to write text input to be passed to Diagrammer::GrViz
-  diagram <- glue("digraph {{
+  diagram <- glue::glue("digraph {{
                   graph [layout = dot, rankdir = LR]
                   node [shape = rectangle, fixedsize= true, width = 4.5,
                   height = 1.5, fontname = Helvetica, fontsize = 20]
