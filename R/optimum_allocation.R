@@ -327,12 +327,6 @@ optimum_allocation <- function(data, strata,
         return(final_output)
       }
     }
-    else {
-      stop("'Method' must be a character string that matches or
-          partially matches one of 'WrightI','WrightII', or
-          'Neyman'.")
-    }
-
     # End if y is given and sd/N is NULL
   }
 
@@ -551,11 +545,6 @@ optimum_allocation <- function(data, strata,
         final_output <- dplyr::arrange(final_output, strata)
         return(final_output)
       }
-    }
-    else {
-      stop("'Method' must be a character string that matches or
-         partially matches one of 'WrightI','WrightII', or
-         'Neyman'.")
     }
     # End if sd is given and y is NULL
   }
