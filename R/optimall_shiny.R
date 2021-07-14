@@ -135,7 +135,7 @@ shiny_server <- function(input, output, session) {
   #observe(input$type == "categorical", {slidertype$type <-
   #"categorical"})
 
-  shiny::output$split_at <- shiny::renderUI({
+  output$split_at <- shiny::renderUI({
     shiny::req(input$data)
     if(type_vals$type %in% c("global quantile","local quantile")){
       shiny::sliderInput(inputId = "split_at", label = "Split At",
