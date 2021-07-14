@@ -1,4 +1,275 @@
-#' Visualize Strata
+#' UI for Shiny App for Splitting Strata with Optimum Allocation
+#' @return Creates the UI for the Shiny app that is loaded with
+#' \code{optimall_shiny}.
+#' @export
+
+ui <- function(){
+
+  shiny::fluidPage(
+
+  # Application title
+  shiny::titlePanel("Splitting Strata with Optimum Allocation"),
+
+  # Set Application Theme
+  theme = bslib::bs_theme(version = 4, bootswatch = "spacelab",
+                          secondary = "#446E9B"),
+
+  # Data input and describe its columns
+  # radio buttons from test result
+  shiny::sidebarLayout(
+    shiny::sidebarPanel(
+      shiny::fileInput("data", "Choose CSV File",
+                multiple = TRUE,
+                accept = c("text/csv",
+                           "text/comma-separated-values,text/plain",
+                           ".csv")),
+      shiny::uiOutput("strata"),
+      shiny::uiOutput("split_var"),
+      shiny::uiOutput("y"),
+      shiny::uiOutput("strata_to_split"),
+      shiny::uiOutput("type"),
+      shiny::uiOutput("split_at"),
+      shiny::uiOutput("allocation"),
+      shiny::uiOutput("key"),
+      shiny::uiOutput("nsample"),
+      shiny::actionButton("confirm", "Confirm Split"),
+      shiny::actionButton("reset", "Reset")
+    ),
+
+    # Show table with output of optimum_allocation
+    shiny::mainPanel(
+      DT::dataTableOutput("datatable"),
+      shiny::textOutput("list")
+    )
+  )
+)
+}
+
+#' Server logic for Interactive Shiny for Optimall.
+#' @param input input for Shiny server.
+#' @param output output for by Shiny server.
+#' @param session session for Shiny server.
+#' @return Defines server logic for Shiny app that can be loaded with
+#' \code{optimall_shiny()}.
+#' @export
+
+server <- function(input, output, session) {
+  #Take the inputted data and call it df
+  values <- shiny::reactiveValues(df_data = NULL)
+  shiny::observeEvent(input$data, {
+    values$df_data <- read.csv(input$data$datapath)
+  })
+  #Render the reactive UI
+
+  #Add option for allocate wave and store it as a reactive value
+  output$allocation <- shiny::renderUI({
+    shiny::req(input$data)
+    shiny::radioButtons(inputId = "allocation",
+                        label = "Include Information from Previous Wave",
+                        list("optimum_allocation","allocate_wave
+                              (have some units already been sampled?)"),)
+  })
+  type_vals <- shiny::reactiveValues()
+  type_vals$func <- "optimum_allocation"
+  shiny::observeEvent(input$allocation, {type_vals$func <- input$allocation})
+
+  #Now add the choice to select which column specifies the wave.
+  output$key <- shiny::renderUI({
+    shiny::req(input$data)
+    if(type_vals$func != c("optimum_allocation")){
+      shiny::selectInput(inputId = "key",
+                         label = "Column Indicating Which Have Already
+                         Been Sampled (Y/N or 1/0):",
+                         choices = names(values$df_data))
+    } else{
+      NULL
+    }
+  })
+
+  output$strata <- shiny::renderUI({
+    shiny::req(input$data)
+    shiny::selectInput(inputId = "strata",
+                       label = "Column Holding Strata",
+                       choices = names(values$df_data))
+  })
+  output$split_var <- shiny::renderUI({
+    shiny::req(input$data)
+    shiny::selectInput(inputId = "split_var",
+                       label = "Column Holding Variable to Split On",
+                       choices = names(values$df_data))
+  })
+  output$y <- shiny::renderUI({
+    shiny::req(input$data)
+    shiny::selectInput(inputId = "y",
+                       label = "Column Holding Variable of Interest",
+                       choices = names(values$df_data))
+  })
+  output$strata_to_split <- shiny::renderUI({
+    shiny::req(input$data)
+    shiny::selectInput(inputId = "strata_to_split",
+                       label = "Name of Strata to Split",
+                       choices = c("All", sort(unique(
+                       dplyr::select(values$df_data,
+                                     input$strata)[,input$strata]))))
+  })
+  output$type <- shiny::renderUI({
+    shiny::req(input$data)
+    shiny::radioButtons(inputId = "type",
+                        label = "Split Type",
+                        list("global quantile","local quantile",
+                              "value", "categorical"))
+  })
+  output$nsample <- shiny::renderUI({
+    shiny::req(input$data)
+    shiny::numericInput("nsample", "n to sample", 10)
+  })
+  #Change the parameters of split_at based on the type
+  type_vals$type <- "global quantile"
+
+  shiny::observeEvent(input$type, {type_vals$type <- input$type})
+  #observe(input$type == "global quantile",{slidertype$type <-
+  #"global quantile"})
+  #observe(input$type == "local quantile", {slidertype$type <-
+  #"local quantile"})
+  #observe(input$type == "value", {slidertype$type <- "value"})
+  #observe(input$type == "categorical", {slidertype$type <-
+  #"categorical"})
+
+  shiny::output$split_at <- shiny::renderUI({
+    shiny::req(input$data)
+    if(type_vals$type %in% c("global quantile","local quantile")){
+      shiny::sliderInput(inputId = "split_at", label = "Split At",
+                         min = 0,
+                         max = 1,
+                         value = 0.5,
+                         step = 0.01)
+    }
+    else if(type_vals$type == "value"){
+      shiny::sliderInput(inputId = "split_at", label = "Split At",
+                         min = min(dplyr::select(values$df_data,
+                                                 input$split_var)[,1]),
+                         max = max(dplyr::select(values$df_data,
+                                                 input$split_var)[,1]),
+                         value = max(dplyr::select(values$df_data,
+                                                   input$split_var)[,1]),
+                         step = 0.01)
+    }
+    else{
+      shiny::checkboxGroupInput(inputId = "split_at", label = "Split At:",
+                                choices = c(unique(
+                                  dplyr::select(values$df_data,
+                                                input$split_var)[
+                                                  ,input$split_var])))
+    }
+  })
+
+  strata_to_split <- shiny::reactiveValues(split = NULL)
+  shiny::observeEvent(input$strata_to_split, {
+    shiny::req(input$data)
+    if(input$strata_to_split == "All"){
+      strata_to_split$split <- NULL
+    } else{
+      strata_to_split$split <- input$strata_to_split
+    }
+  })
+
+  #Render the datatable with the optimum_allocation output.
+  output$datatable <- DT::renderDataTable({
+    shiny::req(input$data)
+    shiny::req(input$y)
+    shiny::req(input$split_var)
+    shiny::req(input$strata)
+    shiny::req(input$split_at)
+    output_df <- optimall::split_strata(data = values$df_data,
+                                        strata = input$strata,
+                                        split = strata_to_split$split,
+                                        split_var = input$split_var,
+                                        type = input$type,
+                                        split_at = input$split_at)
+    if(type_vals$func == "optimum_allocation"){
+      output_df <- optimall::optimum_allocation(data = output_df,
+                                                strata = "new_strata",
+                                                y = input$y,
+                                                nsample = input$nsample,
+                                                ndigits = 4,
+                                                allow.na = T)
+    } else {
+      output_df <- optimall::allocate_wave(data = output_df,
+                                           strata = "new_strata",
+                                           y = input$y,
+                                           nsample = input$nsample,
+                                           wave2a = input$key,
+                                           method = "simple")
+    }
+    DT::datatable(output_df, options = list(pageLength = 25))
+  })
+
+  #Make reactiveVal that says where to start list of code commands.
+  startVal <- shiny::reactiveVal()
+  startVal(1)
+
+  #What happens when you confirm your split. 1: output_df updates
+  #and 2: code for the split pops up.
+  myValues <- shiny::reactiveValues(dList = NULL)
+  shiny::observeEvent(input$confirm,{
+    temp <- optimall::split_strata(data = values$df_data,
+                                   strata = input$strata,
+                                   split = strata_to_split$split ,
+                                   split_var = input$split_var,
+                                   type = input$type,
+                                   split_at = input$split_at)
+    if(type_vals$type != "categorical"|
+       (type_vals$type == "categorical" & length(input$split_at) == 1)){
+      myValues$dList <- c(shiny::isolate(myValues$dList),
+                          shiny::isolate(paste0(
+                            "split_strata(data = 'df_name', strata = '",
+                            input$strata,"', split = ",
+                            ifelse(is.null(strata_to_split$split),
+                                   "NULL",
+                                   paste0("'",
+                                          strata_to_split$split
+                                          ,"'")),
+                            ", split_var = '",input$split_var,
+                            "', type = '",input$type,
+                            "', split_at = '",input$split_at,"')")))
+    }
+    if(type_vals$type == "categorical" & length(input$split_at) > 1){
+      split_cat_text <- paste0("c('",
+                               glue::glue_collapse(input$split_at,
+                                                   sep = "','"),"')")
+      myValues$dList <- c(shiny::isolate(myValues$dList),
+                          shiny::isolate(paste0(
+                            "split_strata(data = 'df_name',
+                            strata = '",
+                            input$strata,"', split = ",
+                            ifelse(is.null(strata_to_split$split),
+                                   "NULL",
+                                   paste0("'",
+                                          strata_to_split$split
+                                          ,"'")),
+                            ", split_var = '",input$split_var,
+                            "', type = '",input$type,
+                            "', split_at = ",split_cat_text,")")))
+    }
+    output$list<-shiny::renderPrint({
+      c(myValues$dList[startVal():length(myValues$dList)])
+    })
+    values$df_data <- temp
+  })
+
+  #Reset button resets df, clears changes in text, and updates startVal
+  #So code from before reset will no longer appear.
+  shiny::observeEvent(input$reset,{
+    output_df <- NULL
+    values$df_data <- read.csv(input$data$datapath)
+    startVal((length(myValues$dList)) + 1)
+    output$list <- shiny::renderPrint({
+      myValues <- NULL
+    })
+  })
+}
+
+#' Run the shiny application
 #'
 #' Launches an R Shiny application locally. This app can be used to
 #' interactively split strata and determine how the results affect
@@ -7,14 +278,11 @@
 #' \code{display.mode} is already set to normal.
 #' @return Launches an R Shiny application locally.
 #' @export
-optimall_shiny <- function(...) {
-  appDir <- system.file("shiny-app", "optimall_shiny",
-    "app_draft_4.R",
-    package = "optimall"
-  )
-  if (appDir == "") {
-    stop("Could not find directory.
-         Try re-installing `optimall`.", call. = FALSE)
-  }
-  shiny::runApp(appDir, display.mode = "normal", ...)
+optimall_shiny_run <- function( ...){
+  if (! requireNamespace("DT", quietly = TRUE)) {
+    stop("Please install DT: install.packages('DT')")}
+  if (! requireNamespace("bslib", quietly = TRUE)) {
+    stop("Please install bslib: install.packages('bslib')")}
+  app <- shiny::shinyApp(ui = ui, server = server)
+  shiny::runApp(app, ...)
 }
