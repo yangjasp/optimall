@@ -99,7 +99,7 @@ allocate_wave <- function(data,
                           strata,
                           y, already_sampled,
                           nsample,
-                          method = "iterative",
+                          method = c("iterative","simple"),
                           detailed = FALSE) {
   key <- stratum_size <- wave1_size <- npop <- difference <-
     nsample_prior <- n_to_sample <- nsample_actual <-
@@ -142,7 +142,7 @@ allocate_wave <- function(data,
     stop("Total sample size across waves, taken as nsampled in
          already_sampled + nsample, is larger than the population size.")
   }
-  method <- match.arg(method, c("simple", "iterative"))
+  method <- match.arg(method)
   # Find the total sample size and optimally allocate that
   nsampled <- sum(data[, already_sampled] == "Y" | data[, already_sampled] == 1)
   output1 <- optimall::optimum_allocation(
