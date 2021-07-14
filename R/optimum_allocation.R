@@ -93,7 +93,8 @@ optimum_allocation <- function(data, strata,
                                sd_h = NULL,
                                N_h = NULL,
                                nsample = NULL,
-                               ndigits = 2, method = "WrightII",
+                               ndigits = 2,
+                               method = c("WrightII", "WrightI", "Neyman"),
                                allow.na = FALSE) {
   n_sd <- sd <- n <- npop <- stratum_fraction <- NULL
   # bind local vars as necessary
@@ -128,7 +129,7 @@ optimum_allocation <- function(data, strata,
     if (is.numeric(data[, y]) == FALSE) {
       stop("'y' must be numeric.")
     }
-    method <- match.arg(method, c("WrightI", "WrightII", "Neyman"))
+    method <- match.arg(method)
     y <- enquo(y)
     strata <- enquo(strata)
     output_df <- data %>%
@@ -345,7 +346,7 @@ optimum_allocation <- function(data, strata,
       is.numeric(data[, N_h]) == FALSE) {
       stop("'sd_h' and 'N_h' must be numeric.")
     }
-    method <- match.arg(method, c("WrightI", "WrightII", "Neyman"))
+    method <- match.arg(method)
     sd_h <- enquo(sd_h)
     N_h <- enquo(N_h)
     strata <- enquo(strata)
