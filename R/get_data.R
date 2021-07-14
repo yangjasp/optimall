@@ -40,10 +40,13 @@ NULL
 #' @describeIn get_data
 #' access slot of multiwave object
 #' @export
-get_data <- function(x, phase = 1, wave = NA, slot = "data") {
+get_data <- function(x, phase = 1, wave = NA,
+                     slot = c("data", "design", "metadata", "samples",
+                              "sampled_data")) {
   if (inherits(x, "Multiwave")  == FALSE) {
     stop("'x' must be an object of class 'Multiwave'")
   }
+  slot <- match.arg(slot)
   if (is.na(phase) & is.na(wave) & slot == "metadata") {
     x@metadata
   } else if (is.na(phase)) {
@@ -85,12 +88,13 @@ get_data <- function(x, phase = 1, wave = NA, slot = "data") {
 #' @aliases get_data<-,Multiwave-method
 #' @export
 
-setGeneric("get_data<-", function(x, phase = 1, wave = NA, slot = "data",
-                                  value) {
-  standardGeneric("get_data<-")
-})
-setMethod("get_data<-", c(x = "Multiwave"), function(x, phase = 1, wave = NA,
-                                                     slot = "data", value) {
+'get_data<-' <- function(x, phase = 1, wave = NA,
+                         slot = c("data", "design", "metadata", "samples",
+                                  "sampled_data"), value) {
+  if (inherits(x, "Multiwave")  == FALSE) {
+    stop("'x' must be an object of class 'Multiwave'")
+  }
+  slot <- match.arg(slot)
   if (is.na(phase) & is.na(wave) & slot == "metadata") {
     x@metadata <- value
   } else if (is.na(phase)) {
@@ -123,4 +127,5 @@ setMethod("get_data<-", c(x = "Multiwave"), function(x, phase = 1, wave = NA,
   }
   validObject(x)
   x
-})
+}
+#)
