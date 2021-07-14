@@ -3,7 +3,7 @@
 #' \code{optimall_shiny}.
 #' @export
 
-ui <- function(){
+shiny_ui <- function(){
 
   shiny::fluidPage(
 
@@ -53,7 +53,7 @@ ui <- function(){
 #' \code{optimall_shiny()}.
 #' @export
 
-server <- function(input, output, session) {
+shiny_server <- function(input, output, session) {
   #Take the inputted data and call it df
   values <- shiny::reactiveValues(df_data = NULL)
   shiny::observeEvent(input$data, {
