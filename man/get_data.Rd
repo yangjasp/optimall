@@ -6,9 +6,19 @@
 \alias{get_data<-,Multiwave-method}
 \title{Access and Write Slots of a Multiwave Object}
 \usage{
-get_data(x, phase = 1, wave = NA, slot = "data")
+get_data(
+  x,
+  phase = 1,
+  wave = NA,
+  slot = c("data", "design", "metadata", "samples", "sampled_data")
+)
 
-get_data(x, phase = 1, wave = NA, slot = "data") <- value
+get_data(
+  x,
+  phase = 1,
+  wave = NA,
+  slot = c("data", "design", "metadata", "samples", "sampled_data")
+) <- value
 }
 \arguments{
 \item{x}{an object of class \code{'Multiwave'}}

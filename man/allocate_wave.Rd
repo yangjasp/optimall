@@ -10,7 +10,7 @@ allocate_wave(
   y,
   already_sampled,
   nsample,
-  method = "iterative",
+  method = c("iterative", "simple"),
   detailed = FALSE
 )
 }

@@ -12,7 +12,7 @@ optimum_allocation(
   N_h = NULL,
   nsample = NULL,
   ndigits = 2,
-  method = "WrightII",
+  method = c("WrightII", "WrightI", "Neyman"),
   allow.na = FALSE
 )
 }
