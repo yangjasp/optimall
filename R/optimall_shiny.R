@@ -19,19 +19,18 @@ shiny_ui <- function(){
   shiny::sidebarLayout(
     shiny::sidebarPanel(
       shiny::fileInput("data", "Choose CSV File",
-                multiple = TRUE,
-                accept = c("text/csv",
-                           "text/comma-separated-values,text/plain",
-                           ".csv")),
-      shiny::uiOutput("strata"),
-      shiny::uiOutput("split_var"),
-      shiny::uiOutput("y"),
-      shiny::uiOutput("strata_to_split"),
-      shiny::uiOutput("type"),
-      shiny::uiOutput("split_at"),
-      shiny::uiOutput("allocation"),
-      shiny::uiOutput("key"),
-      shiny::uiOutput("nsample"),
+                multiple = FALSE,
+                accept = c(".csv",
+                           ".rds")),
+      shiny::uiOutput("strata_output"),
+      shiny::uiOutput("split_var_output"),
+      shiny::uiOutput("y_output"),
+      shiny::uiOutput("strata_to_split_output"),
+      shiny::uiOutput("type_output"),
+      shiny::uiOutput("split_at_output"),
+      shiny::uiOutput("allocation_output"),
+      shiny::uiOutput("key_output"),
+      shiny::uiOutput("nsample_output"),
       shiny::actionButton("confirm", "Confirm Split"),
       shiny::actionButton("reset", "Reset")
     ),
@@ -57,12 +56,18 @@ shiny_server <- function(input, output, session) {
   #Take the inputted data and call it df
   values <- shiny::reactiveValues(df_data = NULL)
   shiny::observeEvent(input$data, {
-    values$df_data <- read.csv(input$data$datapath)
+    path <- input$data$datapath
+    pathext <- substr(path, nchar(path) - 3, nchar(path))
+    if(pathext == ".csv"){
+      values$df_data <- read.csv(input$data$datapath)
+    } else if(pathext == ".rds"){
+      values$df_data <- readRDS(input$data$datapath)
+    }
   })
   #Render the reactive UI
 
   #Add option for allocate wave and store it as a reactive value
-  output$allocation <- shiny::renderUI({
+  output$allocation_output <- shiny::renderUI({
     shiny::req(input$data)
     shiny::radioButtons(inputId = "allocation",
                         label = "Include Information from Previous Wave",
@@ -74,7 +79,7 @@ shiny_server <- function(input, output, session) {
   shiny::observeEvent(input$allocation, {type_vals$func <- input$allocation})
 
   #Now add the choice to select which column specifies the wave.
-  output$key <- shiny::renderUI({
+  output$key_output <- shiny::renderUI({
     shiny::req(input$data)
     if(type_vals$func != c("optimum_allocation")){
       shiny::selectInput(inputId = "key",
@@ -86,25 +91,25 @@ shiny_server <- function(input, output, session) {
     }
   })
 
-  output$strata <- shiny::renderUI({
+  output$strata_output <- shiny::renderUI({
     shiny::req(input$data)
     shiny::selectInput(inputId = "strata",
                        label = "Column Holding Strata",
                        choices = names(values$df_data))
   })
-  output$split_var <- shiny::renderUI({
+  output$split_var_output <- shiny::renderUI({
     shiny::req(input$data)
     shiny::selectInput(inputId = "split_var",
                        label = "Column Holding Variable to Split On",
                        choices = names(values$df_data))
   })
-  output$y <- shiny::renderUI({
+  output$y_output <- shiny::renderUI({
     shiny::req(input$data)
     shiny::selectInput(inputId = "y",
                        label = "Column Holding Variable of Interest",
                        choices = names(values$df_data))
   })
-  output$strata_to_split <- shiny::renderUI({
+  output$strata_to_split_output <- shiny::renderUI({
     shiny::req(input$data)
     shiny::selectInput(inputId = "strata_to_split",
                        label = "Name of Strata to Split",
@@ -112,14 +117,14 @@ shiny_server <- function(input, output, session) {
                        dplyr::select(values$df_data,
                                      input$strata)[,input$strata]))))
   })
-  output$type <- shiny::renderUI({
+  output$type_output <- shiny::renderUI({
     shiny::req(input$data)
     shiny::radioButtons(inputId = "type",
                         label = "Split Type",
                         list("global quantile","local quantile",
                               "value", "categorical"))
   })
-  output$nsample <- shiny::renderUI({
+  output$nsample_output <- shiny::renderUI({
     shiny::req(input$data)
     shiny::numericInput("nsample", "n to sample", 10)
   })
@@ -135,7 +140,7 @@ shiny_server <- function(input, output, session) {
   #observe(input$type == "categorical", {slidertype$type <-
   #"categorical"})
 
-  output$split_at <- shiny::renderUI({
+  output$split_at_output <- shiny::renderUI({
     shiny::req(input$data)
     if(type_vals$type %in% c("global quantile","local quantile")){
       shiny::sliderInput(inputId = "split_at", label = "Split At",
@@ -198,7 +203,7 @@ shiny_server <- function(input, output, session) {
                                            strata = "new_strata",
                                            y = input$y,
                                            nsample = input$nsample,
-                                           wave2a = input$key,
+                                           already_sampled = input$key,
                                            method = "simple")
     }
     DT::datatable(output_df, options = list(pageLength = 25))
@@ -231,7 +236,7 @@ shiny_server <- function(input, output, session) {
                                           ,"'")),
                             ", split_var = '",input$split_var,
                             "', type = '",input$type,
-                            "', split_at = '",input$split_at,"')")))
+                            "', split_at = ",input$split_at,")")))
     }
     if(type_vals$type == "categorical" & length(input$split_at) > 1){
       split_cat_text <- paste0("c('",
