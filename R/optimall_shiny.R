@@ -21,7 +21,8 @@ shiny_ui <- function(){
       shiny::fileInput("data", "Choose CSV File",
                 multiple = FALSE,
                 accept = c(".csv",
-                           ".rds")),
+                           ".rds",
+                           ".rda")),
       shiny::uiOutput("strata_output"),
       shiny::uiOutput("split_var_output"),
       shiny::uiOutput("y_output"),
@@ -58,10 +59,14 @@ shiny_server <- function(input, output, session) {
   shiny::observeEvent(input$data, {
     path <- input$data$datapath
     pathext <- substr(path, nchar(path) - 3, nchar(path))
-    if(pathext == ".csv"){
-      values$df_data <- read.csv(input$data$datapath)
-    } else if(pathext == ".rds"){
+    if (pathext == ".csv"){
+      values$df_data <- utils::read.csv(input$data$datapath)
+    } else if (pathext == ".rds"){
       values$df_data <- readRDS(input$data$datapath)
+    } else if (pathext == ".rda"){
+      env <- new.env(parent = emptyenv())
+      dat <- load(input$data$datapath, envir = env)[1]
+      values$df_data <- env[[dat]]
     }
   })
   #Render the reactive UI
@@ -266,7 +271,17 @@ shiny_server <- function(input, output, session) {
   #So code from before reset will no longer appear.
   shiny::observeEvent(input$reset,{
     output_df <- NULL
-    values$df_data <- read.csv(input$data$datapath)
+    path <- input$data$datapath
+    pathext <- substr(path, nchar(path) - 3, nchar(path))
+    if (pathext == ".csv"){
+      values$df_data <- utils::read.csv(input$data$datapath)
+    } else if (pathext == ".rds"){
+      values$df_data <- readRDS(input$data$datapath)
+    } else if (pathext == ".rda"){
+      env <- new.env(parent = emptyenv())
+      dat <- load(input$data$datapath, envir = env)[1]
+      values$df_data <- env[[dat]]
+    }
     startVal((length(myValues$dList)) + 1)
     output$list <- shiny::renderPrint({
       myValues <- NULL
@@ -278,7 +293,10 @@ shiny_server <- function(input, output, session) {
 #'
 #' Launches an R Shiny application locally. This app can be used to
 #' interactively split strata and determine how the results affect
-#' optimum allocation of a fixed number of samples.
+#' optimum allocation of a fixed number of samples. It accepts
+#' .csv and .rds files as well as .rda files that contain a single
+#' dataset. See vignette titled "Splitting Strata with Optimall Shiny"
+#' for more information.
 #' @param ... Optional arguments to pass to \code{shiny::runApp}.
 #' \code{display.mode} is already set to normal.
 #' @return Launches an R Shiny application locally.
