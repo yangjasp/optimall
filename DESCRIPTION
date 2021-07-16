@@ -42,8 +42,10 @@ Suggests:
     datasets,
     knitr (>= 1.28),
     rmarkdown (>= 2.7),
+    shinytest (>= 1.4.0),
     survey (>= 4.0),
-    testthat (>= 3.0.2)
+    testthat (>= 3.0.2),
+    utils (>= 3.5.0)
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
