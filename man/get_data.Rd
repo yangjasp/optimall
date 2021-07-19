@@ -2,6 +2,7 @@
 % Please edit documentation in R/get_data.R
 \name{get_data}
 \alias{get_data}
+\alias{get_data,Multiwave-method}
 \alias{get_data<-}
 \alias{get_data<-,Multiwave-method}
 \title{Access and Write Slots of a Multiwave Object}
