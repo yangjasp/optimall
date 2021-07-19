@@ -35,17 +35,19 @@ Imports:
     rlang (>= 0.2.2),
     shiny (>= 1.6.0),
     stats (>= 4.0.2),
-    tibble (>= 1.4.2)
+    tibble (>= 1.4.2),
+    utils (>= 3.5.0),
 Suggests: 
     bslib (>= 0.2.4),
     DT (>= 0.15),
     datasets,
+    globals (>= 0.12),
     knitr (>= 1.28),
     rmarkdown (>= 2.7),
     shinytest (>= 1.4.0),
     survey (>= 4.0),
     testthat (>= 3.0.2),
-    utils (>= 3.5.0)
+    webshot (>= 0.5)
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
