@@ -16,13 +16,13 @@ multiwave_diagram(x, height = NULL, width = NULL)
 which produces the default width.}
 }
 \value{
-Returns an object of class \code{htmlwidget} displaying the structure of
-the \code{x}.
+Returns an object of class \code{htmlwidget}
+displaying the structure of the \code{x}.
 }
 \description{
 Takes a multiwave object as input and plots a diagram of its structure
-in the plotting window using \code{grViz()} from the \code{DiagrammeR} package.
-Red boxes indicate slots that have not yet been
+in the plotting window using \code{grViz()} from the \code{DiagrammeR}
+package. Red boxes indicate slots that have not yet been
 filled, blue boxes indicate that the slot is filled.
 }
 \examples{
