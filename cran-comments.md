@@ -6,4 +6,5 @@
 
 
 # R CMD check results
-There were no ERRORs or WARNINGs or NOTEs
+* There were no ERRORs or WARNINGs.
+* 1 Note: Possibly misspelled words in DESCRIPTION, but the spelling is correct.
