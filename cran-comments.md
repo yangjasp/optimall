@@ -7,4 +7,6 @@
 
 # R CMD check results
 * There were no ERRORs or WARNINGs.
-* 1 Note: Possibly misspelled words in DESCRIPTION, but the spelling is correct.
+* There was 1 NOTE: Possibly misspelled words in DESCRIPTION.
+
+The spelling is correct.
