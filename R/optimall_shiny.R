@@ -302,10 +302,15 @@ shiny_server <- function(input, output, session) {
 #' @return Launches an R Shiny application locally.
 #' @export
 optimall_shiny <- function( ...){
+  if (! requireNamespace("shiny", quietly = TRUE)) {
+    stop("Please install shiny: install.packages('shiny')",
+         call. = FALSE)}
   if (! requireNamespace("DT", quietly = TRUE)) {
-    stop("Please install DT: install.packages('DT')")}
+    stop("Please install DT: install.packages('DT')",
+         call. = FALSE)}
   if (! requireNamespace("bslib", quietly = TRUE)) {
-    stop("Please install bslib: install.packages('bslib')")}
+    stop("Please install bslib: install.packages('bslib')",
+         call. = FALSE)}
   app <- shiny::shinyApp(ui = shiny_ui, server = shiny_server)
   shiny::runApp(app, ...)
 }
