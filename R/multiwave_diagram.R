@@ -20,6 +20,13 @@ multiwave_diagram <- function(x, height = NULL, width = NULL) {
   if (inherits(x, "Multiwave") == FALSE) {
     stop("'x' must be an object of class Multiwave")
   }
+
+  # Install DiagrammeR if it is not already installed
+  if (! requireNamespace("DiagrammeR", quietly = TRUE)) {
+    stop("Please install DiagrammeR: install.packages('DiagrammeR').
+         Otherwise, try 'summary()'",
+         call. = FALSE)}
+
   title_char <- n_phases <- n_waves <- metadata_rec <- design_rec <-
     samples_rec <-
     sampled_data_rec <- data_rec <- full_slot_color <- empty_slot_color <-
