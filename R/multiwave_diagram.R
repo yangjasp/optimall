@@ -1,8 +1,8 @@
 #' Print Summary Diagram of Multiwave Object
 #'
 #' Takes a multiwave object as input and plots a diagram of its structure
-#' in the plotting window using \code{grViz()} from the \code{DiagrammeR} package.
-#' Red boxes indicate slots that have not yet been
+#' in the plotting window using \code{grViz()} from the \code{DiagrammeR}
+#' package. Red boxes indicate slots that have not yet been
 #' filled, blue boxes indicate that the slot is filled.
 #'
 #' @param x An object of class \code{multiwave}.
@@ -10,8 +10,8 @@
 #' , which produces default height.
 #' @param width The width in pixels of the diagram. Defaults to \code{NULL},
 #' which produces the default width.
-#' @return Returns an object of class \code{htmlwidget} displaying the structure of
-#' the \code{x}.
+#' @return Returns an object of class \code{htmlwidget}
+#' displaying the structure of the \code{x}.
 #' @examples
 #' MySurvey <- new_multiwave(phases = 2, waves = c(1, 3))
 #' multiwave_diagram(MySurvey)

@@ -202,7 +202,7 @@ shiny_server <- function(input, output, session) {
                                                 y = input$y,
                                                 nsample = input$nsample,
                                                 ndigits = 4,
-                                                allow.na = T)
+                                                allow.na = TRUE)
     } else {
       output_df <- optimall::allocate_wave(data = output_df,
                                            strata = "new_strata",
