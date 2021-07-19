@@ -28,8 +28,10 @@ app <- shinytest::ShinyDriver$new(shiny::shinyApp(ui = shiny_ui,
 test_that("App runs", {
 
    # accepts data
-  #app$uploadFile(data = file.path(system.file("data", package = "optimall"), "MatWgt_Sim.rda"))
-  app$uploadFile(data = system.file("extdata", "MatWgt_Sim.csv", package = "optimall"))
+  #app$uploadFile(data = file.path(system.file("data", package = "optimall"),
+                                  #"MatWgt_Sim.rda"))
+  app$uploadFile(data = system.file("extdata", "MatWgt_Sim.csv",
+                                    package = "optimall"))
 
   # set inputs
   app$setInputs(strata =  "race", split_at = 0.5, split_var = "mat_weight_est",
