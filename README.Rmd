@@ -29,7 +29,13 @@ When used together, these functions can automate most of the sampling workflow.
 
 ## Installation
 
-You can install the development version of `optimall` from [GitHub](https://github.com/) with:
+You can install `optimall` from [CRAN](https://cran.r-project.org/web/packages/optimall/index.html) with:
+
+``` r
+# install.packages("optimall")
+```
+
+Or, you can install the development version from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
