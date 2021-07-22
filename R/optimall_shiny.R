@@ -18,7 +18,7 @@ shiny_ui <- function(){
   # radio buttons from test result
   shiny::sidebarLayout(
     shiny::sidebarPanel(
-      shiny::fileInput("data", "Choose CSV File",
+      shiny::fileInput("data", "Choose File",
                 multiple = FALSE,
                 accept = c(".csv",
                            ".rds",
