@@ -150,7 +150,7 @@ setMethod(
       for (i in seq_along(dup_cols)) {
         # Warning if non-NA for both values for any row
         if (any(!is.na(sort(previous_wave_data[
-          previous_wave_data$id %in%
+          previous_wave_data[, id] %in%
             x@phases[[phase]]@waves[[wave]]@sampled_data[, id],
           dup_cols[i]
         ])) &
@@ -202,7 +202,7 @@ setMethod(
     already_sampled_ids <- unlist(already_sampled_ids)
 
     output_data[, sampled_ind] <-
-      ifelse(output_data$id %in% already_sampled_ids, 1, 0)
+      ifelse(output_data[,id] %in% already_sampled_ids, 1, 0)
 
     get_data(x, phase = phase, wave = wave) <- output_data
     return(x)
