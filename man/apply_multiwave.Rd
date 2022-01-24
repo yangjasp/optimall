@@ -43,7 +43,7 @@ specified wave to generate the final, merged data for the current wave.
 If used, the output multiwave object contains an updated \code{"data"}
 slot in the specified wave. Note that \code{merge_samples} is already a
 method for multiwave objects, so calling
-it through \code{apply_optimall} is the exact same as calling it on its
+it through \code{apply_multiwave} is the exact same as calling it on its
 own.}
 See documentation of these functions for more details on the
 specific uses and arguments.}
