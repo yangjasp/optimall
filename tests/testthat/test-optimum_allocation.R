@@ -51,7 +51,14 @@ test_that("WrightI and WrightII work", {
       data = data, strata = "strata",
       y = "y", nsample = 10,
       method = "WrightII"
-    )$stratum_size,
+    )$stratum_size)
+
+  expect_equal(
+    optimum_allocation(
+    data = data, strata = "strata",
+    y = "y", nsample = 10,
+    method = "WrightII"
+  )$stratum_size,
     optimum_allocation(
       data = data, strata = "strata",
       y = "y", nsample = 10,
@@ -88,7 +95,13 @@ test_that("Output agrees whether input is matrix, df, or tibble", {
     optimum_allocation(
       data = data_mat, strata = "strata",
       y = "y", nsample = 10
-    )$stratum_size,
+    )$stratum_size)
+
+  expect_equal(
+    optimum_allocation(
+    data = data_mat, strata = "strata",
+    y = "y", nsample = 10
+  )$stratum_size,
     optimum_allocation(
       data = data_tib, strata = "strata",
       y = "y", nsample = 10
@@ -206,6 +219,12 @@ test_that("WrightI and WrightII work", {
       data = short_data, strata = "strata",
       N_h = "size", sd_h = "sd", nsample = 10,
       method = "WrightII"
+    )$stratum_size)
+  expect_equal(
+    optimum_allocation(
+    data = short_data, strata = "strata",
+    N_h = "size", sd_h = "sd", nsample = 10,
+    method = "WrightII"
     )$stratum_size,
     optimum_allocation(
       data = data, strata = "strata",
@@ -283,7 +302,13 @@ test_that("Output agrees whether input is matrix, df, or tibble", {
       N_h = "size",
       sd_h = "sd",
       nsample = 10
-    )$stratum_size,
+    )$stratum_size)
+  expect_equal(optimum_allocation(
+    data = data_mat, strata = "strata",
+    N_h = "size",
+    sd_h = "sd",
+    nsample = 10
+  )$stratum_size,
     optimum_allocation(
       data = data_tib, strata = "strata",
       N_h = "size",
