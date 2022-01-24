@@ -2,13 +2,24 @@
 % Please edit documentation in R/get_data.R
 \name{get_data}
 \alias{get_data}
+\alias{get_data,Multiwave-method}
 \alias{get_data<-}
 \alias{get_data<-,Multiwave-method}
 \title{Access and Write Slots of a Multiwave Object}
 \usage{
-get_data(x, phase = 1, wave = NA, slot = "data")
+get_data(
+  x,
+  phase = 1,
+  wave = NA,
+  slot = c("data", "design", "metadata", "samples", "sampled_data")
+)
 
-get_data(x, phase = 1, wave = NA, slot = "data") <- value
+get_data(
+  x,
+  phase = 1,
+  wave = NA,
+  slot = c("data", "design", "metadata", "samples", "sampled_data")
+) <- value
 }
 \arguments{
 \item{x}{an object of class \code{'Multiwave'}}
@@ -26,6 +37,9 @@ accessed. Must be one of \code{"metadata"}, \code{"design"},
 information about slots.}
 
 \item{value}{value to assign to specified slot}
+}
+\value{
+If accessing a multiwave object slot, returns the specified slot.
 }
 \description{
 \code{get_data} is the accessor function for objects of

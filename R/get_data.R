@@ -12,6 +12,7 @@
 #' \code{"samples"}, \code{"sampled_data"}, \code{"data"}. Defaults to
 #' \code{"data"}. See class documentation or package vignettes for more
 #'  information about slots.
+#' @return If accessing a multiwave object slot, returns the specified slot.
 #'
 #' @name get_data
 #'
@@ -36,13 +37,28 @@
 #' @include multiwave.R phase.R wave.R
 NULL
 
+#' @aliases get_data,Multiwave-method
 #' @describeIn get_data
 #' access slot of multiwave object
 #' @export
-get_data <- function(x, phase = 1, wave = NA, slot = "data") {
-  if (class(x) != "Multiwave") {
+setGeneric("get_data", function(x, phase = 1, wave = NA,
+                                slot = c("data", "design",
+                                         "metadata", "samples",
+                                         "sampled_data")) {
+  standardGeneric("get_data")
+})
+
+setMethod("get_data", c(x = "Multiwave"), function(x, phase = 1,
+                                                   wave = NA,
+                                                   slot = c("data",
+                                                            "design",
+                                                            "metadata",
+                                                            "samples",
+                                                            "sampled_data")){
+  if (inherits(x, "Multiwave")  == FALSE) {
     stop("'x' must be an object of class 'Multiwave'")
   }
+  slot <- match.arg(slot)
   if (is.na(phase) & is.na(wave) & slot == "metadata") {
     x@metadata
   } else if (is.na(phase)) {
@@ -76,23 +92,30 @@ get_data <- function(x, phase = 1, wave = NA, slot = "data") {
   else {
     stop("unable to find selection in 'x': invalid selection")
   }
-}
+})
 
 #' @describeIn get_data
 #' assign value to slot of a multiwave object
 #' @param value value to assign to specified slot
 #' @aliases get_data<-,Multiwave-method
 #' @export
-
-setGeneric("get_data<-", function(x, phase = 1, wave = NA, slot = "data",
-                                  value) {
+#'
+setGeneric("get_data<-", function(x, phase = 1, wave = NA,
+                                  slot = c("data", "design",
+                                           "metadata", "samples",
+                                           "sampled_data"),
+value) {
   standardGeneric("get_data<-")
 })
+
 setMethod("get_data<-", c(x = "Multiwave"), function(x, phase = 1, wave = NA,
-                                                     slot = "data", value) {
-  if (class(x) != "Multiwave") {
-    stop("'x' must be an object of class 'multiwave'")
-  }
+                                                     slot = c("data",
+                                                              "design",
+                                                              "metadata",
+                                                              "samples",
+                                                              "sampled_data"),
+                                                     value) {
+  slot <- match.arg(slot)
   if (is.na(phase) & is.na(wave) & slot == "metadata") {
     x@metadata <- value
   } else if (is.na(phase)) {

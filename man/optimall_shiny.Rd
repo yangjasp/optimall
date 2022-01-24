@@ -2,12 +2,22 @@
 % Please edit documentation in R/optimall_shiny.R
 \name{optimall_shiny}
 \alias{optimall_shiny}
-\title{Visualize Strata}
+\title{Run the shiny application}
 \usage{
-optimall_shiny()
+optimall_shiny(...)
+}
+\arguments{
+\item{...}{Optional arguments to pass to \code{shiny::runApp}.
+\code{display.mode} is already set to normal.}
+}
+\value{
+Launches an R Shiny application locally.
 }
 \description{
 Launches an R Shiny application locally. This app can be used to
 interactively split strata and determine how the results affect
-optimum allocation of a fixed number of samples.
+optimum allocation of a fixed number of samples. It accepts
+.csv and .rds files as well as .rda files that contain a single
+dataset. See vignette titled "Splitting Strata with Optimall Shiny"
+for more information.
 }

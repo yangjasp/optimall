@@ -55,13 +55,24 @@
 #' These details are all available from
 #' \code{optimum_allocation}.
 #' @examples
-#' \dontrun{
+#' # Create dataframe with a column specifying strata, a variable of interest
+#' # and an indicator for whether each unit was already sampled
+#' set.seed(234)
+#' mydata <- data.frame(Strata = c(rep(1, times = 20),
+#'                                 rep(2, times = 20),
+#'                                 rep(3, times = 20)),
+#'                      Var = c(rnorm(20, 1, 0.5),
+#'                              rnorm(20, 1, 0.9),
+#'                              rnorm(20, 1.5, 0.9)),
+#'                      AlreadySampled = rep(c(rep(1, times = 5),
+#'                                             rep(0, times = 15)),
+#'                                           times = 3))
+#'
 #' x <- allocate_wave(
-#'   data = iris, strata = "Species",
-#'   y = "Sepal.Width", already_sampled = "BinaryIndAlreadySampled",
+#'   data = mydata, strata = "Strata",
+#'   y = "Var", already_sampled = "AlreadySampled",
 #'   nsample = 20, method = "simple"
 #' )
-#' }
 #' @export
 #' @references McIsaac MA, Cook RJ. Adaptive sampling in two-phase designs:
 #' a biomarker study for progression in arthritis. Statistics in medicine.
@@ -88,7 +99,7 @@ allocate_wave <- function(data,
                           strata,
                           y, already_sampled,
                           nsample,
-                          method = "iterative",
+                          method = c("iterative","simple"),
                           detailed = FALSE) {
   key <- stratum_size <- wave1_size <- npop <- difference <-
     nsample_prior <- n_to_sample <- nsample_actual <-
@@ -110,7 +121,7 @@ allocate_wave <- function(data,
     stop("'already_sampled' must be a character string matching a column name of
            data.")
   }
-  if (class(detailed) != "logical") {
+  if (inherits(detailed, "logical") == FALSE) {
     stop("'detailed' must be a logical value.")
   }
   if (length(table(data[, already_sampled])) != 2) {
@@ -120,7 +131,7 @@ allocate_wave <- function(data,
          use 'optimum_allocation'.")
   }
   if (("Y" %in% data[, already_sampled] == FALSE & 1 %in%
-    data[, already_sampled] == FALSE) | any(is.na(data[, already_sampled]))) {
+    data[, already_sampled] == FALSE) | anyNA(data[, already_sampled])) {
     stop("'already_sampled' column must contain '1' (numeric) or 'Y'
          (character) as indicators that a unit was sampled in a
          previous wave and cannot contain NAs. If no units have
@@ -131,7 +142,7 @@ allocate_wave <- function(data,
     stop("Total sample size across waves, taken as nsampled in
          already_sampled + nsample, is larger than the population size.")
   }
-  method <- match.arg(method, c("simple", "iterative"))
+  method <- match.arg(method)
   # Find the total sample size and optimally allocate that
   nsampled <- sum(data[, already_sampled] == "Y" | data[, already_sampled] == 1)
   output1 <- optimall::optimum_allocation(
@@ -367,9 +378,5 @@ allocate_wave <- function(data,
     }
     output_df <- dplyr::arrange(output_df, strata)
     return(output_df)
-  }
-  else {
-    stop("'Method' must be a character string that matches or
-         partially matches one of 'simple' or 'iterative'.")
   }
 }

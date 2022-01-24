@@ -93,7 +93,8 @@ optimum_allocation <- function(data, strata,
                                sd_h = NULL,
                                N_h = NULL,
                                nsample = NULL,
-                               ndigits = 2, method = "WrightII",
+                               ndigits = 2,
+                               method = c("WrightII", "WrightI", "Neyman"),
                                allow.na = FALSE) {
   n_sd <- sd <- n <- npop <- stratum_fraction <- NULL
   # bind local vars as necessary
@@ -107,7 +108,7 @@ optimum_allocation <- function(data, strata,
     stop("'Strata' must be a string or vector of strings matching
          column names of data.")
   }
-  if (any(is.na(data[, strata]))) {
+  if (anyNA(data[, strata])) {
     stop("Columns specifying strata contain NAs")
   }
   if ((is.null(y) & is.null(sd_h)) |
@@ -128,7 +129,7 @@ optimum_allocation <- function(data, strata,
     if (is.numeric(data[, y]) == FALSE) {
       stop("'y' must be numeric.")
     }
-    method <- match.arg(method, c("WrightI", "WrightII", "Neyman"))
+    method <- match.arg(method)
     y <- enquo(y)
     strata <- enquo(strata)
     output_df <- data %>%
@@ -326,12 +327,6 @@ optimum_allocation <- function(data, strata,
         return(final_output)
       }
     }
-    else {
-      stop("'Method' must be a character string that matches or
-          partially matches one of 'WrightI','WrightII', or
-          'Neyman'.")
-    }
-
     # End if y is given and sd/N is NULL
   }
 
@@ -345,7 +340,7 @@ optimum_allocation <- function(data, strata,
       is.numeric(data[, N_h]) == FALSE) {
       stop("'sd_h' and 'N_h' must be numeric.")
     }
-    method <- match.arg(method, c("WrightI", "WrightII", "Neyman"))
+    method <- match.arg(method)
     sd_h <- enquo(sd_h)
     N_h <- enquo(N_h)
     strata <- enquo(strata)
@@ -550,11 +545,6 @@ optimum_allocation <- function(data, strata,
         final_output <- dplyr::arrange(final_output, strata)
         return(final_output)
       }
-    }
-    else {
-      stop("'Method' must be a character string that matches or
-         partially matches one of 'WrightI','WrightII', or
-         'Neyman'.")
     }
     # End if sd is given and y is NULL
   }
