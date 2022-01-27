@@ -29,7 +29,7 @@ When used together, these functions can automate most of the sampling workflow.
 
 ## Installation
 
-You can install `optimall` from [CRAN](https://cran.r-project.org/web/packages/optimall/index.html) with:
+You can install `optimall` from [CRAN](https://CRAN.R-project.org/package=optimall) with:
 
 ``` r
 # install.packages("optimall")

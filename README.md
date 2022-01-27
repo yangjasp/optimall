@@ -25,8 +25,7 @@ workflow.
 ## Installation
 
 You can install `optimall` from
-[CRAN](https://cran.r-project.org/web/packages/optimall/index.html)
-with:
+[CRAN](https://CRAN.R-project.org/package=optimall) with:
 
 ``` r
 # install.packages("optimall")
