@@ -1,17 +1,6 @@
 # Resubmission
-This is a resubmission. In this version I have:
 
-* Added more details about the package functionality and methods in the
-description field of the DESCRIPTION file.
-
-* Added references describing the package's methods to the description field.
-
-* Added \value to the .Rd files.
-
-* Removed all instances of \dontrun{}.
-
-* Moved code for the Shiny app UI and server to the R directory and
-added tests for the app in the tests directory.
+This is an update version 0.1.1 (see NEWS.md)
 
 # Test environments
 * local: macOS, R-release 
@@ -21,7 +10,4 @@ added tests for the app in the tests directory.
 
 
 # R CMD check results
-* There were no ERRORs or WARNINGs.
-* There was 1 NOTE: Possibly misspelled words in DESCRIPTION.
-
-The spelling is correct.
+* There were no ERRORs, WARNINGs, or NOTEs.
