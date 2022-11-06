@@ -1,6 +1,6 @@
 # Resubmission
 
-This is an update version 0.1.1 (see NEWS.md)
+This is an update version 0.1.2 (see NEWS.md)
 
 # Test environments
 * local: macOS, R-release 

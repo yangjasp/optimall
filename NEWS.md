@@ -1,3 +1,9 @@
+# optimall 0.1.2
+
+## Bug fixes
+
+- Updated function tests to pass CRAN check on M1mac
+
 # optimall 0.1.1
 
 ## Bug fixes
