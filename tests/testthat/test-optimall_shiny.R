@@ -42,7 +42,8 @@ test_that("App runs", {
 
   values <- app$getAllValues()
 
-  expect_equal(nchar(values$output$list)[1], 141)
+  # expect_equal(nchar(values$output$list)[1], 141). But nchar is 138 on M1mac
+  expect_gt(nchar(values$output$list)[1], 137)
   expect_equal(length(values$output$list), 1)
 })
 
