@@ -334,6 +334,23 @@ setMethod(
         method <- arguments$method
       }
 
+      if (is.null(arguments$allocation_method)) {
+        if ("allocation_method" %in% names(wave_md) &
+            inherits(wave_md$allocation_method, "character")) {
+          allocation_method <- wave_md$allocation_method
+        } else if ("allocation_method" %in% names(phase_md) &
+                   inherits(phase_md$allocation_method, "character")) {
+          allocation_method <- phase_md$allocation_method
+        } else if ("allocation_method" %in% names(survey_md) &
+                   inherits(survey_md$allocation_method, "character")) {
+          allocation_method <- survey_md$allocation_method
+        } else {
+          allocation_method <- "WrightII"
+        }
+      } else {
+        allocation_method <- arguments$allocation_method
+      }
+
       if (is.null(arguments$nsample)) {
         if ("nsample" %in% names(wave_md) &
             inherits(wave_md$nsample, "numeric")) {
@@ -372,6 +389,7 @@ setMethod(
         data = data, y = y,
         already_sampled = already_sampled, strata = strata,
         nsample = nsample, method = method,
+        allocation_method = allocation_method,
         detailed = detailed
       )
 

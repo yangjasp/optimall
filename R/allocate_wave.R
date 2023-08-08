@@ -1,8 +1,8 @@
 #' Adaptive Multi-Wave Sampling
 #'
 #' Determines the adaptive optimum sampling allocation for a new sampling
-#' wave based on results from previous waves. Using Algorithm II
-#' from Wright (2014), \code{allocate_wave} calculates the
+#' wave based on results from previous waves. Using Neyman or
+#' Wright (2014) allocation, \code{allocate_wave} calculates the
 #' optimum allocation for the \emph{total} number of samples
 #' across waves, determines how many were allocated to each strata
 #' in previous waves, and allocates the remaining samples to make
@@ -32,6 +32,10 @@
 #' /\code{0}) indicator specifying whether each unit has already
 #' been sampled in a previous wave.
 #' @param nsample The desired sample size of the next wave.
+#' @param allocation_method A character string specifying the method of
+#' optimum sample allocation to use. For details see
+#' \code{optimum_allocation()}. Defaults to \code{WrightII} which is more exact
+#' than \code{Neyman} but may run slower.
 #' @param method A character string specifying the method to be
 #' used if at least one group was oversampled. Must be one of:
 #' \itemize{
@@ -53,7 +57,7 @@
 #' previous waves of sampling
 #' and stratum standard deviations. Defaults to FALSE.
 #' These details are all available from
-#' \code{optimum_allocation}.
+#' \code{optimum_allocation()}.
 #' @examples
 #' # Create dataframe with a column specifying strata, a variable of interest
 #' # and an indicator for whether each unit was already sampled
@@ -99,6 +103,8 @@ allocate_wave <- function(data,
                           strata,
                           y, already_sampled,
                           nsample,
+                          allocation_method = c("WrightII", "WrightI",
+                                                "Neyman"),
                           method = c("iterative","simple"),
                           detailed = FALSE) {
   key <- stratum_size <- wave1_size <- npop <- difference <-
@@ -142,6 +148,7 @@ allocate_wave <- function(data,
     stop("Total sample size across waves, taken as nsampled in
          already_sampled + nsample, is larger than the population size.")
   }
+  allocation_method <- match.arg(allocation_method)
   method <- match.arg(method)
   # Find the total sample size and optimally allocate that
   nsampled <- sum(data[, already_sampled] == "Y" | data[, already_sampled] == 1)
@@ -150,6 +157,7 @@ allocate_wave <- function(data,
     strata = strata,
     y = y,
     nsample = nsample + nsampled,
+    method = allocation_method,
     allow.na = TRUE
   )
   # Optimal for total sample size
@@ -218,6 +226,7 @@ allocate_wave <- function(data,
       strata = "group",
       y = "y",
       nsample = nsample + nsampled - nsampled_in_closed_groups,
+      method = allocation_method,
       allow.na = TRUE
     )
     names(open_output)[1] <- "group"
@@ -322,6 +331,7 @@ allocate_wave <- function(data,
       outputn <- optimall::optimum_allocation(
         data = open_df, strata = "group", y = "y",
         nsample = nsample + nsampled - nsampled_in_closed_groups,
+        method = allocation_method,
         allow.na = TRUE
       )
 

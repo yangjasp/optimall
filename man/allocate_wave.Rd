@@ -10,6 +10,7 @@ allocate_wave(
   y,
   already_sampled,
   nsample,
+  allocation_method = c("WrightII", "WrightI", "Neyman"),
   method = c("iterative", "simple"),
   detailed = FALSE
 )
@@ -36,6 +37,11 @@ been sampled in a previous wave.}
 
 \item{nsample}{The desired sample size of the next wave.}
 
+\item{allocation_method}{A character string specifying the method of
+optimum sample allocation to use. For details see
+\code{optimum_allocation()}. Defaults to \code{WrightII} which is more exact
+than \code{Neyman} but may run slower.}
+
 \item{method}{A character string specifying the method to be
 used if at least one group was oversampled. Must be one of:
 \itemize{
@@ -58,7 +64,7 @@ the true optimum allocation without the constraint of
 previous waves of sampling
 and stratum standard deviations. Defaults to FALSE.
 These details are all available from
-\code{optimum_allocation}.}
+\code{optimum_allocation()}.}
 }
 \value{
 Returns a dataframe with one row for each stratum and
@@ -70,8 +76,8 @@ number of units in each strata for the next wave (\code{"n_to_sample"}).
 }
 \description{
 Determines the adaptive optimum sampling allocation for a new sampling
-wave based on results from previous waves. Using Algorithm II
-from Wright (2014), \code{allocate_wave} calculates the
+wave based on results from previous waves. Using Neyman or
+Wright (2014) allocation, \code{allocate_wave} calculates the
 optimum allocation for the \emph{total} number of samples
 across waves, determines how many were allocated to each strata
 in previous waves, and allocates the remaining samples to make

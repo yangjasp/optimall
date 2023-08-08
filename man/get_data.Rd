@@ -47,11 +47,16 @@ class \code{Multiwave}. It can be used to access or write slots.
 }
 \section{Functions}{
 \itemize{
-\item \code{get_data}: access slot of multiwave object
+\item \code{get_data()}: access slot of multiwave object
 
-\item \code{get_data<-}: assign value to slot of a multiwave object
+\item \code{get_data(
+  x,
+  phase = 1,
+  wave = NA,
+  slot = c("data", "design", "metadata", "samples", "sampled_data")
+) <- value}: assign value to slot of a multiwave object
+
 }}
-
 \examples{
 # Intiate multiwave object
 MySurvey <- new_multiwave(phases = 2, waves = c(1, 3))

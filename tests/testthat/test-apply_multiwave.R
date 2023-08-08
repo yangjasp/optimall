@@ -215,6 +215,35 @@ test_that("allocate_wave runs with args provided", {
     )$n_to_sample),
     15
   )
+  expect_equal(
+    sum(get_data(MySurvey,
+                 phase = 2, wave = 2,
+                 slot = "design"
+    )$n_to_sample),
+    30
+  )
+  MySurvey <- apply_multiwave(MySurvey,
+                              phase = 2, wave = 2,
+                              fun = "allocate_wave", strata = "Species",
+                              y = "Sepal.Width",
+                              already_sampled = "already_sampled_ind",
+                              allocation_method = "Neyman",
+                              nsample = 30, detailed = TRUE
+  )
+  expect_lt(
+    sum(get_data(MySurvey,
+                 phase = 2, wave = 2,
+                 slot = "design"
+    )$n_to_sample),
+    33
+  )
+  expect_gt(
+    sum(get_data(MySurvey,
+                 phase = 2, wave = 2,
+                 slot = "design"
+    )$n_to_sample),
+    27
+  )
 })
 
 test_that("allocate_wave runs with args in metadata", {
@@ -226,7 +255,8 @@ test_that("allocate_wave runs with args in metadata", {
     strata = "Species",
     design_strata = "strata",
     id = "id",
-    n_allocated = "n_to_sample"
+    n_allocated = "n_to_sample",
+    allocation_method = "WrightII"
   )
 
   get_data(MySurvey, phase = 2, wave = 1, slot = "design") <-
@@ -276,7 +306,7 @@ test_that("allocate_wave runs with args in metadata", {
     y = "Sepal.Width",
     already_sampled = "already_sampled_ind",
     strata = "Species",
-    nsample = 32, detailed = TRUE
+    nsample = 32, detailed = TRUE, allocation_method = "WrightII"
   )
   MySurvey <- apply_multiwave(MySurvey,
     phase = 2, wave = 2,
@@ -305,7 +335,7 @@ test_that("allocate_wave runs with args in metadata", {
     y = "Sepal.Width",
     already_sampled = "already_sampled_ind",
     strata = "Species",
-    nsample = 33, detailed = TRUE
+    nsample = 33, detailed = TRUE, allocation_method = "WrightII"
   )
   MySurvey <- apply_multiwave(MySurvey,
     phase = 2, wave = 2,

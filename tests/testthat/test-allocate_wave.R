@@ -35,6 +35,28 @@ test_that("the output of allocate_wave is as expected", {
   )
 })
 
+test_that("the output is as expected with allocation_method = Neyman", {
+  output <- allocate_wave(
+    data = data, strata = "strata",
+    already_sampled = "key", y = "y", nsample = 20, allocation_method = "Neyman"
+  )
+  expect_equal(
+    output$nsample_actual,
+    optimum_allocation(
+      data = data, strata = "strata",
+      y = "y", method = "Neyman",
+      nsample = sum(data$key) + 20
+    )$stratum_size
+  )
+  # Only works if no oversampling in already_sampled
+  expect_lt(sum(output$n_to_sample), 22)
+  expect_gt(sum(output$n_to_sample), 18)
+  expect_equal(
+    sum(output$n_to_sample) + sum(output$nsample_prior),
+    sum(output$nsample_actual)
+  )
+})
+
 test_that("If there is oversampling, allocate_wave does keeps strata
           at least as large as they were in prior samples and total
           sample sizes add up properly", {
