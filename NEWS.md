@@ -1,3 +1,11 @@
+# optimall 0.1.3
+
+## Enhancements
+
+- Updated documentation for get_data()
+- Added options for allocation method in allocate_wave()
+
+
 # optimall 0.1.2
 
 ## Bug fixes
