@@ -15,5 +15,4 @@ This is an update version 0.1.3 (see NEWS.md)
     * New maintainer. Maintainer email address has been updated. 
     * On Fedora: Skipping checking HTML validation: no command 'tidy' found.
     
-The second note appears to be an issue specific to the Fedora test environment 
-and out of my control ([link](https://github.com/r-hub/rhub/issues/548)).
+The second note appears to be an issue specific to the Fedora test environment and out of my control ([rhub/rhub#548](https://github.com/r-hub/rhub/issues/548)).
