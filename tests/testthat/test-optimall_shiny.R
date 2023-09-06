@@ -36,8 +36,10 @@ test_that("App runs", {
   # set inputs
   app$setInputs(strata =  "race", split_at = 0.5, split_var = "mat_weight_est",
                 y = "mat_weight_est", strata_to_split = "White",
-                type = "local quantile", nsample =  100)
-  app$setInputs(strata_to_split = "White")
+                type = "local quantile", nsample =  100,
+                allowInputNoBinding_ = TRUE)
+  app$setInputs(strata_to_split = "White",
+                allowInputNoBinding_ = TRUE)
   app$click("confirm")
 
   values <- app$getAllValues()
