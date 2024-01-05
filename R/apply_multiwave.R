@@ -22,8 +22,9 @@
 #' object contains an updated \code{"design"} slot in the specified wave.
 #' \item \code{allocate_wave}: Uses the \code{data} from the previous wave
 #' (or previous phase if \code{wave = 1}) to determine the optimum sampling
-#' allocation for the specified wave. If used, the output multiwave object
+#' allocation for the specified wave. If used, the outputted multiwave object
 #' contains an updated \code{"design"} slot in the specified wave.
+#' The default argument when \code{allocate_wave} is applied in a \code{apply_multiwave()} is \code{detailed = TRUE}.
 #' \item \code{sample_strata}: Uses the \code{data} from the previous wave
 #' (or previous phase if \code{wave = 1}) and \code{design}
 #' from current wave to generate a vector of ids to sample for the current
@@ -379,7 +380,7 @@ setMethod(
             inherits(survey_md$detailed, "logical")) {
           detailed <- survey_md$detailed
         } else {
-          detailed <- FALSE
+          detailed <- TRUE
         }
       } else {
         detailed <- arguments$detailed
