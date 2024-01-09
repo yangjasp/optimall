@@ -25,7 +25,7 @@ standard deviation for the variable of interest (\code{sd_h}) and another
 holding the stratum sample sizes (\code{N_h}).
 If \code{data} contains a column \code{y} holding values for
 the variable of interest, then \code{data} should have one row for
-each sampled unit. If \code{data} holds \code{sd_h} and {N_h}, the
+each sampled unit. If \code{data} holds \code{sd_h} and \code{N_h}, the
 within-stratum standard deviations and population sizes, then \code{data}
 should have one row per stratum.
 Other columns are allowed but will be ignored.}

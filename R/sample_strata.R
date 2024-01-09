@@ -34,7 +34,7 @@
 #' column in \code{design_data} that indicates the n allocated to each
 #' stratum. Defaults to "n_to_sample".
 #' @export
-#' @return returns {data} as a dataframe with a new column named
+#' @return returns \code{data} as a dataframe with a new column named
 #' "sample_indicator" containing a binary (1/0) indicator of
 #' whether each unit should be sampled.
 #' @importFrom magrittr %>%
