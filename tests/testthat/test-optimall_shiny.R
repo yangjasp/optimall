@@ -23,7 +23,8 @@ skip_if_not(webshot::is_phantomjs_installed())
 
 app <- shinytest::ShinyDriver$new(shiny::shinyApp(ui = shiny_ui,
                                                   server = shiny_server),
-                                  loadTimeout = 1000000)
+                                  loadTimeout = 1000000,
+                                  phantomTimeout = 10000)
 
 test_that("App runs", {
 
