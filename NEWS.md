@@ -1,3 +1,13 @@
+# optimall 0.1.4
+
+## Enhancements
+
+- allocate_wave() now defaults to providing a detailed summary of allocation
+
+## Bug fixes
+
+- Increased phantomJS timeout time for optimall_shiny() test to pass CRAN check
+
 # optimall 0.1.3
 
 ## Enhancements
