@@ -1,3 +1,9 @@
+# optimall 0.1.5
+
+## Bug fixes
+
+- Updated function tests to pass CRAN check on Windows
+
 # optimall 0.1.4
 
 ## Enhancements
