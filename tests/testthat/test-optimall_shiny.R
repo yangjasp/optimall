@@ -13,6 +13,7 @@ library(webshot)
 # phantomJS is required to run this test. This function will install it
 # if possible, but it doesn't work on Fedora.
 skip_on_os("linux")
+skip_on_os("windows")
 
 if (!dependenciesInstalled()){
   shinytest::installDependencies()
