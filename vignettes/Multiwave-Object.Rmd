@@ -232,7 +232,7 @@ IrisSurvey <- apply_multiwave(IrisSurvey, phase = 2, wave = 1,
                             n_allocated = "stratum_size")
 ```
 
-Note that we did not have to specify the `data` or `design_data` as we do in the standard version of `split_strata()` because they are extracted using the `phase` and `wave` arguments. We also did not have to specify the `strata` argument again because it was available in the phase metadata. The result of this call to `apply_multiwave()` is an updated `IrisSurvey` with a character vector of ids to sample in the ”samples” slot:
+Note that we did not have to specify the `data` or `design_data` as we do in the standard version of `split_strata()` because they are extracted using the `phase` and `wave` arguments. We also did not have to specify the `strata` argument again because it was available in the phase metadata. The result of this call to `apply_multiwave()` is an updated `IrisSurvey` with a character vector of ids to sample in the "samples” slot:
 
 ```{r}
 get_data(IrisSurvey, phase = 2, wave = 1, slot = "samples")
