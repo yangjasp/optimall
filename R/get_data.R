@@ -1,7 +1,7 @@
-#' Access and Write Slots of a Multiwave Object
+#' Access Slots of a Multiwave Object
 #'
 #' \code{get_data} is the accessor function for objects of
-#' class \code{Multiwave}. It can be used to access or write slots.
+#' class \code{Multiwave}.
 #' @param x an object of class \code{'Multiwave'}
 #' @param phase a numeric value specifying the phase that should be accessed.
 #' To access the overall metadata, set \code{phase = NA}. Defaults to 1.
@@ -115,6 +115,8 @@ setMethod("get_data<-", c(x = "Multiwave"), function(x, phase = 1, wave = NA,
                                                               "samples",
                                                               "sampled_data"),
                                                      value) {
+  warning("get_data() has been deprecated for writing slots.
+          Please use set_data() instead.")
   slot <- match.arg(slot)
   if (is.na(phase) & is.na(wave) & slot == "metadata") {
     x@metadata <- value
