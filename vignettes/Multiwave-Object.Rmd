@@ -90,10 +90,10 @@ The light blue objects in the figure above represent the slots that hold the sur
 
 To work with the multiwave object, users only need to know a few functions. This section describes how to initialize an object, how to access and write slots of it, and how to deploy some of its useful features. This will be demonstrated in the context of the same two-phase, multiwave sampling design used in the package vignette.
 
-A multiwave object is initialized by the function `new_multiwave()`:
+A multiwave object is initialized by the function `multiwave()`:
 
 ```{r}
-MySurvey <- new_multiwave(phases = 2, waves = c(1,3))
+MySurvey <- multiwave(phases = 2, waves = c(1,3))
 ```
 
 We now have an object that can hold all of the information for our two-phase survey for which the second phase will be conducted over three waves. Note that the length of the ‘waves‘ argument must match the number of phases. Phase 1 will almost always have one wave.
@@ -183,7 +183,7 @@ To demonstrate, we return to the example of sampling sepal width from the iris d
 ```{r}
 
 # Initialize Multiwave
-IrisSurvey <- new_multiwave(phases = 2, waves = c(1,3))
+IrisSurvey <- multiwave(phases = 2, waves = c(1,3))
 
 # Add id column to iris dataset
 iris <- cbind(datasets::iris, id = 1:150)

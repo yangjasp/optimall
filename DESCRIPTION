@@ -67,7 +67,6 @@ Collate:
     'matwgt_sim.R'
     'merge_strata.R'
     'multiwave_diagram.R'
-    'new_multiwave.R'
     'optimall_shiny.R'
     'set_data.R'
     'split_strata.R'
