@@ -244,3 +244,26 @@ test_that("returns error if n_allocated is not a whole number", {
     "must specify a numeric column"
   )
 })
+
+test_that("wave argument is correctly accepted, and it rejects new name
+  if column  with that name already exists", {
+    df <- allocate_wave(
+      data = data, strata = "strata",
+      already_sampled = "key", y = "y", nsample = 15
+    )
+    sampled_data <- sample_strata(
+      data = data, strata = "strata",
+      id = "id", design_data = df,
+      already_sampled = "key", design_strata = "strata", wave = "Wave2",
+      n_allocated = "n_to_sample")
+    expect_equal(names(sampled_data)[5], "sample_indicatorWave2")
+
+    sampled_data <- sample_strata(
+      data = sampled_data, strata = "strata",
+      id = "id", design_data = df,
+      already_sampled = "key", design_strata = "strata", wave = "Wave2",
+      n_allocated = "n_to_sample")
+    expect_equal(names(sampled_data)[6], "sample_indicator")
+
+
+})

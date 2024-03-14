@@ -33,10 +33,15 @@
 #' @param n_allocated a character string specifying the name of the
 #' column in \code{design_data} that indicates the n allocated to each
 #' stratum. Defaults to "n_to_sample".
+#' @param wave A character string or numeric value indicating the
+#' sampling wave. If specified, the input is appended to the column name
+#' of the sample indicator (as long as such a column name does not already
+#' exist in \code{data}). Defaults to NULL.
 #' @export
 #' @return returns \code{data} as a dataframe with a new column named
 #' "sample_indicator" containing a binary (1/0) indicator of
-#' whether each unit should be sampled.
+#' whether each unit should be sampled. If \code{wave} argument is
+#' specified, then the given input is appended to "sample_indicator".
 #' @importFrom magrittr %>%
 #' @examples
 #' # Define a design dataframe
@@ -64,7 +69,8 @@
 #' )
 sample_strata <- function(data, strata, id, already_sampled = NULL,
                           design_data, design_strata = "strata",
-                          n_allocated = "n_to_sample") {
+                          n_allocated = "n_to_sample",
+                          wave = NULL) {
   if (is.matrix(data) | is.matrix(design_data)) {
     data <- as.data.frame(data)
     design_data <- as.data.frame(design_data)
@@ -150,7 +156,16 @@ sample_strata <- function(data, strata, id, already_sampled = NULL,
   }
   sampled_ids <- unlist(sampled_ids)
   names(data)[names(data) == id] <- "id"
+
+  ## Generate sample_indicator column, possible with "wave" arg appended
+
+  new_col_name <- paste0("sample_indicator", wave)
+  new_col_name <- ifelse(new_col_name %in% names(data),
+                         "sample_indicator",
+                         new_col_name)
+
   output_df <- data %>%
-    dplyr::mutate(sample_indicator = ifelse(id %in% sampled_ids, 1, 0))
+    dplyr::mutate(!!new_col_name := ifelse(id %in% sampled_ids, 1, 0))
+
   return(output_df)
 }
