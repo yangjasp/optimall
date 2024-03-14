@@ -14,7 +14,7 @@ iris$Sepal.Width <- iris$Sepal.Length + rnorm(60, 0, 0.5)
 # 1. Optimum_allocation
 
 test_that("optimum_allocation runs with args provided", {
-  MySurvey <- new_multiwave(phases = 2, waves = c(1, 3))
+  MySurvey <- multiwave(phases = 2, waves = c(1, 3))
   get_data(MySurvey, phase = 1, slot = "data") <-
     dplyr::select(iris, -Sepal.Width)
   MySurvey <- apply_multiwave(MySurvey,
@@ -55,7 +55,7 @@ test_that("optimum_allocation runs with args provided", {
 })
 
 test_that("optimum_allocation runs with args in metadata", {
-  MySurvey <- new_multiwave(phases = 2, waves = c(1, 3))
+  MySurvey <- multiwave(phases = 2, waves = c(1, 3))
   get_data(MySurvey, phase = 1, slot = "data") <-
     dplyr::select(iris, -Sepal.Width)
   get_data(MySurvey, phase = NA, slot = "metadata") <- list(
@@ -144,7 +144,7 @@ test_that("optimum_allocation runs with args in metadata", {
 })
 
 test_that("optimum_allocation works for wave 2 also", {
-  MySurvey <- new_multiwave(phases = 2, waves = c(1, 3))
+  MySurvey <- multiwave(phases = 2, waves = c(1, 3))
   get_data(MySurvey, phase = 2, wave = 1, slot = "data") <- iris
   MySurvey <- apply_multiwave(MySurvey,
     phase = 2, wave = 2,
@@ -167,7 +167,7 @@ test_that("optimum_allocation works for wave 2 also", {
 # 2. Allocate_wave
 
 test_that("allocate_wave runs with args provided", {
-  MySurvey <- new_multiwave(phases = 2, waves = c(1, 3))
+  MySurvey <- multiwave(phases = 2, waves = c(1, 3))
   get_data(MySurvey, phase = 1, slot = "data") <-
     dplyr::select(iris, -Sepal.Width)
 
@@ -247,7 +247,7 @@ test_that("allocate_wave runs with args provided", {
 })
 
 test_that("allocate_wave runs with args in metadata", {
-  MySurvey <- new_multiwave(phases = 2, waves = c(1, 3))
+  MySurvey <- multiwave(phases = 2, waves = c(1, 3))
   get_data(MySurvey, phase = 1, slot = "data") <-
     dplyr::select(iris, -Sepal.Width)
 
@@ -358,7 +358,7 @@ test_that("allocate_wave runs with args in metadata", {
 })
 
 test_that("error if phase = 1", {
-  MySurvey <- new_multiwave(phases = 2, waves = c(1, 3))
+  MySurvey <- multiwave(phases = 2, waves = c(1, 3))
   get_data(MySurvey, phase = 1, slot = "data") <-
     dplyr::select(iris, -Sepal.Width)
   expect_error(
@@ -371,7 +371,7 @@ test_that("error if phase = 1", {
 })
 
 test_that("errors if args are not specified", {
-  MySurvey <- new_multiwave(phases = 2, waves = c(1, 3))
+  MySurvey <- multiwave(phases = 2, waves = c(1, 3))
   get_data(MySurvey, phase = 1, slot = "data") <-
     dplyr::select(iris, -Sepal.Width)
 
@@ -448,11 +448,11 @@ test_that("errors if args are not specified", {
 # 3. sample_strata
 
 test_that("sample_strata works with specified args", {
-  MySurvey <- new_multiwave(phases = 2, waves = c(1, 3))
-  get_data(MySurvey, phase = 1, slot = "data") <-
+  MySurvey <- multiwave(phases = 2, waves = c(1, 3))
+  set_data(MySurvey, phase = 1, slot = "data") <-
     dplyr::select(iris, -Sepal.Width)
 
-  get_data(MySurvey, phase = 2, wave = 1, slot = "design") <-
+  set_data(MySurvey, phase = 2, wave = 1, slot = "design") <-
     data.frame(strata = unique(iris$Species), n_to_sample = c(5, 5, 5))
   set.seed(123)
   MySurvey <- apply_multiwave(MySurvey,
@@ -465,10 +465,12 @@ test_that("sample_strata works with specified args", {
   expect_equal(length(
     get_data(MySurvey, phase = 2, wave = 1, slot = "samples")
   ), 15)
+  expect_equal(names(get_data(MySurvey, phase = 2, wave = 1, slot = "data"))[6],
+               "sample_indicatorWave1")
 })
 
 test_that("sample_strata works with args specified in metadata", {
-  MySurvey <- new_multiwave(phases = 2, waves = c(1, 3))
+  MySurvey <- multiwave(phases = 2, waves = c(1, 3))
   get_data(MySurvey, phase = 1, slot = "data") <-
     dplyr::select(iris, -Sepal.Width)
 
@@ -587,7 +589,7 @@ test_that("sample_strata works with args specified in metadata", {
 })
 
 test_that("errors in sample_strata if args don't match", {
-  MySurvey <- new_multiwave(phases = 2, waves = c(1, 3))
+  MySurvey <- multiwave(phases = 2, waves = c(1, 3))
   get_data(MySurvey, phase = 1, slot = "data") <-
     dplyr::select(iris, -Sepal.Width)
 
@@ -683,7 +685,7 @@ test_that("errors in sample_strata if args don't match", {
 # 4. merge_samples
 
 test_that("merge_samples works when args are specified within it", {
-  MySurvey <- new_multiwave(phases = 2, waves = c(1, 3))
+  MySurvey <- multiwave(phases = 2, waves = c(1, 3))
 
   get_data(MySurvey, phase = 1, slot = "data") <-
     dplyr::select(iris, -Sepal.Width)
@@ -736,7 +738,7 @@ test_that("merge_samples works when args are specified within it", {
 })
 
 test_that("merge_samples works with args specifies in metadata", {
-  MySurvey <- new_multiwave(phases = 2, waves = c(1, 3))
+  MySurvey <- multiwave(phases = 2, waves = c(1, 3))
 
   get_data(MySurvey, phase = 1, slot = "data") <-
     dplyr::select(iris, -Sepal.Width)

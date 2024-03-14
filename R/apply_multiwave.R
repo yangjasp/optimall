@@ -562,18 +562,25 @@ setMethod(
         'design' slot of the specified wave.")
       }
 
+
       output <- sample_strata(
         data = data, id = id,
         strata = strata, already_sampled = already_sampled,
         design_data = design_data,
         design_strata = design_strata,
-        n_allocated = n_allocated
+        n_allocated = n_allocated,
+        wave = paste0("Wave", wave)
       )
 
       x_updated <- x
       sample_indicator <- NULL
       x_updated@phases[[phase]]@waves[[wave]]@samples <-
-        as.character(dplyr::filter(output, sample_indicator == 1)$id)
+        as.character(dplyr::filter(output,
+                                   !!sym(paste0("sample_indicator",
+                                          paste0("Wave", wave))) == 1)$id)
+
+      # Also update data itself to include sample_indicator column.
+      x_updated@phases[[phase]]@waves[[wave]]@data <- output
       return(x_updated)
     }
 

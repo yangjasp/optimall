@@ -41,7 +41,7 @@
 #' @return returns \code{data} as a dataframe with a new column named
 #' "sample_indicator" containing a binary (1/0) indicator of
 #' whether each unit should be sampled. If \code{wave} argument is
-#' specified, then the given input is appended to "sample_indicator".
+#' specified, then the given input is appended to the name "sample_indicator".
 #' @importFrom magrittr %>%
 #' @examples
 #' # Define a design dataframe
