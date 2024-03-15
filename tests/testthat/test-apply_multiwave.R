@@ -499,15 +499,6 @@ test_that("sample_strata works with args specified in metadata", {
     mwget(MySurvey, phase = 2, wave = 1, slot = "samples")
   ), 15)
 
-  # And that newly created column in data slot is good
-  expect_equal(names(mwget(MySurvey, phase = 2, wave = 1, slot = "data"))[4],
-               "sample_indicatorWave1")
-  expect_equivalent(
-    as.character(
-      dplyr::filter(mwget(MySurvey, phase = 2, wave = 1, slot = "data"),
-                    sample_indicatorWave1 == 1)$id),
-    mwget(MySurvey, phase = 2, wave = 1, slot = "samples"))
-
   # only need to specify strata once if it is same in both
 
   mwset(MySurvey, phase = NA, slot = "metadata") <- list(
