@@ -1,7 +1,7 @@
 #' Access Slots of a Multiwave Object
 #'
-#' \code{get_data} is the accessor function for objects of
-#' class \code{Multiwave}.
+#' \code{mwget} is the accessor function for objects of
+#' class \code{Multiwave}. It is used to get values from multiwave (mw) objects.
 #' @param x an object of class \code{'Multiwave'}
 #' @param phase a numeric value specifying the phase that should be accessed.
 #' To access the overall metadata, set \code{phase = NA}. Defaults to 1.
@@ -14,31 +14,89 @@
 #'  information about slots.
 #' @return If accessing a multiwave object slot, returns the specified slot.
 #'
-#' @name get_data
+#' @name mwget
 #'
 #' @examples
 #' # Intiate multiwave object
-#' MySurvey <- new_multiwave(phases = 2, waves = c(1, 3))
+#' MySurvey <- multiwave(phases = 2, waves = c(1, 3))
 #'
 #' # To access overall metadata
-#' get_data(MySurvey, phase = NA, slot = "metadata")
+#' mwget(MySurvey, phase = NA, slot = "metadata")
 #'
 #' # To write overall metadata
-#' get_data(MySurvey, phase = NA, slot = "metadata") <- list(
+#' mwset(MySurvey, phase = NA, slot = "metadata") <- list(
 #'   title = "Maternal Weight Survey"
 #' )
 #'
 #' # To access Phase 2 metadata
-#' get_data(MySurvey, phase = 2, slot = "metadata")
+#' mwget(MySurvey, phase = 2, slot = "metadata")
 #'
 #' # To access Phase 2, Wave 2 design
-#' get_data(MySurvey, phase = 2, wave = 2, slot = "design")
+#' mwget(MySurvey, phase = 2, wave = 2, slot = "design")
 #' @export
 #' @include multiwave.R phase.R wave.R
 NULL
 
+#' @aliases mwget,Multiwave-method
+#' @describeIn mwget
+#' access slot of multiwave object
+#' @export
+setGeneric("mwget", function(x, phase = 1, wave = NA,
+                                slot = c("data", "design",
+                                         "metadata", "samples",
+                                         "sampled_data")) {
+  standardGeneric("mwget")
+})
+
+setMethod("mwget", c(x = "Multiwave"), function(x, phase = 1,
+                                                   wave = NA,
+                                                   slot = c("data",
+                                                            "design",
+                                                            "metadata",
+                                                            "samples",
+                                                            "sampled_data")){
+  if (inherits(x, "Multiwave")  == FALSE) {
+    stop("'x' must be an object of class 'Multiwave'")
+  }
+  slot <- match.arg(slot)
+  if (is.na(phase) & is.na(wave) & slot == "metadata") {
+    x@metadata
+  } else if (is.na(phase)) {
+    stop("must specify a phase unless getting overall metadata")
+  } else if (phase != 1 & phase != "phase1" & is.na(wave) == TRUE
+             & !is.na(phase) & slot != "metadata") {
+    stop("must specify wave number unless getting phase 1 or
+         survey metadata")
+  } else if ((phase == 1 | phase == "phase1") & slot %in% c("data",
+                                                            "metadata")) {
+    x@phases$phase1[[slot]]
+  } else if ((phase > 1 | (!is.na(phase) & phase != "phase1")) &
+             is.na(wave) & slot == "metadata") {
+    x@phases[[phase]]@metadata
+  } else if ((phase > 1 | (!is.na(phase) & phase != "phase1")) &
+             slot == "data") {
+    x@phases[[phase]]@waves[[wave]]@data
+  } else if ((phase > 1 | (!is.na(phase) & phase != "phase1")) &
+             slot == "metadata") {
+    x@phases[[phase]]@waves[[wave]]@metadata
+  } else if ((phase > 1 | (!is.na(phase) & phase != "phase1")) &
+             slot == "samples") {
+    x@phases[[phase]]@waves[[wave]]@samples
+  } else if ((phase > 1 | (!is.na(phase) & phase != "phase1")) &
+             slot == "sampled_data") {
+    x@phases[[phase]]@waves[[wave]]@sampled_data
+  } else if ((phase > 1 | (!is.na(phase) & phase != "phase1")) &
+             slot == "design") {
+    x@phases[[phase]]@waves[[wave]]@design
+  }
+  else {
+    stop("unable to find selection in 'x': invalid selection")
+  }
+})
+
+
 #' @aliases get_data,Multiwave-method
-#' @describeIn get_data
+#' @describeIn mwget
 #' access slot of multiwave object
 #' @export
 setGeneric("get_data", function(x, phase = 1, wave = NA,
@@ -55,6 +113,8 @@ setMethod("get_data", c(x = "Multiwave"), function(x, phase = 1,
                                                             "metadata",
                                                             "samples",
                                                             "sampled_data")){
+  warning("get_data() has been deprecated for accessing slots.
+          Please use mwget() instead.")
   if (inherits(x, "Multiwave")  == FALSE) {
     stop("'x' must be an object of class 'Multiwave'")
   }
@@ -94,7 +154,7 @@ setMethod("get_data", c(x = "Multiwave"), function(x, phase = 1,
   }
 })
 
-#' @describeIn get_data
+#' @describeIn mwget
 #' assign value to slot of a multiwave object
 #' @param value value to assign to specified slot
 #' @aliases get_data<-,Multiwave-method
@@ -116,7 +176,7 @@ setMethod("get_data<-", c(x = "Multiwave"), function(x, phase = 1, wave = NA,
                                                               "sampled_data"),
                                                      value) {
   warning("get_data() has been deprecated for writing slots.
-          Please use set_data() instead.")
+          Please use mwset() instead.")
   slot <- match.arg(slot)
   if (is.na(phase) & is.na(wave) & slot == "metadata") {
     x@metadata <- value

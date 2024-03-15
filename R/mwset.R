@@ -1,7 +1,8 @@
 #' Write Slots of a Multiwave Object
 #'
-#' \code{set_data} is used to assign values (write to) slots of
-#' \code{Multiwave} class objects.
+#' \code{mwset} is used to assign values (write to) slots of
+#' \code{Multiwave} class objects. It is used to set values of
+#' multiwave (mw) objects.
 #' @param x an object of class \code{'Multiwave'}
 #' @param phase a numeric value specifying the phase that should be accessed.
 #' To access the overall metadata, set \code{phase = NA}. Defaults to 1.
@@ -13,36 +14,36 @@
 #' \code{"data"}. See class documentation or package vignettes for more
 #'  information about slots.
 #'
-#' @name set_data
+#' @name mwset
 #'
 #' @examples
 #' # To write overall metadata
-#' get_data(MySurvey, phase = NA, slot = "metadata") <- list(
+#' mwset(MySurvey, phase = NA, slot = "metadata") <- list(
 #'   title = "Maternal Weight Survey"
 #'
 #' # To write Phase 2 metadata
-#' get_data(MySurvey, phase = 2, slot = "metadata") <- list(
+#' mwset(MySurvey, phase = 2, slot = "metadata") <- list(
 #'   strata = "mystrata", id = "id")
 #'
 #' @export
 #' @include multiwave.R phase.R wave.R
 NULL
 
-#' @describeIn set_data
+#' @describeIn mwset
 #' assign value to slot of a multiwave object
 #' @param value value to assign to specified slot
-#' @aliases set_data<-,Multiwave-method
+#' @aliases mwset<-,Multiwave-method
 #' @export
 #'
-setGeneric("set_data<-", function(x, phase = 1, wave = NA,
+setGeneric("mwset<-", function(x, phase = 1, wave = NA,
                                   slot = c("data", "design",
                                            "metadata", "samples",
                                            "sampled_data"),
                                   value) {
-  standardGeneric("set_data<-")
+  standardGeneric("mwset<-")
 })
 
-setMethod("set_data<-", c(x = "Multiwave"), function(x, phase = 1, wave = NA,
+setMethod("mwset<-", c(x = "Multiwave"), function(x, phase = 1, wave = NA,
                                                      slot = c("data",
                                                               "design",
                                                               "metadata",

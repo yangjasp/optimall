@@ -115,20 +115,20 @@ MySurvey@phases$phase2@metadata
 MySurvey@phases$phase2@waves$wave2@design
 ```
 
-but this is overly complicated and potentially unstable. Instead, any slot of the multiwave object can be accessed using the function `get_data()`. Similarly, any slot can written using `set_data()`:
+but this is overly complicated and potentially unstable. Instead, any slot of the multiwave object can be accessed using the function `mwget()`. Similarly, any slot can written using `mwset()`:
 
 ```{r}
 #To access overall metadata
-get_data(MySurvey, phase = NA, slot = "metadata")
+mwget(MySurvey, phase = NA, slot = "metadata")
 
 #To write overall metadata
-set_data(MySurvey, phase = NA, slot = "metadata") <- list(title = "Maternal Weight Survey")
+mwset(MySurvey, phase = NA, slot = "metadata") <- list(title = "Maternal Weight Survey")
 
 #To access Phase 2 metadata
-get_data(MySurvey, phase = 2, slot = "metadata")
+mwget(MySurvey, phase = 2, slot = "metadata")
 
 #To access Phase 2, Wave 2 design
-get_data(MySurvey, phase = 2, wave = 2, slot = "design")
+mwget(MySurvey, phase = 2, wave = 2, slot = "design")
 ```
 
 Note that calls to get data from phase 1 do not require `wave` to be specified, since phase 1 only consists of one wave.
@@ -138,7 +138,7 @@ Let's suppose that our phase 1 data has been collected. We can add it to the pha
 ```{r}
 head(phase1)
 
-get_data(MySurvey, phase = 1, slot = "data") <- phase1
+mwset(MySurvey, phase = 1, slot = "data") <- phase1
 
 #Make Phase 1 data dict
 phase1_data_dictionary <- data.frame(
@@ -153,7 +153,7 @@ phase1_data_dictionary <- data.frame(
 
 head(phase1_data_dictionary)
 
-set_data(MySurvey, phase = 1, slot = "metadata") <- list(data_dict = phase1_data_dictionary)
+mwset(MySurvey, phase = 1, slot = "metadata") <- list(data_dict = phase1_data_dictionary)
 ```
 
 ### View Summary Diagram of Survey
@@ -189,7 +189,7 @@ IrisSurvey <- multiwave(phases = 2, waves = c(1,3))
 iris <- cbind(datasets::iris, id = 1:150)
 
 # To place iris data in Phase 1
-set_data(IrisSurvey, phase = 1, slot = "data") <-
+mwset(IrisSurvey, phase = 1, slot = "data") <-
     subset(iris, select = -Sepal.Width)
 ```
 
@@ -204,7 +204,7 @@ IrisSurvey <- apply_multiwave(IrisSurvey, phase = 2, wave = 1,
 Since `"strata"` will be `"Species"` for every wave, we may instead move that argument to the phase metadata so that we don’t have to repetitively specify the same argument in every function call:
 
 ```{r}
-set_data(IrisSurvey, phase = 2, slot = "metadata") <-
+mwset(IrisSurvey, phase = 2, slot = "metadata") <-
   list(strata = "Species")
 ```
 
@@ -220,7 +220,7 @@ IrisSurvey <- apply_multiwave(IrisSurvey, phase = 2, wave = 1,
 In the absence of a specific strata argument, apply_multiwave() turns to the wave, phase, and then overall metadata to look for the missing argument. In this case, it finds `strata = "Species"` in the phase metadata. By specifying the `phase` and `wave` in the function call, we are telling optimum_allocation() to use the most recent version of the data (the full data from the previous wave, or in this case, the phase 1 data) as input and to output the results in the corresponding slot of the specified wave. As such, both calls to `apply_multiwave()` output an updated multiwave object with the results of `optimum_allocation()` in the phase 2, wave 1 `"design"` slot:
 
 ```{r}
-get_data(IrisSurvey, phase = 2, wave = 1, slot = "design")
+mwget(IrisSurvey, phase = 2, wave = 1, slot = "design")
 ```
 
 The `allocate_wave()` function can be applied to multiwave objects in the same manner and will be demonstrated in the following examples section. After these functions have been used to specify a ”design” data frame (or a manually created design data frame has been placed in the ”design” slot to implement a different allocation strategy), we can use `apply_multiwave()` to apply `sample_strata()` and select the ids to sample for the given sampling wave:
@@ -235,14 +235,14 @@ IrisSurvey <- apply_multiwave(IrisSurvey, phase = 2, wave = 1,
 Note that we did not have to specify the `data` or `design_data` as we do in the standard version of `split_strata()` because they are extracted using the `phase` and `wave` arguments. We also did not have to specify the `strata` argument again because it was available in the phase metadata. The result of this call to `apply_multiwave()` is an updated `IrisSurvey` with a character vector of ids to sample in the "samples” slot:
 
 ```{r}
-get_data(IrisSurvey, phase = 2, wave = 1, slot = "samples")
+mwget(IrisSurvey, phase = 2, wave = 1, slot = "samples")
 ```
 
 When working with a multiwave object, a new function called `merge_samples()` also becomes available. This function allows users to quickly and efficiently merge the sampled data with the previous wave’s data. Suppose that we have collected the sepal width for these 30 plant ids and placed the data in the "sampled_data" slot of phase 2, wave 1 of `IrisSurvey`:
 
 ```{r}
-set_data(IrisSurvey, phase = 2, wave = 1, slot = "sampled_data") <-
-  iris[iris$id %in% get_data(IrisSurvey,
+mwset(IrisSurvey, phase = 2, wave = 1, slot = "sampled_data") <-
+  iris[iris$id %in% mwget(IrisSurvey,
                              phase = 2,
                              wave = 1,
                              slot = "samples"),
@@ -259,7 +259,7 @@ IrisSurvey <- merge_samples(IrisSurvey, phase = 2, wave = 1,
 In the `"data"` slot of phase 2, wave 1, we will now have an updated dataframe with all of the phase 1 data and a sepal width column that and has the sampled data for the selected ids and `NA` values for the rest of the plants. There is also a new column called `"sampled_phase2"` that holds an indicator for which samples have been sampled in phase 2 thus far:
 
 ```{r}
-head(get_data(IrisSurvey, phase = 2, wave = 1, slot = "data"))
+head(mwget(IrisSurvey, phase = 2, wave = 1, slot = "data"))
 ```
 
 Calls to `merge_samples()` in later waves of phase 2 will update the phase sampled indicator each time. The `sample_strata` function will use this column to ensure that units sampled in previous waves are not selected again. The utility of `merge_samples()` and `apply_multiwave()` are demonstrated further below.
@@ -275,7 +275,7 @@ The first step of Phase 2, Wave 1 is to specify the metadata for both the phase 
 # and column names to be used in function calls.
 # Note that each element name corresponds to at least one argument of a 
 # function that will be called later on in the multi-wave workflow.
-set_data(MySurvey, phase = 2, slot = "metadata") <- 
+mwset(MySurvey, phase = 2, slot = "metadata") <- 
   list(description = "Phase 2 of Maternal Weight Survey in which we
        seek to validate 750 samples across three waves.",
        strata = "new_strata", # strata column in data (used in multiple funcs)
@@ -288,7 +288,7 @@ set_data(MySurvey, phase = 2, slot = "metadata") <-
        )
 
 # Then, metadata for Wave 1 of Phase 2 
-set_data(MySurvey, phase = 2, wave = 1, slot = "metadata") <- 
+mwset(MySurvey, phase = 2, wave = 1, slot = "metadata") <- 
   list(description = "First wave of 250 
        sampled using proportional sampling")
 ```
@@ -297,12 +297,12 @@ After the metadata is specified, we create a dataframe specifying the survey des
 
 ```{r}
 #Design for Wave 1
-set_data(MySurvey, phase = 2, wave = 1, slot = "design") <- data.frame(
+mwset(MySurvey, phase = 2, wave = 1, slot = "design") <- data.frame(
   strata = names(table(phase1$new_strata)), 
   n_to_sample = round(250.3*as.vector(table(phase1$new_strata))/10335)
   ) #250.3 to make sure 250 samples after rounding
 
-get_data(MySurvey, phase = 2, wave = 1, slot = "design")
+mwget(MySurvey, phase = 2, wave = 1, slot = "design")
 ```
 
 We can use this design to randomly select ids to sample from the previous wave (in this case the overall Phase 1 data) using `apply_multiwave()` to apply the function `sample_strata()` to the multiwave object. When applied to an object of class "Multiwave", `sample_strata()` will find `"data"` and `"design_data"` in the object and will look in the wave, phase, then overall metadata for the other arguments to `sample_strata()` if they are not provided in the call. It will return the same multiwave object with a vector of ids to sample in the `"samples"` slot of the specified wave.
@@ -322,8 +322,8 @@ MySurvey <- apply_multiwave(MySurvey, phase = 2, wave = 1,
                             )
 # check that it worked
 
-head(get_data(MySurvey, phase = 2, wave = 1, slot = "samples"))
-length(get_data(MySurvey, phase = 2, wave = 1, slot = "samples"))
+head(mwget(MySurvey, phase = 2, wave = 1, slot = "samples"))
+length(mwget(MySurvey, phase = 2, wave = 1, slot = "samples"))
 
 # But, notice that we had already specified most of the arguments to 
 # sample_strata in the phase metadata. So, we can get the same result
@@ -332,7 +332,7 @@ set.seed(456)
 
 MySurvey <- apply_multiwave(MySurvey, phase = 2, wave = 1, fun = "sample_strata")
 
-ids_wave1 <- get_data(MySurvey, phase = 2, wave = 1, slot = "samples") 
+ids_wave1 <- mwget(MySurvey, phase = 2, wave = 1, slot = "samples") 
 
 #Check that  it gives same results
 head(ids_wave1)
@@ -344,7 +344,7 @@ We can use these sample ids to sample the Phase 2, Wave 1 data from MatWgt_Sim, 
 ```{r}
 
 # We can use these ids to get the data:
-set_data(MySurvey, phase = 2, wave = 1, slot = "sampled_data") <- 
+mwset(MySurvey, phase = 2, wave = 1, slot = "sampled_data") <- 
   MatWgt_Sim[MatWgt_Sim$id %in% ids_wave1, c("id", "mat_weight_true")]
 ```
 
@@ -360,11 +360,11 @@ All the slots for this wave are now filled! We can check to make sure everything
 ```{r, include = F}
 # Old, before added sampled_ind you had to specify yourself
 
-set_data(MySurvey, phase = 2, wave = 1) <- 
-  get_data(MySurvey, phase = 2, wave = 1) %>%
+mwset(MySurvey, phase = 2, wave = 1) <- 
+  mwget(MySurvey, phase = 2, wave = 1) %>%
   dplyr::mutate(already_sampled_ind = 
                   ifelse(id %in% 
-                           get_data(MySurvey, 
+                           mwget(MySurvey, 
                                     phase = 2, 
                                     wave = 1,
                                     slot = "samples"), 1, 0))
@@ -391,7 +391,7 @@ MySurvey <- apply_multiwave(MySurvey,
                                     nsample = 250,
                                     already_sampled = "already_sampled_ind")
 
-get_data(MySurvey, phase = 2, wave = 2, slot = "design")
+mwget(MySurvey, phase = 2, wave = 2, slot = "design")
 ```
 
 Now the design for Wave 2 is specified. We can continue with similar steps for future waves!

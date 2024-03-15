@@ -13,7 +13,7 @@
 #' @return Returns an object of class \code{htmlwidget}
 #' displaying the structure of the \code{x}.
 #' @examples
-#' MySurvey <- new_multiwave(phases = 2, waves = c(1, 3))
+#' MySurvey <- multiwave(phases = 2, waves = c(1, 3))
 #' multiwave_diagram(MySurvey)
 #' @export
 multiwave_diagram <- function(x, height = NULL, width = NULL) {
