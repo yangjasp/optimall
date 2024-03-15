@@ -28,7 +28,9 @@
 #' \item \code{sample_strata}: Uses the \code{data} from the previous wave
 #' (or previous phase if \code{wave = 1}) and \code{design}
 #' from current wave to generate a vector of ids to sample for the current
-#' wave. If used, the output multiwave object contains an updated
+#' wave. Note that the \code{wave} argument of the standalone
+#' \code{sample_strata()} function does not apply here.
+#'  If used, the output multiwave object contains an updated
 #' \code{"samples"} slot in the specified wave.
 #' \item \code{merge_samples}: Uses the \code{data} from the previous wave (or
 #' previous phase if \code{wave = 1}) and \code{sampled_data} from the
@@ -60,8 +62,8 @@
 #'
 #' library(datasets)
 #'
-#' MySurvey <- new_multiwave(phases = 2, waves = c(1, 3))
-#' get_data(MySurvey, phase = 1, slot = "data") <-
+#' MySurvey <- multiwave(phases = 2, waves = c(1, 3))
+#' mwset(MySurvey, phase = 1, slot = "data") <-
 #'   dplyr::select(datasets::iris, -Sepal.Width)
 #'
 #' # Get Design by applying optimum_allocation
@@ -74,7 +76,7 @@
 #' )
 #'
 #' # or, we can establish function args in the metadata
-#' get_data(MySurvey, phase = 2, slot = "metadata") <- list(
+#' mwset(MySurvey, phase = 2, slot = "metadata") <- list(
 #'   strata = "Species",
 #'   nsample = 15,
 #'   y = "Sepal.Length",
@@ -86,7 +88,7 @@
 #'   phase = 2, wave = 1,
 #'   fun = "optimum_allocation"
 #' )
-#' @include get_data.R phase.R wave.R multiwave.R optimum_allocation.R
+#' @include mwget.R mwset.R phase.R wave.R multiwave.R optimum_allocation.R
 #' @include allocate_wave.R merge_samples.R sample_strata.R
 #' @importFrom magrittr %>%
 #' @export
@@ -569,18 +571,14 @@ setMethod(
         design_data = design_data,
         design_strata = design_strata,
         n_allocated = n_allocated,
-        wave = paste0("Wave", wave)
+        wave = NULL
       )
 
       x_updated <- x
       sample_indicator <- NULL
       x_updated@phases[[phase]]@waves[[wave]]@samples <-
-        as.character(dplyr::filter(output,
-                                   !!sym(paste0("sample_indicator",
-                                          paste0("Wave", wave))) == 1)$id)
+        as.character(dplyr::filter(output, sample_indicator == 1)$id)
 
-      # Also update data itself to include sample_indicator column.
-      x_updated@phases[[phase]]@waves[[wave]]@data <- output
       return(x_updated)
     }
 
