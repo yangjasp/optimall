@@ -14,10 +14,10 @@ iris <- data.frame(
 )
 iris$Sepal.Width <- iris$Sepal.Length + rnorm(60, 0, 0.5)
 
-set_data(test, phase = 1, slot = "data") <-
+mwset(test, phase = 1, slot = "data") <-
   dplyr::select(iris, -Sepal.Width)
 
-set_data(test, phase = 2, slot = "metadata") <- list(
+mwset(test, phase = 2, slot = "metadata") <- list(
   strata = "Species",
   design_strata = "strata",
   id = "id",
@@ -25,7 +25,7 @@ set_data(test, phase = 2, slot = "metadata") <- list(
 )
 
 
-set_data(test, phase = 2, wave = 1, slot = "design") <-
+mwset(test, phase = 2, wave = 1, slot = "design") <-
   data.frame(
     strata = unique(iris$Species),
     n_to_sample = c(5, 5, 5)
@@ -37,9 +37,9 @@ test <- apply_multiwave(test,
   wave = 1, "sample_strata"
 ) # get samples
 
-samples <- get_data(test, phase = 2, wave = 1, slot = "samples")
+samples <- mwget(test, phase = 2, wave = 1, slot = "samples")
 
-set_data(test, phase = 2, wave = 1, slot = "sampled_data") <-
+mwset(test, phase = 2, wave = 1, slot = "sampled_data") <-
   dplyr::select(iris, id, Sepal.Width)[samples, ]
 
 # Testing Wave 1
@@ -70,9 +70,9 @@ test_that("merge_samples merges data with sampled data
 # Testing Wave 2
 samples2 <- sample(c(1:60)[-as.numeric(samples)], 15)
 # No duplicates
-set_data(test, phase = 2, wave = 2, slot = "samples") <-
+mwset(test, phase = 2, wave = 2, slot = "samples") <-
   as.character(samples2) # No duplicates
-set_data(test, phase = 2, wave = 2, slot = "sampled_data") <-
+mwset(test, phase = 2, wave = 2, slot = "sampled_data") <-
   dplyr::select(iris, id, Sepal.Width)[samples2, ]
 test1 <- merge_samples(test,
   phase = 2, wave = 2, id = "id",
@@ -99,10 +99,10 @@ test_that("merge_samples merges data with sampled data
 
 test_that("warning if id already has value for what has been sampled", {
   temp <- test1
-  set_data(temp, phase = 2, wave = 2, slot = "sampled_data") <-
+  mwset(temp, phase = 2, wave = 2, slot = "sampled_data") <-
     dplyr::select(iris, id, Sepal.Width)[samples2 + as.numeric(samples[1]), ]
   # Make dup
-  set_data(temp, phase = 2, wave = 2, slot = "samples") <-
+  mwset(temp, phase = 2, wave = 2, slot = "samples") <-
     c(as.character(samples2), samples[1]) # Make dup
   expect_warning(
     merge_samples(temp,
@@ -115,13 +115,13 @@ test_that("warning if id already has value for what has been sampled", {
 
 test_that("warning if new ids are in sampled data", {
   temp <- test1
-  set_data(temp, phase = 2, wave = 2, slot = "sampled_data") <-
+  mwset(temp, phase = 2, wave = 2, slot = "sampled_data") <-
     rbind(
       dplyr::select(iris, id, Sepal.Width)[samples2, ],
       c(61, 3.5)
     )
   # Make dup
-  set_data(temp, phase = 2, wave = 2, slot = "samples") <-
+  mwset(temp, phase = 2, wave = 2, slot = "samples") <-
     c(as.character(samples2), "61") # Make dup
   expect_warning(
     temp <- merge_samples(temp,
@@ -132,15 +132,15 @@ test_that("warning if new ids are in sampled data", {
   )
   # temp <- merge_samples(temp, phase = 2, wave = 2, id = "id",
   # sampled_ind = "already_sampled_ind")
-  expect_equal(nrow(get_data(temp, 2, 2, "data")), 61) # one extra row
+  expect_equal(nrow(mwget(temp, 2, 2, "data")), 61) # one extra row
 })
 
 test_that("warning if one of wave's 'samples' slots is empty", {
   temp <- test1
-  set_data(temp, phase = 2, wave = 2, slot = "sampled_data") <-
+  mwset(temp, phase = 2, wave = 2, slot = "sampled_data") <-
     dplyr::select(iris, id, Sepal.Width)[samples2, ]
   # Make dup
-  set_data(temp, phase = 2, wave = 2, slot = "samples") <-
+  mwset(temp, phase = 2, wave = 2, slot = "samples") <-
     character(0) # forget to specify samples
   expect_warning(
     temp <- merge_samples(temp,
@@ -153,40 +153,40 @@ test_that("warning if one of wave's 'samples' slots is empty", {
 
 test_that("arguments can be specified in metadata", {
   temp <- test1
-  set_data(test1, phase = NA, wave = NA, "metadata") <- list(
+  mwset(test1, phase = NA, wave = NA, "metadata") <- list(
     id = "id",
     sampled_ind = "already_sampled_ind"
   )
   temp <- merge_samples(temp, phase = 2, wave = 2)
-  expect_equal(dim(get_data(temp, 2, 2, "data")), c(60, 5))
+  expect_equal(dim(mwget(temp, 2, 2, "data")), c(60, 5))
   expect_equal(
     "already_sampled_ind" %in% names(
-      get_data(temp, phase = 2, wave = 2, slot = "data")
+      mwget(temp, phase = 2, wave = 2, slot = "data")
     ),
     TRUE
   )
   temp <- test1
-  set_data(temp, phase = 2, wave = NA, "metadata") <- list(
+  mwset(temp, phase = 2, wave = NA, "metadata") <- list(
     id = "id",
     sampled_ind = "already_samples_ind"
   )
   temp <- merge_samples(temp, phase = 2, wave = 2)
-  expect_equal(dim(get_data(temp, 2, 2, "data")), c(60, 5))
+  expect_equal(dim(mwget(temp, 2, 2, "data")), c(60, 5))
   temp <- test1
-  set_data(temp, phase = 2, wave = 2, "metadata") <- list(
+  mwset(temp, phase = 2, wave = 2, "metadata") <- list(
     id = "id",
     sampled_ind = "already_sampled_ind"
   )
   temp <- merge_samples(temp, phase = 2, wave = 2)
-  expect_equal(dim(get_data(temp, 2, 2, "data")), c(60, 5))
+  expect_equal(dim(mwget(temp, 2, 2, "data")), c(60, 5))
 })
 
 test_that("Errors as necessary", {
   temp <- test1
-  set_data(temp, phase = 2, wave = 2, slot = "sampled_data") <-
+  mwset(temp, phase = 2, wave = 2, slot = "sampled_data") <-
     dplyr::select(iris, id, Sepal.Width)[samples2, ]
   # Make dup
-  set_data(temp, phase = 2, wave = 2, slot = "samples") <-
+  mwset(temp, phase = 2, wave = 2, slot = "samples") <-
     character(0) # forget to specify samples
   expect_error(
     merge_samples(temp,
