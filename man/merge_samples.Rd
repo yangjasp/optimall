@@ -5,7 +5,14 @@
 \alias{merge_samples,Multiwave-method}
 \title{Merge Sampled Data based on IDs}
 \usage{
-merge_samples(x, phase, wave, id = NULL, sampled_ind = "already_sampled_ind")
+merge_samples(
+  x,
+  phase,
+  wave,
+  id = NULL,
+  phase_sample_ind = "sampled_phase",
+  wave_sample_ind = "sampled_wave"
+)
 }
 \arguments{
 \item{x}{an object of class \code{"Multiwave"}.}
@@ -25,9 +32,16 @@ dataframe in the \code{"data"} slot.}
 ids. Taken from wave, phase, or overall metadata (searched for in that
 order) if \code{NULL}. Defaults to \code{NULL}.}
 
-\item{sampled_ind}{a character value specifying the name of the column that
-should hold the indicator of whether each unit has already been sampled in
-the current phase.}
+\item{phase_sample_ind}{a character value specifying the name of the column
+that should hold the indicator of whether each unit has already been sampled
+in the current \emph{phase}. The specified phase number will be appended
+to the end of the given character name. Defaults to "sampled_phase".}
+
+\item{wave_sample_ind}{a character value specifying the name of the column
+that should hold the indicator of whether each unit has already been sampled
+in the current \emph{wave}. The specified phase and wave numbers separated
+by "." will be appended o the end of the given character name.
+If FALSE, no such column is created. Defaults to "sampled_wave".}
 }
 \value{
 A Multiwave object with the merged dataframe in the
@@ -40,29 +54,31 @@ the dataframe in the \code{"sampled data"} slot with the dataframe in
 the \code{"data"} slot of the previous wave.
 }
 \details{
-If a column name in the \code{"sampled data"} matches a column name in
-the \code{"data"} slot of the previous wave, these columns will be
-merged into one column with the same name in the output dataframe.
-For ids that have non-missing values in both columns of the merge,
-the value from
-\code{"sampled_data"} will overwrite the previous value and a warning
-will be printed. All ids present in the \code{"data"} from the previous
-wave but missing from \code{"sampled_data"} will be given NA values
-for the newly merged variables
-
 Columns in \code{"sampled_data"} that do not match names of the
 \code{"data"} from the previous wave will be added as new columns in
 the output dataframe. All ids that do not appear in
 \code{"sampled_data"} will receive NA values for these new variables.
+
+If a column name in the \code{"sampled data"} matches a column name in
+the \code{"data"} slot of the previous wave, these columns will be
+merged into one column with the same name in the output dataframe.
+For ids that have non-missing values in both columns of the merge,
+the value from \code{"sampled_data"} will overwrite the previous value
+and a warning will be printed. All ids present in the \code{"data"} from the
+previous wave but missing from \code{"sampled_data"} will be given NA values
+for the newly merged variables.
+
+If columns with the name produced by \code{phase_sample_ind} or
+\code{phase_sample_ind} already exist, they will be overwritten.
 }
 \examples{
 library(datasets)
 iris <- data.frame(iris, id = 1:150)
 
 MySurvey <- new_multiwave(phases = 2, waves = c(1, 3))
-get_data(MySurvey, phase = 1, slot = "data") <-
+mwset(MySurvey, phase = 1, slot = "data") <-
   data.frame(dplyr::select(iris, -Sepal.Width))
-get_data(MySurvey, phase = 2, wave = 1, slot = "sampled_data") <-
+mwset(MySurvey, phase = 2, wave = 1, slot = "sampled_data") <-
   dplyr::select(iris, id, Sepal.Width)[1:40, ]
 MySurvey <- merge_samples(MySurvey, phase = 2, wave = 1, id = "id")
 }
