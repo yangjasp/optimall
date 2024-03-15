@@ -5,15 +5,6 @@
 #' the dataframe in the \code{"sampled data"} slot with the dataframe in
 #' the \code{"data"} slot of the previous wave.
 #'
-#' If a column name in the \code{"sampled data"} matches a column name in
-#' the \code{"data"} slot of the previous wave, these columns will be
-#' merged into one column with the same name in the output dataframe.
-#' For ids that have non-missing values in both columns of the merge,
-#' the value from
-#' \code{"sampled_data"} will overwrite the previous value and a warning
-#' will be printed. All ids present in the \code{"data"} from the previous
-#' wave but missing from \code{"sampled_data"} will be given NA values
-#' for the newly merged variables
 #'
 #' Columns in \code{"sampled_data"} that do not match names of the
 #' \code{"data"} from the previous wave will be added as new columns in
@@ -33,9 +24,29 @@
 #' @param id A character value specifying the name of the column holding unit
 #' ids. Taken from wave, phase, or overall metadata (searched for in that
 #' order) if \code{NULL}. Defaults to \code{NULL}.
-#' @param sampled_ind a character value specifying the name of the column that
-#' should hold the indicator of whether each unit has already been sampled in
-#' the current phase.
+#' @param phase_sample_ind a character value specifying the name of the column
+#' that should hold the indicator of whether each unit has already been sampled
+#' in the current \emph{phase}. The specified phase number will be appended
+#' to the end of the given character name. Defaults to "sampled_phase".
+#' @param wave_sample_ind a character value specifying the name of the column
+#' that should hold the indicator of whether each unit has already been sampled
+#' in the current \emph{wave}. The specified phase and wave numbers separated
+#' by "." will be appended o the end of the given character name.
+#' If FALSE, no such column is created. Defaults to "sampled_wave".
+#' @details
+#' If a column name in the \code{"sampled data"} matches a column name in
+#' the \code{"data"} slot of the previous wave, these columns will be
+#' merged into one column with the same name in the output dataframe.
+#' For ids that have non-missing values in both columns of the merge,
+#' the value from \code{"sampled_data"} will overwrite the previous value
+#' and a warning will be printed. All ids present in the \code{"data"} from the
+#' previous wave but missing from \code{"sampled_data"} will be given NA values
+#' for the newly merged variables.
+#'
+#' If columns with the name produced by \code{phase_sample_ind} or
+#' \code{phase_sample_ind} already exist, they will be overwritten.
+#'
+#'
 #' @return A Multiwave object with the merged dataframe in the
 #' \code{"data"} slot of the specified wave.
 #' @export
@@ -47,21 +58,23 @@
 #' iris <- data.frame(iris, id = 1:150)
 #'
 #' MySurvey <- new_multiwave(phases = 2, waves = c(1, 3))
-#' set_data(MySurvey, phase = 1, slot = "data") <-
+#' mwset(MySurvey, phase = 1, slot = "data") <-
 #'   data.frame(dplyr::select(iris, -Sepal.Width))
-#' set_data(MySurvey, phase = 2, wave = 1, slot = "sampled_data") <-
+#' mwset(MySurvey, phase = 2, wave = 1, slot = "sampled_data") <-
 #'   dplyr::select(iris, id, Sepal.Width)[1:40, ]
 #' MySurvey <- merge_samples(MySurvey, phase = 2, wave = 1, id = "id")
 #' @importFrom rlang :=
 setGeneric("merge_samples", function(x, phase, wave,
                                      id = NULL,
-                                     sampled_ind = "already_sampled_ind") {
+                                     phase_sample_ind = "sampled_phase",
+                                     wave_sample_ind = "sampled_wave") {
   standardGeneric("merge_samples")
 })
 setMethod(
   "merge_samples", c(x = "Multiwave"),
   function(x, phase, wave, id = NULL,
-           sampled_ind = "already_sampled_ind") {
+           phase_sample_ind = NULL,
+           wave_sample_ind = NULL) {
     if (!is.numeric(phase) |
       !(phase %in% c(seq_len(length(x@phases))) & phase > 1)) {
       stop("'phase' must be a numeric value specifying a valid phase
@@ -72,14 +85,8 @@ setMethod(
       stop("'wave' must be a numeric value specifying a valid wave in
       'phase' in 'x'")
     }
-    if (!is.character(sampled_ind) | length(sampled_ind) != 1) {
-      stop("'sampled_ind' must be a character value specifying the desired
-    name of the column in the newly merged data that should hold a
-    binary indicator for whether each unit has been sampled in the current
-    wave.")
-    }
 
-    # Get previous wave data
+    # Get previous wave data.
 
     if ((phase == 2 | phase == "phase2") & (wave == 1 | wave == "wave1")) {
       previous_wave_data <- x@phases$phase1$data
@@ -128,6 +135,51 @@ setMethod(
         previous_wave_data[[id]]
     ))) {
       warning("sampled_data is introducing new ids to the data")
+    }
+
+    # Get phase_sample_ind if given phase_sample_ind is NULL
+    if (is.null(phase_sample_ind)) {
+      if ("phase_sample_ind" %in% names(x@phases[[phase]]@waves[[wave]]@metadata)
+      ) {
+        phase_sample_ind <-
+          x@phases[[phase]]@waves[[wave]]@metadata$phase_sample_ind
+      } else if ("phase_sample_ind" %in% names(x@phases[[phase]]@metadata)) {
+        phase_sample_ind <- x@phases[[phase]]@metadata$phase_sample_ind
+      } else if ("phase_sample_ind" %in% names(x@metadata)) {
+        phase_sample_ind <- x@metadata$phase_sample_id
+      } else {
+       phase_sample_ind <- "sampled_phase"
+      }
+    }
+
+    # Get wave_sample_ind if given wave_sample_ind is NULL
+    if (is.null(wave_sample_ind)) {
+      if ("wave_sample_ind" %in% names(x@phases[[phase]]@waves[[wave]]@metadata)
+      ) {
+        wave_sample_ind <-
+          x@phases[[phase]]@waves[[wave]]@metadata$wave_sample_ind
+      } else if ("wave_sample_ind" %in% names(x@phases[[phase]]@metadata)) {
+        wave_sample_ind <- x@phases[[phase]]@metadata$wave_sample_ind
+      } else if ("wave_sample_ind" %in% names(x@metadata)) {
+        wave_sample_ind <- x@metadata$wave_sample_id
+      } else {
+        wave_sample_ind <- "sampled_wave"
+      }
+    }
+
+    # Errors if given wave ind or phase ind are not characaters
+    if (!is.character(phase_sample_ind) | length(phase_sample_ind) != 1) {
+      stop("'phase_sampled_ind' must be a character value specifying the desired
+    name of the column in the newly merged data that should hold a
+    binary indicator for whether each unit has been sampled in the current
+    phase.")
+    }
+    if (!is.character(wave_sample_ind) & wave_sample_ind != FALSE |
+        length(wave_sample_ind) != 1) {
+      stop("'wave_sampled_ind' must be FALSE or a character value specifying the
+      desired name of the column in the newly merged data that should hold a
+      binary indicator for whether each unit has been sampled in the current
+           wave.")
     }
 
     # Perform merge
@@ -181,30 +233,45 @@ setMethod(
       }
     }
 
-    # Add indicator for already sampled
+    # Add indicator for already sampled in current phase
 
-    already_sampled_ids <- list()
+    already_sampled_phase_ids <- list()
 
     for (i in seq_len(wave)) {
-      already_sampled_ids[[i]] <- get_data(x,
+      already_sampled_phase_ids[[i]] <- mwget(x,
         phase = phase,
         wave = i,
         slot = "samples"
       )
     }
 
-    if (any(sapply(already_sampled_ids, length) == 0)) {
+    if (any(sapply(already_sampled_phase_ids, length) == 0)) {
       warning("some 'samples' slots of previous waves in this phase are
             empty. The `sampled_ind` column of the newly merged data may
             be inaccurate.")
     }
 
-    already_sampled_ids <- unlist(already_sampled_ids)
+    already_sampled_phase_ids <- unlist(already_sampled_phase_ids)
 
-    output_data[, sampled_ind] <-
-      ifelse(output_data[,id] %in% already_sampled_ids, 1, 0)
+    phase_col_name <- paste0(phase_sample_ind, phase)
 
-    set_data(x, phase = phase, wave = wave) <- output_data
+    output_data[, phase_col_name] <-
+      ifelse(output_data[,id] %in% already_sampled_phase_ids, 1, 0)
+
+    # Add indicator for sampled in current wave
+
+    if(wave_sample_ind != FALSE){
+      wave_col_name <- paste0(wave_sample_ind, phase, ".", wave)
+
+      output_data[, wave_col_name] <-
+        ifelse(as.character(output_data[,id]) %in% mwget(x,
+                                          phase = phase,
+                                          wave = wave,
+                                          slot = "samples"), 1, 0)
+  }
+
+    # Add output_data to data slot of current wave
+    mwset(x, phase = phase, wave = wave, slot ="data") <- output_data
     return(x)
   }
 )
