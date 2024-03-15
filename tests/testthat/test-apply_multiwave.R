@@ -449,10 +449,10 @@ test_that("errors if args are not specified", {
 
 test_that("sample_strata works with specified args", {
   MySurvey <- multiwave(phases = 2, waves = c(1, 3))
-  set_data(MySurvey, phase = 1, slot = "data") <-
+  mwset(MySurvey, phase = 1, slot = "data") <-
     dplyr::select(iris, -Sepal.Width)
 
-  set_data(MySurvey, phase = 2, wave = 1, slot = "design") <-
+  mwset(MySurvey, phase = 2, wave = 1, slot = "design") <-
     data.frame(strata = unique(iris$Species), n_to_sample = c(5, 5, 5))
   set.seed(123)
   MySurvey <- apply_multiwave(MySurvey,
@@ -465,8 +465,15 @@ test_that("sample_strata works with specified args", {
   expect_equal(length(
     mwget(MySurvey, phase = 2, wave = 1, slot = "samples")
   ), 15)
-  expect_equal(names(mwget(MySurvey, phase = 2, wave = 1, slot = "data"))[6],
+
+  # And that newly created column in data slot is good
+  expect_equal(names(mwget(MySurvey, phase = 2, wave = 1, slot = "data"))[4],
                "sample_indicatorWave1")
+  expect_equivalent(
+    as.character(
+      dplyr::filter(mwget(MySurvey, phase = 2, wave = 1, slot = "data"),
+                  sample_indicatorWave1 == 1)$id),
+    mwget(MySurvey, phase = 2, wave = 1, slot = "samples"))
 })
 
 test_that("sample_strata works with args specified in metadata", {
@@ -491,6 +498,15 @@ test_that("sample_strata works with args specified in metadata", {
   expect_equal(length(
     mwget(MySurvey, phase = 2, wave = 1, slot = "samples")
   ), 15)
+
+  # And that newly created column in data slot is good
+  expect_equal(names(mwget(MySurvey, phase = 2, wave = 1, slot = "data"))[4],
+               "sample_indicatorWave1")
+  expect_equivalent(
+    as.character(
+      dplyr::filter(mwget(MySurvey, phase = 2, wave = 1, slot = "data"),
+                    sample_indicatorWave1 == 1)$id),
+    mwget(MySurvey, phase = 2, wave = 1, slot = "samples"))
 
   # only need to specify strata once if it is same in both
 
