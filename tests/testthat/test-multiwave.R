@@ -19,12 +19,12 @@ test_that("initiating with metadata and phase1 data works", {
     ),
     metadata = list(title = "title")
   )
-  expect_equal(get_data(test, phase = 1), data.frame(
+  expect_equal(mwget(test, phase = 1), data.frame(
     a = c("a", "b", "c"),
     b = c(1, 2, 3)
   ))
   expect_equal(
-    get_data(test, phase = NA, slot = "metadata"),
+    mwget(test, phase = NA, slot = "metadata"),
     list(title = "title")
   )
 })
