@@ -14,7 +14,7 @@ mwset(MySurvey, slot = "metadata") <-
 test_that("metadata access works", {
   # overall metadata
   expect_equal(
-    get_data(MySurvey, phase = NA, slot = "metadata"),
+    mwget(MySurvey, phase = NA, slot = "metadata"),
     MySurvey@metadata
   )
 
@@ -23,7 +23,7 @@ test_that("metadata access works", {
     list(title = "Maternal Weight Survey Phase 1")
 
   expect_equal(
-    get_data(MySurvey, phase = 1, slot = "metadata"),
+    mwget(MySurvey, phase = 1, slot = "metadata"),
     MySurvey@phases$phase1$metadata
   )
 
@@ -33,7 +33,7 @@ test_that("metadata access works", {
     list(title = "Maternal Weight Survey Phase 2")
 
   expect_equal(
-    get_data(MySurvey, phase = 2, slot = "metadata"),
+    mwget(MySurvey, phase = 2, slot = "metadata"),
     MySurvey@phases$phase2@metadata
   )
 
@@ -44,10 +44,10 @@ test_that("metadata access works", {
     list(title = "Maternal Weight Survey Phase 2, Wave 1")
 
   expect_equal(
-    get_data(MySurvey, phase = 2, wave = 1, slot = "metadata"),
+    mwget(MySurvey, phase = 2, wave = 1, slot = "metadata"),
     MySurvey@phases$phase2@waves$wave1@metadata
   )
 })
 
-## See test-get_data for other tests
+## See test-mwget for other tests
 
