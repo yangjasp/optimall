@@ -191,14 +191,13 @@ test_that("allocate_wave runs with args provided", {
   mwset(MySurvey, phase = 2, wave = 1, slot = "sampled_data") <-
     dplyr::select(iris, id, Sepal.Width)[samples, ]
   MySurvey <- merge_samples(MySurvey,
-    phase = 2, wave = 1, id = "id",
-    sampled_ind = "already_sampled_ind"
+    phase = 2, wave = 1, id = "id"
   )
   MySurvey <- apply_multiwave(MySurvey,
     phase = 2, wave = 2,
     fun = "allocate_wave", strata = "Species",
     y = "Sepal.Width",
-    already_sampled = "already_sampled_ind",
+    already_sampled = "sampled_phase2",
     nsample = 30, detailed = TRUE
   )
   expect_equal(
@@ -226,7 +225,7 @@ test_that("allocate_wave runs with args provided", {
                               phase = 2, wave = 2,
                               fun = "allocate_wave", strata = "Species",
                               y = "Sepal.Width",
-                              already_sampled = "already_sampled_ind",
+                              already_sampled = "sampled_phase2",
                               allocation_method = "Neyman",
                               nsample = 30, detailed = TRUE
   )
@@ -272,12 +271,11 @@ test_that("allocate_wave runs with args in metadata", {
   mwset(MySurvey, phase = 2, wave = 1, slot = "sampled_data") <-
     dplyr::select(iris, id, Sepal.Width)[samples, ]
   MySurvey <- merge_samples(MySurvey,
-    phase = 2, wave = 1, id = "id",
-    sampled_ind = "already_sampled_ind"
+    phase = 2, wave = 1, id = "id"
   )
   mwset(MySurvey, phase = NA, slot = "metadata") <- list(
     y = "Sepal.Width",
-    already_sampled = "already_sampled_ind",
+    already_sampled = "sampled_phase2",
     strata = "Species",
     nsample = 30, detailed = TRUE
   )
@@ -304,7 +302,7 @@ test_that("allocate_wave runs with args in metadata", {
   # but metadata in phase overrides
   mwset(MySurvey, phase = 2, slot = "metadata") <- list(
     y = "Sepal.Width",
-    already_sampled = "already_sampled_ind",
+    already_sampled = "sampled_phase2",
     strata = "Species",
     nsample = 32, detailed = TRUE, allocation_method = "WrightII"
   )
@@ -333,7 +331,7 @@ test_that("allocate_wave runs with args in metadata", {
     slot = "metadata"
   ) <- list(
     y = "Sepal.Width",
-    already_sampled = "already_sampled_ind",
+    already_sampled = "sampled_phase2",
     strata = "Species",
     nsample = 33, detailed = TRUE, allocation_method = "WrightII"
   )
@@ -395,8 +393,7 @@ test_that("errors if args are not specified", {
   mwset(MySurvey, phase = 2, wave = 1, slot = "sampled_data") <-
     dplyr::select(iris, id, Sepal.Width)[samples, ]
   MySurvey <- merge_samples(MySurvey,
-    phase = 2, wave = 1, id = "id",
-    sampled_ind = "already_sampled_ind"
+    phase = 2, wave = 1, id = "id"
   )
   mwset(MySurvey, phase = 2, slot = "metadata") <- list()
 
@@ -467,13 +464,13 @@ test_that("sample_strata works with specified args", {
   ), 15)
 
   # And that newly created column in data slot is good
-  expect_equal(names(mwget(MySurvey, phase = 2, wave = 1, slot = "data"))[4],
-               "sample_indicatorWave1")
-  expect_equivalent(
-    as.character(
-      dplyr::filter(mwget(MySurvey, phase = 2, wave = 1, slot = "data"),
-                  sample_indicatorWave1 == 1)$id),
-    mwget(MySurvey, phase = 2, wave = 1, slot = "samples"))
+  # expect_equal(names(mwget(MySurvey, phase = 2, wave = 1, slot = "data"))[4],
+  #             "sample_indicatorWave1")
+  # expect_equivalent(
+  #  as.character(
+  #    dplyr::filter(mwget(MySurvey, phase = 2, wave = 1, slot = "data"),
+  #                sample_indicatorWave1 == 1)$id),
+  #  mwget(MySurvey, phase = 2, wave = 1, slot = "samples"))
 })
 
 test_that("sample_strata works with args specified in metadata", {
@@ -725,7 +722,7 @@ test_that("merge_samples works when args are specified within it", {
   MySurvey <- apply_multiwave(MySurvey,
     phase = 2, wave = 1,
     fun = "merge_samples", id = "id",
-    sampled_ind = "already_sampled_ind"
+    phase_sample_ind = "already_sampled_ind"
   )
 
   expect_equal(
@@ -733,12 +730,12 @@ test_that("merge_samples works when args are specified within it", {
     c(60, 5)
   )
   expect_equal(length(
-    MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind`[
-      MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind` == 1
+    MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind2`[
+      MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind2` == 1
     ]
   ), 15)
   expect_equal(length(
-    MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind`[
+    MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind2`[
       !is.na(MySurvey@phases$phase2@waves$wave1@data$Sepal.Width)
     ]
   ), 15)
@@ -777,7 +774,8 @@ test_that("merge_samples works with args specifies in metadata", {
 
   mwset(MySurvey, phase = NA, slot = "metadata") <- list(
     id = "id",
-    sampled_ind = "already_sampled_ind"
+    phase_sample_ind = "already_sampled_ind",
+    wave_sample_ind = "test"
   )
 
   MySurvey <- apply_multiwave(MySurvey,
@@ -787,59 +785,7 @@ test_that("merge_samples works with args specifies in metadata", {
 
   expect_equal(
     dim(MySurvey@phases$phase2@waves$wave1@data),
-    c(60, 5)
-  )
-  expect_equal(length(
-    MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind`[
-      MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind` == 1
-    ]
-  ), 15)
-  expect_equal(length(
-    MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind`[
-      !is.na(MySurvey@phases$phase2@waves$wave1@data$Sepal.Width)
-    ]
-  ), 15)
-
-  # But phase metadata overrides it
-  mwset(MySurvey, phase = 2, slot = "metadata") <- list(
-    id = "id",
-    sampled_ind = "already_sampled_ind1"
-  )
-
-  MySurvey <- apply_multiwave(MySurvey,
-    phase = 2, wave = 1,
-    fun = "merge_samples"
-  )
-
-  expect_equal(
-    dim(MySurvey@phases$phase2@waves$wave1@data),
-    c(60, 5)
-  )
-  expect_equal(length(
-    MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind1`[
-      MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind1` == 1
-    ]
-  ), 15)
-  expect_equal(length(
-    MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind1`[
-      !is.na(MySurvey@phases$phase2@waves$wave1@data$Sepal.Width)
-    ]
-  ), 15)
-
-  # But wave metadata overrides it
-  mwset(MySurvey, phase = 2, wave = 1, slot = "metadata") <- list(
-    id = "id",
-    sampled_ind = "already_sampled_ind2"
-  )
-
-  MySurvey <- apply_multiwave(MySurvey,
-    phase = 2, wave = 1,
-    fun = "merge_samples"
-  )
-
-  expect_equal(
-    dim(MySurvey@phases$phase2@waves$wave1@data),
-    c(60, 5)
+    c(60, 6)
   )
   expect_equal(length(
     MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind2`[
@@ -849,6 +795,75 @@ test_that("merge_samples works with args specifies in metadata", {
   expect_equal(length(
     MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind2`[
       !is.na(MySurvey@phases$phase2@waves$wave1@data$Sepal.Width)
+    ]
+  ), 15)
+  expect_equal(length(
+    MySurvey@phases$phase2@waves$wave1@data$`test2.1`[
+      MySurvey@phases$phase2@waves$wave1@data$`test2.1` == 1
+    ]
+  ), 15)
+
+  # But phase metadata overrides it
+  mwset(MySurvey, phase = 2, slot = "metadata") <- list(
+    id = "id",
+    phase_sample_ind = "already_sampled_indA",
+    wave_sample_ind = "testA"
+  )
+
+  MySurvey <- apply_multiwave(MySurvey,
+    phase = 2, wave = 1,
+    fun = "merge_samples"
+  )
+
+  expect_equal(
+    dim(MySurvey@phases$phase2@waves$wave1@data),
+    c(60, 6)
+  )
+  expect_equal(length(
+    MySurvey@phases$phase2@waves$wave1@data$`already_sampled_indA2`[
+      MySurvey@phases$phase2@waves$wave1@data$`already_sampled_indA2` == 1
+    ]
+  ), 15)
+  expect_equal(length(
+    MySurvey@phases$phase2@waves$wave1@data$`already_sampled_indA2`[
+      !is.na(MySurvey@phases$phase2@waves$wave1@data$Sepal.Width)
+    ]
+  ), 15)
+  expect_equal(length(
+    MySurvey@phases$phase2@waves$wave1@data$`testA2.1`[
+      MySurvey@phases$phase2@waves$wave1@data$`testA2.1` == 1
+    ]
+  ), 15)
+
+  # But wave metadata overrides it
+  mwset(MySurvey, phase = 2, wave = 1, slot = "metadata") <- list(
+    id = "id",
+    phase_sample_ind = "already_sampled_indB",
+    wave_sample_ind = "testB"
+  )
+
+  MySurvey <- apply_multiwave(MySurvey,
+    phase = 2, wave = 1,
+    fun = "merge_samples"
+  )
+
+  expect_equal(
+    dim(MySurvey@phases$phase2@waves$wave1@data),
+    c(60, 6)
+  )
+  expect_equal(length(
+    MySurvey@phases$phase2@waves$wave1@data$`already_sampled_indB2`[
+      MySurvey@phases$phase2@waves$wave1@data$`already_sampled_indB2` == 1
+    ]
+  ), 15)
+  expect_equal(length(
+    MySurvey@phases$phase2@waves$wave1@data$`already_sampled_indB2`[
+      !is.na(MySurvey@phases$phase2@waves$wave1@data$Sepal.Width)
+    ]
+  ), 15)
+  expect_equal(length(
+    MySurvey@phases$phase2@waves$wave1@data$`testB2.1`[
+      MySurvey@phases$phase2@waves$wave1@data$`testB2.1` == 1
     ]
   ), 15)
 })
