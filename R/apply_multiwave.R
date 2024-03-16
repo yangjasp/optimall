@@ -604,27 +604,45 @@ setMethod(
         id <- arguments$id
       }
 
-      if (is.null(arguments$sampled_ind)) {
-        if ("sampled_ind" %in% names(wave_md) &
-            inherits(wave_md$sampled_ind, "character")) {
-          sampled_ind <- wave_md$sampled_ind
-        } else if ("sampled_ind" %in% names(phase_md) &
-            inherits(phase_md$sampled_ind, "character")) {
-          sampled_ind <- phase_md$sampled_ind
-        } else if ("sampled_ind" %in% names(survey_md) &
-            inherits(survey_md$sampled_ind, "character")) {
-          sampled_ind <- survey_md$sampled_ind
+      if (is.null(arguments$phase_sample_ind)) {
+        if ("phase_sample_ind" %in% names(wave_md) &
+            inherits(wave_md$phase_sample_ind, "character")) {
+          phase_sample_ind <- wave_md$phase_sample_ind
+        } else if ("phase_sample_ind" %in% names(phase_md) &
+            inherits(phase_md$phase_sample_ind, "character")) {
+          phase_sample_ind <- phase_md$phase_sample_ind
+        } else if ("phase_sample_ind" %in% names(survey_md) &
+            inherits(survey_md$phase_sample_ind, "character")) {
+          phase_sample_ind <- survey_md$phase_sample_ind
         } else {
-          sampled_ind <- "sampled_ind"
+          phase_sample_ind <- "phase_sample_ind"
         }
       } else {
-        sampled_ind <- arguments$sampled_ind
+        phase_sample_ind <- arguments$phase_sample_ind
+      }
+
+      if (is.null(arguments$wave_sample_ind)) {
+        if ("wave_sample_ind" %in% names(wave_md) &
+            inherits(wave_md$wave_sample_ind, "character")) {
+          wave_sample_ind <- wave_md$wave_sample_ind
+        } else if ("wave_sample_ind" %in% names(phase_md) &
+                   inherits(phase_md$wave_sample_ind, "character")) {
+          wave_sample_ind <- phase_md$wave_sample_ind
+        } else if ("wave_sample_ind" %in% names(survey_md) &
+                   inherits(survey_md$wave_sample_ind, "character")) {
+          wave_sample_ind <- survey_md$wave_sample_ind
+        } else {
+          wave_sample_ind <- "wave_sample_ind"
+        }
+      } else {
+        wave_sample_ind <- arguments$wave_sample_ind
       }
 
 
       x_updated <- merge_samples(
         x = x, phase = phase, wave = wave, id = id,
-        sampled_ind = sampled_ind
+        phase_sample_ind = phase_sample_ind,
+        wave_sample_ind = wave_sample_ind
       )
       return(x_updated)
     }
