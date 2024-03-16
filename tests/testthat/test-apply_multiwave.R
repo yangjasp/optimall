@@ -727,7 +727,7 @@ test_that("merge_samples works when args are specified within it", {
 
   expect_equal(
     dim(MySurvey@phases$phase2@waves$wave1@data),
-    c(60, 5)
+    c(60, 6)
   )
   expect_equal(length(
     MySurvey@phases$phase2@waves$wave1@data$`already_sampled_ind2`[
