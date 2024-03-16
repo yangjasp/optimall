@@ -90,14 +90,13 @@ test_that("Design, samples, sampled_data, data work", {
     dplyr::select(iris, id, Sepal.Width)[samples, ]
 
   test <- merge_samples(test,
-    phase = 2, wave = 1, id = "id",
-    sampled_ind = "already_sampled_ind"
+    phase = 2, wave = 1, id = "id"
   )
 
   test <- apply_multiwave(test,
     phase = 2, wave = 2, fun = "allocate_wave",
     y = "Sepal.Width",
-    already_sampled = "already_sampled_ind", nsample = 30,
+    already_sampled = "sampled_phase2", nsample = 30,
     detailed = TRUE
   )
 
@@ -155,12 +154,12 @@ test_that("errors work when invalid slot is accessed", {
     "must specify wave number unless"
   )
   expect_error(
-    mwget(MySurvey, phase = NA, slot = "data") <-
+    mwset(MySurvey, phase = NA, slot = "data") <-
       data.frame(),
     "must specify a phase unless getting overall metadata"
   )
   expect_error(
-    mwget(MySurvey, phase = 2, wave = NA, slot = "data") <-
+    mwset(MySurvey, phase = 2, wave = NA, slot = "data") <-
       data.frame(),
     "must specify wave number unless"
   )
