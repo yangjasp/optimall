@@ -12,6 +12,7 @@ sample_strata(
   design_data,
   design_strata = "strata",
   n_allocated = "n_to_sample",
+  probs = NULL,
   wave = NULL
 )
 }
@@ -45,17 +46,29 @@ Defaults to "strata".}
 column in \code{design_data} that indicates the n allocated to each
 stratum. Defaults to "n_to_sample".}
 
-\item{wave}{A character string or numeric value indicating the
-sampling wave. This argument does not apply when \code{sample_strata()} is
-called inside \code{allocate_wave()}. If specified, the input is appended to
-the column name of the sample indicator (as long as such a column name does
-not already exist in \code{data}). Defaults to NULL.}
+\item{probs}{a character string specifying the name of the column in
+in \code{design_data} that indicates the sampling probability for each
+stratum. If specified, a new column containing the sampling probability
+attached to each sampled unit will be created in the outputted
+dataframe. This column will be named "sampling_prob". Defaults to NULL.}
+
+\item{wave}{A numeric value or character string indicating the
+sampling wave. If specified, the input is appended to
+"sample indicator" in the new the sample indicator column name
+(as long as such columns name do not already exist in \code{data}).
+Defaults to NULL. This argument does not
+apply when \code{sample_strata()} is called inside \code{allocate_wave()}.}
+
+\item{name}{description}
 }
 \value{
 returns \code{data} as a dataframe with a new column named
 "sample_indicator" containing a binary (1/0) indicator of
 whether each unit should be sampled. If \code{wave} argument is
 specified, then the given input is appended to the name "sample_indicator".
+If \code{probs} argument is specified, then the dataframe will also contain
+a new column named "sampling_prob" holding the sampling probabilities for
+each sampled element.
 }
 \description{
 Requires two dataframes or matrices: \code{data} with a column
