@@ -46,9 +46,10 @@ column in \code{design_data} that indicates the n allocated to each
 stratum. Defaults to "n_to_sample".}
 
 \item{wave}{A character string or numeric value indicating the
-sampling wave. If specified, the input is appended to the column name
-of the sample indicator (as long as such a column name does not already
-exist in \code{data}). Defaults to NULL.}
+sampling wave. This argument does not apply when \code{sample_strata()} is
+called inside \code{allocate_wave()}. If specified, the input is appended to
+the column name of the sample indicator (as long as such a column name does
+not already exist in \code{data}). Defaults to NULL.}
 }
 \value{
 returns \code{data} as a dataframe with a new column named
