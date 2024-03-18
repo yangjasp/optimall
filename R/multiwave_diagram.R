@@ -210,16 +210,16 @@ multiwave_diagram <- function(x, height = NULL, width = NULL) {
             )
           )
         samples_color <-
-          ifelse(length(x@phases[[i]]@waves[[j]]@samples) == 0,
+          ifelse(length(x@phases[[i]]@waves[[j]]@samples$ids) == 0,
             empty_slot_color,
             full_slot_color
           )
         samples_text <-
-          ifelse(length(x@phases[[i]]@waves[[j]]@samples) == 0,
+          ifelse(length(x@phases[[i]]@waves[[j]]@samples$ids) == 0,
             ">",
             paste(
               "<br/> vector of length ",
-              as.character(length(x@phases[[i]]@waves[[j]]@samples)),
+              as.character(length(x@phases[[i]]@waves[[j]]@samples$ids)),
               ">"
             )
           )
