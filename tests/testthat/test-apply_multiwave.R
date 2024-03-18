@@ -186,7 +186,7 @@ test_that("allocate_wave runs with args provided", {
     fun = "sample_strata"
   )
 
-  samples <- mwget(MySurvey, phase = 2, wave = 1, slot = "samples")
+  samples <- mwget(MySurvey, phase = 2, wave = 1, slot = "samples")$ids
 
   mwset(MySurvey, phase = 2, wave = 1, slot = "sampled_data") <-
     dplyr::select(iris, id, Sepal.Width)[samples, ]
@@ -266,7 +266,7 @@ test_that("allocate_wave runs with args in metadata", {
     fun = "sample_strata"
   )
 
-  samples <- mwget(MySurvey, phase = 2, wave = 1, slot = "samples")
+  samples <- mwget(MySurvey, phase = 2, wave = 1, slot = "samples")$ids
 
   mwset(MySurvey, phase = 2, wave = 1, slot = "sampled_data") <-
     dplyr::select(iris, id, Sepal.Width)[samples, ]
@@ -388,7 +388,7 @@ test_that("errors if args are not specified", {
     fun = "sample_strata"
   )
 
-  samples <- mwget(MySurvey, phase = 2, wave = 1, slot = "samples")
+  samples <- mwget(MySurvey, phase = 2, wave = 1, slot = "samples")$ids
 
   mwset(MySurvey, phase = 2, wave = 1, slot = "sampled_data") <-
     dplyr::select(iris, id, Sepal.Width)[samples, ]
@@ -460,7 +460,7 @@ test_that("sample_strata works with specified args", {
     n_allocated = "n_to_sample"
   )
   expect_equal(length(
-    mwget(MySurvey, phase = 2, wave = 1, slot = "samples")
+    mwget(MySurvey, phase = 2, wave = 1, slot = "samples")$ids
   ), 15)
 
   # And that newly created column in data slot is good
@@ -493,7 +493,7 @@ test_that("sample_strata works with args specified in metadata", {
     fun = "sample_strata"
   )
   expect_equal(length(
-    mwget(MySurvey, phase = 2, wave = 1, slot = "samples")
+    mwget(MySurvey, phase = 2, wave = 1, slot = "samples")$ids
   ), 15)
 
   # only need to specify strata once if it is same in both
@@ -512,7 +512,7 @@ test_that("sample_strata works with args specified in metadata", {
     fun = "sample_strata"
   )
   expect_equal(length(
-    mwget(MySurvey, phase = 2, wave = 1, slot = "samples")
+    mwget(MySurvey, phase = 2, wave = 1, slot = "samples")$ids
   ), 15)
 
   # but metadata in phase overrides
@@ -531,7 +531,7 @@ test_that("sample_strata works with args specified in metadata", {
     fun = "sample_strata"
   )
   expect_equal(length(
-    mwget(MySurvey, phase = 2, wave = 1, slot = "samples")
+    mwget(MySurvey, phase = 2, wave = 1, slot = "samples")$ids
   ), 16)
 
   # again, only need to specify strata once if it is same in both
@@ -550,7 +550,7 @@ test_that("sample_strata works with args specified in metadata", {
     fun = "sample_strata"
   )
   expect_equal(length(
-    mwget(MySurvey, phase = 2, wave = 1, slot = "samples")
+    mwget(MySurvey, phase = 2, wave = 1, slot = "samples")$ids
   ), 16)
 
   # And wave overrides that
@@ -569,7 +569,7 @@ test_that("sample_strata works with args specified in metadata", {
     fun = "sample_strata"
   )
   expect_equal(length(
-    mwget(MySurvey, phase = 2, wave = 1, slot = "samples")
+    mwget(MySurvey, phase = 2, wave = 1, slot = "samples")$ids
   ), 17)
 
   # only need to specify strata once if it is same in both
@@ -588,7 +588,7 @@ test_that("sample_strata works with args specified in metadata", {
     fun = "sample_strata"
   )
   expect_equal(length(
-    mwget(MySurvey, phase = 2, wave = 1, slot = "samples")
+    mwget(MySurvey, phase = 2, wave = 1, slot = "samples")$ids
   ), 17)
 })
 
@@ -714,7 +714,7 @@ test_that("merge_samples works when args are specified within it", {
     wave = 1, "sample_strata"
   ) # get samples
 
-  samples <- mwget(MySurvey, phase = 2, wave = 1, slot = "samples")
+  samples <- mwget(MySurvey, phase = 2, wave = 1, slot = "samples")$ids
 
   mwset(MySurvey, phase = 2, wave = 1, slot = "sampled_data") <-
     dplyr::select(iris, id, Sepal.Width)[samples, ]
@@ -851,7 +851,7 @@ test_that("merge_samples works with args specifies in metadata", {
 
   expect_equal(
     dim(MySurvey@phases$phase2@waves$wave1@data),
-    c(60, 6)
+    c(60, 7)
   )
   expect_equal(length(
     MySurvey@phases$phase2@waves$wave1@data$`already_sampled_indB2`[
