@@ -259,7 +259,7 @@ test_that("wave argument is correctly accepted, and it rejects new name
     expect_equal(names(sampled_data)[5], "sample_indicatorWave2")
 
     sampled_data <- sample_strata(
-      data = data, strata = "strata",
+      data = sampled_data, strata = "strata",
       id = "id", design_data = df,
       already_sampled = "key", design_strata = "strata", wave = 2,
       n_allocated = "n_to_sample")
@@ -275,7 +275,7 @@ test_that("wave argument is correctly accepted, and it rejects new name
 
 })
 
-test_that("probs argument is correctly accepted"){
+test_that("probs argument is correctly accepted",{
   df <- allocate_wave(
     data = data, strata = "strata",
     already_sampled = "key", y = "y", nsample = 15,
@@ -294,4 +294,11 @@ test_that("probs argument is correctly accepted"){
                names(table(sampled_data$sampling_prob)))
   expect_equal((sum(df$n_to_sample)),
                sum(table(sampled_data$sampling_prob)))
-}
+
+  expect_warning(sample_strata(
+    data = sampled_data, strata = "strata",
+    id = "id", design_data = df,
+    already_sampled = "key", design_strata = "strata",
+    wave = "Wave2", probs = "sampprob",
+    n_allocated = "n_to_sample"), "Overwriting prior")
+})

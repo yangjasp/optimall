@@ -40,11 +40,15 @@
 #' dataframe. This column will be named "sampling_prob". Defaults to NULL.
 #' @param wave A numeric value or character string indicating the
 #' sampling wave. If specified, the input is appended to
-#' "sample indicator" in the new the sample indicator column name
+#' "sample_indicator" in the new the sample indicator column name
 #' (as long as such columns name do not already exist in \code{data}).
 #' Defaults to NULL. This argument does not
 #' apply when \code{sample_strata()} is called inside \code{allocate_wave()}.
 #' @param name description
+#' @param warn_prob_overwrite Logical indicator for whether warning should
+#' be printed if \code{probs} is specified and a "sampling_prob" columns is
+#' going to be overwritten. Defaults to TRUE. If function is called inside
+#' \code{apply_multiwave()}, then defaults to FALSE
 #' @export
 #' @return returns \code{data} as a dataframe with a new column named
 #' "sample_indicator" containing a binary (1/0) indicator of
@@ -81,7 +85,7 @@
 sample_strata <- function(data, strata, id, already_sampled = NULL,
                           design_data, design_strata = "strata",
                           n_allocated = "n_to_sample", probs = NULL,
-                          wave = NULL) {
+                          wave = NULL, warn_prob_overwrite = TRUE) {
   if (is.matrix(data) | is.matrix(design_data)) {
     data <- as.data.frame(data)
     design_data <- as.data.frame(design_data)
@@ -193,6 +197,13 @@ sample_strata <- function(data, strata, id, already_sampled = NULL,
   ## If 'probs' specified, add sampling_prob column for sampled units only
 
   if(!is.null(probs)){
+    if("sampling_prob" %in% names(output_df)){
+      if(warn_prob_overwrite == TRUE){
+      warning("Overwriting prior 'sampling_prob' column with
+              new sampling probs" )
+    }
+      output_df <- output_df[,!(names(output_df) == "sampling_prob")]
+    }
     temp <- design_data[,c(design_strata, probs)]
     names(temp) <- c(strata, "sampling_prob")
     output_df <- output_df %>%
