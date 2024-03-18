@@ -36,7 +36,7 @@
 #' @param include_probs A logical value. If TRUE, looks for "probs" in
 #' the \code{design_data} slot and includes the corresponding sampling
 #' probability for each element sampled in the current wave in the merged data
-#' in a column named "sampling_probs". If this column already exists, it keeps
+#' in a column named "sampling_prob". If this column already exists, it keeps
 #' the existing column and adds (or replaces) the values for units sampled in
 #' the current wave. Returns an error if specified but
 #' \code{wave_sample_wave} is FALSE.
@@ -78,7 +78,7 @@ setGeneric("merge_samples", function(x, phase, wave,
                                      id = NULL,
                                      phase_sample_ind = "sampled_phase",
                                      wave_sample_ind = "sampled_wave",
-                                     include_probs = TRUE) {
+                                     include_probs = NULL) {
   standardGeneric("merge_samples")
 })
 setMethod(
@@ -86,7 +86,7 @@ setMethod(
   function(x, phase, wave, id = NULL,
            phase_sample_ind = NULL,
            wave_sample_ind = NULL,
-           include_probs = TRUE) {
+           include_probs = NULL) {
     if (!is.numeric(phase) |
       !(phase %in% c(seq_len(length(x@phases))) & phase > 1)) {
       stop("'phase' must be a numeric value specifying a valid phase
@@ -151,24 +151,20 @@ setMethod(
 
     # Get include_probs if given include_probs is NULL
     if(is.null(include_probs)){
-      if ("include_probs" %in% names(x@phases[[phase]]@waves[[wave]]@metadata)&
-           inherits(x@phases[[phase]]@waves[[wave]]@metadata$include_probs,
-           "logical")
-      ) {
+      if ("include_probs" %in% names(x@phases[[phase]]@waves[[wave]]@metadata)){
         include_probs <- x@phases[[phase]]@waves[[wave]]@metadata$include_probs
-      } else if ("include_probs" %in% names(x@phases[[phase]]@metadata)  &
-                 inherits(
-                   x@phases[[phase]]@waves[[wave]]@metadata$include_probs,
-                 "logical")
-      ) {
+      } else if ("include_probs" %in% names(x@phases[[phase]]@metadata)) {
         include_probs <- x@phases[[phase]]@metadata$include_probs
-      } else if ("include_probs" %in% names(x@metadata)  &
-                 inherits(
-                   x@phases[[phase]]@waves[[wave]]@metadata$include_probs,
-                 "logical")
-      ) {
+      } else if ("include_probs" %in% names(x@metadata)) {
         include_probs <- x@metadata$include_probs
+      } else{
+        include_probs <- FALSE
       }
+    }
+
+    # Error if include_probs is not logical
+    if(!is.logical(include_probs)){
+      stop("'include_probs' must be TRUE, FALSE, or NULL")
     }
 
     # Get phase_sample_ind if given phase_sample_ind is NULL
@@ -341,13 +337,14 @@ setMethod(
           probs_df <-
             data.frame(x@phases[[phase]]@waves[[wave]]@samples$ids,
                        x@phases[[phase]]@waves[[wave]]@samples$probs)
-          names(probs_df) <- c(id, "probs")
-          # First if 'probs' is already a column in data, write probs from
-          # 'design_data' only for new samples, leaving any old valyes
-          if("probs" %in% names(output_data)){
-            temp1 <- output_data[,c(id, "probs")]
+          names(probs_df) <- c(id, "sampling_prob")
+          # First if 'sampling_probs' is already a column in data, write probs
+          # from 'design_data' only for new samples, leaving any old values
+          if("sampling_prob" %in% names(output_data)){
+            temp1 <- output_data[,c(id, "sampling_prob")]
             temp2 <- dplyr::left_join(temp1, probs_df, by = id)
-            updated_probs <- dplyr::coalesce(temp2$probs.y, temp2$probs.x)
+            updated_probs <- dplyr::coalesce(temp2$sampling_prob.y,
+                                             temp2$sampling_prob.x)
             output_data$sampling_prob <- updated_probs
           } else{
             output_data <- output_data %>%
