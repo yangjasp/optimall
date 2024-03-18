@@ -33,6 +33,16 @@
 #' in the current \emph{wave}. The specified phase and wave numbers separated
 #' by "." will be appended o the end of the given character name.
 #' If FALSE, no such column is created. Defaults to "sampled_wave".
+#' @param include_probs A logical value. If TRUE, looks for "probs" in
+#' the \code{design_data} slot and includes the corresponding sampling
+#' probability for each element sampled in the current wave in the merged data
+#' in a column named "sampling_probs". If this column already exists, it keeps
+#' the existing column and adds (or replaces) the values for units sampled in
+#' the current wave. Returns an error if specified but
+#' \code{wave_sample_wave} is FALSE.
+#' Defaults to NULL, which looks for "probs" argument in
+#' metadata and does not create (or add to existing) "sampling_prob" column if
+#' none is found.
 #' @details
 #' If a column name in the \code{"sampled data"} matches a column name in
 #' the \code{"data"} slot of the previous wave, these columns will be
@@ -67,14 +77,16 @@
 setGeneric("merge_samples", function(x, phase, wave,
                                      id = NULL,
                                      phase_sample_ind = "sampled_phase",
-                                     wave_sample_ind = "sampled_wave") {
+                                     wave_sample_ind = "sampled_wave",
+                                     include_probs = TRUE) {
   standardGeneric("merge_samples")
 })
 setMethod(
   "merge_samples", c(x = "Multiwave"),
   function(x, phase, wave, id = NULL,
            phase_sample_ind = NULL,
-           wave_sample_ind = NULL) {
+           wave_sample_ind = NULL,
+           include_probs = TRUE) {
     if (!is.numeric(phase) |
       !(phase %in% c(seq_len(length(x@phases))) & phase > 1)) {
       stop("'phase' must be a numeric value specifying a valid phase
@@ -137,6 +149,28 @@ setMethod(
       warning("sampled_data is introducing new ids to the data")
     }
 
+    # Get include_probs if given include_probs is NULL
+    if(is.null(include_probs)){
+      if ("include_probs" %in% names(x@phases[[phase]]@waves[[wave]]@metadata)&
+           inherits(x@phases[[phase]]@waves[[wave]]@metadata$include_probs,
+           "logical")
+      ) {
+        include_probs <- x@phases[[phase]]@waves[[wave]]@metadata$include_probs
+      } else if ("include_probs" %in% names(x@phases[[phase]]@metadata)  &
+                 inherits(
+                   x@phases[[phase]]@waves[[wave]]@metadata$include_probs,
+                 "logical")
+      ) {
+        include_probs <- x@phases[[phase]]@metadata$include_probs
+      } else if ("include_probs" %in% names(x@metadata)  &
+                 inherits(
+                   x@phases[[phase]]@waves[[wave]]@metadata$include_probs,
+                 "logical")
+      ) {
+        include_probs <- x@metadata$include_probs
+      }
+    }
+
     # Get phase_sample_ind if given phase_sample_ind is NULL
     if (is.null(phase_sample_ind)) {
       if ("phase_sample_ind" %in% names(x@phases[[phase]]@waves[[wave]]@metadata)
@@ -165,6 +199,12 @@ setMethod(
       } else {
         wave_sample_ind <- "sampled_wave"
       }
+    }
+
+    # Require wave_sample_ind to exist if include_probs is true, so wave is
+    # always attached to probability
+    if(include_probs == TRUE & wave_sample_ind == FALSE){
+      stop("'wave_sample_ind must be specified if 'include_probs' is TRUE.")
     }
 
     # Errors if given wave ind or phase ind are not characaters
@@ -236,20 +276,31 @@ setMethod(
     # Add indicator for already sampled in current phase
 
     already_sampled_phase_ids <- list()
+    warn_empty <- FALSE
 
     for (i in seq_len(wave)) {
       already_sampled_phase_ids[[i]] <- mwget(x,
         phase = phase,
         wave = i,
         slot = "samples"
-      )$id
+      )$ids
+
+      if (length(
+        mwget(x,
+              phase = phase,
+              wave = i,
+              slot = "samples"
+        )$ids) == 0) {
+        warn_empty <- TRUE
+      }
     }
 
-    if (any(sapply(already_sampled_phase_ids, length) == 0)) {
-      warning("some 'samples' slots of previous waves in this phase are
+    if(warn_empty == TRUE){
+      warning("some 'samples' slots of waves in this phase are
             empty. The `sampled_ind` column of the newly merged data may
             be inaccurate.")
     }
+
 
     already_sampled_phase_ids <- unlist(already_sampled_phase_ids)
 
@@ -267,8 +318,44 @@ setMethod(
         ifelse(output_data[,id] %in% mwget(x,
                                           phase = phase,
                                           wave = wave,
-                                          slot = "samples")$id, 1, 0)
-  }
+                                          slot = "samples")$ids, 1, 0)
+
+      if(all(sort(unique(mwget(x,
+               phase = phase,
+               wave = wave,
+               slot = "samples")$ids)) !=
+         sort(unique(x@phases[[phase]]@waves[[wave]]@sampled_data[,id])))){
+        warning("ids in 'samples' slot were used to create sample indicator,
+                but they do not match ids in 'sampled_data'")
+      }
+    }
+
+    # Get probs from design_data if include_probs is TRUE.
+    if(include_probs == TRUE){
+      if(length(x@phases[[phase]]@waves[[wave]]@samples$probs) > 0){
+        if(length(x@phases[[phase]]@waves[[wave]]@samples$probs) !=
+           length(x@phases[[phase]]@waves[[wave]]@samples$ids)){
+          stop(" 'probs' and 'ids' in 'samples'
+               slot should be the same length.")
+        } else{
+          probs_df <-
+            data.frame(x@phases[[phase]]@waves[[wave]]@samples$ids,
+                       x@phases[[phase]]@waves[[wave]]@samples$probs)
+          names(probs_df) <- c(id, "probs")
+          # First if 'probs' is already a column in data, write probs from
+          # 'design_data' only for new samples, leaving any old valyes
+          if("probs" %in% names(output_data)){
+            temp1 <- output_data[,c(id, "probs")]
+            temp2 <- dplyr::left_join(temp1, probs_df, by = id)
+            updated_probs <- dplyr::coalesce(temp2$probs.y, temp2$probs.x)
+            output_data$sampling_prob <- updated_probs
+          } else{
+            output_data <- output_data %>%
+              dplyr::left_join(probs_df, by = id)
+          }
+        }
+      }
+    }
 
     # Add output_data to data slot of current wave
     mwset(x, phase = phase, wave = wave, slot ="data") <- output_data

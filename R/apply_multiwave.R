@@ -598,11 +598,11 @@ setMethod(
 
       x_updated <- x
       sample_indicator <- NULL
-      sampls <- dplyr::filter(output, sample_indicator == 1)
-      x_updated@phases[[phase]]@waves[[wave]]@samples$id <-
+      samps <- dplyr::filter(output, sample_indicator == 1)
+      x_updated@phases[[phase]]@waves[[wave]]@samples$ids <-
         samps$id
       x_updated@phases[[phase]]@waves[[wave]]@samples$probs <-
-        samps$probs
+        samps$sampling_prob
 
       return(x_updated)
     }
