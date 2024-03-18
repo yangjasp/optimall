@@ -274,7 +274,7 @@ temp <- apply_multiwave(temp, phase = 2, wave = 2,
                         fun = "allocate_wave", id = "id",
                         y = "Sepal.Width",
                         already_sampled = "sampled_phase2",
-                        allocation_method = "Neyman",
+                        allocation_method = "WrightII",
                         nsample = 15)
 mwset(temp, phase = 2, wave = 2, slot = "design") <-
   mwget(temp, phase = 2, wave = 2, slot = "design") %>%
