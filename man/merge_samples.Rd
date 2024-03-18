@@ -11,7 +11,8 @@ merge_samples(
   wave,
   id = NULL,
   phase_sample_ind = "sampled_phase",
-  wave_sample_ind = "sampled_wave"
+  wave_sample_ind = "sampled_wave",
+  include_probs = NULL
 )
 }
 \arguments{
@@ -42,6 +43,17 @@ that should hold the indicator of whether each unit has already been sampled
 in the current \emph{wave}. The specified phase and wave numbers separated
 by "." will be appended o the end of the given character name.
 If FALSE, no such column is created. Defaults to "sampled_wave".}
+
+\item{include_probs}{A logical value. If TRUE, looks for "probs" in
+the \code{design_data} slot and includes the corresponding sampling
+probability for each element sampled in the current wave in the merged data
+in a column named "sampling_prob". If this column already exists, it keeps
+the existing column and adds (or replaces) the values for units sampled in
+the current wave. Returns an error if specified but
+\code{wave_sample_wave} is FALSE.
+Defaults to NULL, which looks for "probs" argument in
+metadata and does not create (or add to existing) "sampling_prob" column if
+none is found.}
 }
 \value{
 A Multiwave object with the merged dataframe in the

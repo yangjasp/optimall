@@ -351,6 +351,8 @@ setMethod(
               dplyr::left_join(probs_df, by = id)
           }
         }
+      } else{
+        warning("include_probs is TRUE, but no 'probs' found in samples slot.")
       }
     }
 

@@ -29,7 +29,7 @@
 #' (or previous phase if \code{wave = 1}) and \code{design}
 #' from current wave to generate a vector of ids to sample for the current
 #' wave. Note that the \code{wave} argument of the standalone
-#' \code{sample_strata()} function does not apply here.
+#' \code{sample_strata()} function does not apply here,
 #'  If used, the output multiwave object contains an updated
 #' \code{"samples"} slot in the specified wave.
 #' \item \code{merge_samples}: Uses the \code{data} from the previous wave (or
@@ -593,7 +593,8 @@ setMethod(
         design_strata = design_strata,
         n_allocated = n_allocated,
         probs = probs,
-        wave = NULL
+        wave = NULL,
+        warn_prob_overwrite = FALSE
       )
 
       x_updated <- x
@@ -601,8 +602,12 @@ setMethod(
       samps <- dplyr::filter(output, sample_indicator == 1)
       x_updated@phases[[phase]]@waves[[wave]]@samples$ids <-
         samps$id
-      x_updated@phases[[phase]]@waves[[wave]]@samples$probs <-
+      if(!(is.null(probs))){
+        x_updated@phases[[phase]]@waves[[wave]]@samples$probs <-
         samps$sampling_prob
+      } else{
+        x_updated@phases[[phase]]@waves[[wave]]@samples$probs <- c()
+      } # To ensure incorrect/old probs are removed
 
       return(x_updated)
     }
@@ -663,11 +668,27 @@ setMethod(
         wave_sample_ind <- arguments$wave_sample_ind
       }
 
+      # Get include_probs if given include_probs is NULL
+      if(is.null(arguments$include_probs)){
+        if ("include_probs" %in% names(wave_md)){
+          include_probs <- wave_md$include_probs
+        } else if ("include_probs" %in% names(phase_md)) {
+          include_probs <- phase_md$include_probs
+        } else if ("include_probs" %in% names(survey_md)) {
+          include_probs <- survey_md$include_probs
+        } else{
+          include_probs <- FALSE
+        }
+      } else{
+        include_probs <- arguments$include_probs
+        }
+
 
       x_updated <- merge_samples(
         x = x, phase = phase, wave = wave, id = id,
         phase_sample_ind = phase_sample_ind,
-        wave_sample_ind = wave_sample_ind
+        wave_sample_ind = wave_sample_ind,
+        include_probs = include_probs
       )
       return(x_updated)
     }

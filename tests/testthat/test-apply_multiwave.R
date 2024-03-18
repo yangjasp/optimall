@@ -751,23 +751,25 @@ test_that("merge_samples works with args specifies in metadata", {
     strata = "Species",
     design_strata = "strata",
     id = "id",
-    n_allocated = "n_to_sample"
+    n_allocated = "n_to_sample",
+    include_probs = FALSE
   )
 
 
   mwset(MySurvey, phase = 2, wave = 1, slot = "design") <-
     data.frame(
       strata = unique(iris$Species),
-      n_to_sample = c(5, 5, 5)
+      n_to_sample = c(5, 5, 5),
+      probs = rep(0.25, times = 3)
     )
 
   set.seed(123)
   MySurvey <- apply_multiwave(MySurvey,
     phase = 2,
-    wave = 1, "sample_strata"
+    wave = 1, "sample_strata", probs = "probs"
   ) # get samples
 
-  samples <- mwget(MySurvey, phase = 2, wave = 1, slot = "samples")
+  samples <- mwget(MySurvey, phase = 2, wave = 1, slot = "samples")$ids
 
   mwset(MySurvey, phase = 2, wave = 1, slot = "sampled_data") <-
     dplyr::select(iris, id, Sepal.Width)[samples, ]
@@ -807,17 +809,17 @@ test_that("merge_samples works with args specifies in metadata", {
   mwset(MySurvey, phase = 2, slot = "metadata") <- list(
     id = "id",
     phase_sample_ind = "already_sampled_indA",
-    wave_sample_ind = "testA"
+    wave_sample_ind = "testA", include_probs = TRUE
   )
 
   MySurvey <- apply_multiwave(MySurvey,
     phase = 2, wave = 1,
-    fun = "merge_samples"
+    fun = "merge_samples", include_probs = TRUE
   )
 
   expect_equal(
     dim(MySurvey@phases$phase2@waves$wave1@data),
-    c(60, 6)
+    c(60, 7)
   )
   expect_equal(length(
     MySurvey@phases$phase2@waves$wave1@data$`already_sampled_indA2`[
