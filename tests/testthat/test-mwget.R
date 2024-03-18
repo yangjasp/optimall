@@ -84,7 +84,7 @@ test_that("Design, samples, sampled_data, data work", {
     wave = 1, "sample_strata"
   ) # get samples
 
-  samples <- mwget(test, phase = 2, wave = 1, slot = "samples")
+  samples <- mwget(test, phase = 2, wave = 1, slot = "samples")$id
 
   mwset(test, phase = 2, wave = 1, slot = "sampled_data") <-
     dplyr::select(iris, id, Sepal.Width)[samples, ]
