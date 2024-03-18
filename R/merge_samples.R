@@ -242,7 +242,7 @@ setMethod(
         phase = phase,
         wave = i,
         slot = "samples"
-      )
+      )$id
     }
 
     if (any(sapply(already_sampled_phase_ids, length) == 0)) {
@@ -264,10 +264,10 @@ setMethod(
       wave_col_name <- paste0(wave_sample_ind, phase, ".", wave)
 
       output_data[, wave_col_name] <-
-        ifelse(as.character(output_data[,id]) %in% mwget(x,
+        ifelse(output_data[,id] %in% mwget(x,
                                           phase = phase,
                                           wave = wave,
-                                          slot = "samples"), 1, 0)
+                                          slot = "samples")$id, 1, 0)
   }
 
     # Add output_data to data slot of current wave

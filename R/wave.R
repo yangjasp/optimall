@@ -25,7 +25,7 @@
 Wave <- setClass("Wave", slots = list(
   metadata = "list",
   design = "data.frame",
-  samples = "character",
+  samples = "list",
   sampled_data = "data.frame",
   data = "data.frame"
 ))

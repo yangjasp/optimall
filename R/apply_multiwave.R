@@ -490,6 +490,27 @@ setMethod(
          'design' slot of the specified wave.")
       }
 
+      # Probs
+      if (is.null(arguments$probs)) {
+        if ("probs" %in% names(wave_md) &
+            inherits(wave_md$probs, "character")) {
+          probs <- wave_md$probs
+        } else if ("probs" %in% names(phase_md) &
+                   inherits(phase_md$probs, "character")) {
+          probs <- phase_md$probs
+        } else if ("probs" %in% names(survey_md) &
+                   inherits(survey_md$probs, "character")) {
+          probs <- survey_md$probs
+        } else {
+          probs <- NULL
+        }
+      } else if (!(arguments$probs %in% names(design_data))) {
+        stop("'probs' must be a column name of the 'design_data'
+         slot of the specified wave")
+      } else {
+        probs <- arguments$probs
+      }
+
 
       # Now id
       if (is.null(arguments$id)) {
@@ -571,13 +592,17 @@ setMethod(
         design_data = design_data,
         design_strata = design_strata,
         n_allocated = n_allocated,
+        probs = probs,
         wave = NULL
       )
 
       x_updated <- x
       sample_indicator <- NULL
-      x_updated@phases[[phase]]@waves[[wave]]@samples <-
-        as.character(dplyr::filter(output, sample_indicator == 1)$id)
+      sampls <- dplyr::filter(output, sample_indicator == 1)
+      x_updated@phases[[phase]]@waves[[wave]]@samples$id <-
+        samps$id
+      x_updated@phases[[phase]]@waves[[wave]]@samples$probs <-
+        samps$probs
 
       return(x_updated)
     }
