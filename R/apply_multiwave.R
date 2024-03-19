@@ -63,7 +63,7 @@
 #' library(datasets)
 #'
 #' MySurvey <- multiwave(phases = 2, waves = c(1, 3))
-#' mwset(MySurvey, phase = 1, slot = "data") <-
+#' set_mw(MySurvey, phase = 1, slot = "data") <-
 #'   dplyr::select(datasets::iris, -Sepal.Width)
 #'
 #' # Get Design by applying optimum_allocation
@@ -76,7 +76,7 @@
 #' )
 #'
 #' # or, we can establish function args in the metadata
-#' mwset(MySurvey, phase = 2, slot = "metadata") <- list(
+#' set_mw(MySurvey, phase = 2, slot = "metadata") <- list(
 #'   strata = "Species",
 #'   nsample = 15,
 #'   y = "Sepal.Length",
@@ -88,7 +88,7 @@
 #'   phase = 2, wave = 1,
 #'   fun = "optimum_allocation"
 #' )
-#' @include get_mw.R mwset.R phase.R wave.R multiwave.R optimum_allocation.R
+#' @include get_mw.R set_mw.R phase.R wave.R multiwave.R optimum_allocation.R
 #' @include allocate_wave.R merge_samples.R sample_strata.R
 #' @importFrom magrittr %>%
 #' @export

@@ -80,7 +80,7 @@ function in its specified slot.
 library(datasets)
 
 MySurvey <- multiwave(phases = 2, waves = c(1, 3))
-mwset(MySurvey, phase = 1, slot = "data") <-
+set_mw(MySurvey, phase = 1, slot = "data") <-
   dplyr::select(datasets::iris, -Sepal.Width)
 
 # Get Design by applying optimum_allocation
@@ -93,7 +93,7 @@ MySurvey <- apply_multiwave(MySurvey,
 )
 
 # or, we can establish function args in the metadata
-mwset(MySurvey, phase = 2, slot = "metadata") <- list(
+set_mw(MySurvey, phase = 2, slot = "metadata") <- list(
   strata = "Species",
   nsample = 15,
   y = "Sepal.Length",

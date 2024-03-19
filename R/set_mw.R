@@ -14,7 +14,7 @@
 #' \code{"data"}. See class documentation or package vignettes for more
 #'  information about slots.
 #'
-#' @name set_mw
+#' @name set_mw<-
 #'
 #' @examples
 #' # To write overall metadata
@@ -29,7 +29,6 @@
 #' @include multiwave.R phase.R wave.R
 NULL
 
-#' @describeIn set_mw
 #' assign value to slot of a multiwave object
 #' @param value value to assign to specified slot
 #' @aliases set_mw<-,Multiwave-method
