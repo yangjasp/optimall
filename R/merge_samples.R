@@ -68,9 +68,9 @@
 #' iris <- data.frame(iris, id = 1:150)
 #'
 #' MySurvey <- new_multiwave(phases = 2, waves = c(1, 3))
-#' mwset(MySurvey, phase = 1, slot = "data") <-
+#' set_mw(MySurvey, phase = 1, slot = "data") <-
 #'   data.frame(dplyr::select(iris, -Sepal.Width))
-#' mwset(MySurvey, phase = 2, wave = 1, slot = "sampled_data") <-
+#' set_mw(MySurvey, phase = 2, wave = 1, slot = "sampled_data") <-
 #'   dplyr::select(iris, id, Sepal.Width)[1:40, ]
 #' MySurvey <- merge_samples(MySurvey, phase = 2, wave = 1, id = "id")
 #' @importFrom rlang :=
@@ -275,14 +275,14 @@ setMethod(
     warn_empty <- FALSE
 
     for (i in seq_len(wave)) {
-      already_sampled_phase_ids[[i]] <- mwget(x,
+      already_sampled_phase_ids[[i]] <- get_mw(x,
         phase = phase,
         wave = i,
         slot = "samples"
       )$ids
 
       if (length(
-        mwget(x,
+        get_mw(x,
               phase = phase,
               wave = i,
               slot = "samples"
@@ -311,12 +311,12 @@ setMethod(
       wave_col_name <- paste0(wave_sample_ind, phase, ".", wave)
 
       output_data[, wave_col_name] <-
-        ifelse(output_data[,id] %in% mwget(x,
+        ifelse(output_data[,id] %in% get_mw(x,
                                           phase = phase,
                                           wave = wave,
                                           slot = "samples")$ids, 1, 0)
 
-      if(all(sort(unique(mwget(x,
+      if(all(sort(unique(get_mw(x,
                phase = phase,
                wave = wave,
                slot = "samples")$ids)) !=
@@ -357,7 +357,7 @@ setMethod(
     }
 
     # Add output_data to data slot of current wave
-    mwset(x, phase = phase, wave = wave, slot ="data") <- output_data
+    set_mw(x, phase = phase, wave = wave, slot ="data") <- output_data
     return(x)
   }
 )

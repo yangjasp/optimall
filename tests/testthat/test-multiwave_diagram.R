@@ -8,25 +8,25 @@ test_that("multiwave_diagram works", {
   # Create Survey
 
   MySurvey <- multiwave(phases = 2, waves = c(1, 3))
-  mwset(MySurvey, phase = 1, slot = "data") <-
+  set_mw(MySurvey, phase = 1, slot = "data") <-
     dplyr::select(iris, -Sepal.Width)
 
-  mwset(MySurvey, phase = 2, slot = "metadata") <- list(
+  set_mw(MySurvey, phase = 2, slot = "metadata") <- list(
     strata = "Species",
     strata2 = "strata",
     id = "id",
     n_allocated = "n_to_sample"
   )
 
-  mwset(MySurvey, phase = 2, wave = 1, slot = "design") <-
+  set_mw(MySurvey, phase = 2, wave = 1, slot = "design") <-
     data.frame(strata = unique(iris$Species), n_to_sample = c(5, 5, 5))
   set.seed(123)
   # MySurvey <- apply_multiwave(MySurvey, phase = 2, wave = 1,
   #                           fun = "sample_strata")
 
-  #  samples <- mwget(MySurvey, phase = 2, wave = 1, slot = "samples")
+  #  samples <- get_mw(MySurvey, phase = 2, wave = 1, slot = "samples")
 
-  # mwset(MySurvey, phase = 2, wave = 1, slot = "sampled_data") <-
+  # set_mw(MySurvey, phase = 2, wave = 1, slot = "sampled_data") <-
   #  dplyr::select(iris, id, Sepal.Width)[samples,]
   # MySurvey <- merge_samples(MySurvey, phase = 2, wave = 1, id = "id",
   #                         phase_sample_ind = "already_sampled_ind")

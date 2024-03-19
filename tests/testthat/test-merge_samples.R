@@ -14,10 +14,10 @@ iris <- data.frame(
 )
 iris$Sepal.Width <- iris$Sepal.Length + rnorm(60, 0, 0.5)
 
-mwset(test, phase = 1, slot = "data") <-
+set_mw(test, phase = 1, slot = "data") <-
   dplyr::select(iris, -Sepal.Width)
 
-mwset(test, phase = 2, slot = "metadata") <- list(
+set_mw(test, phase = 2, slot = "metadata") <- list(
   strata = "Species",
   design_strata = "strata",
   id = "id",
@@ -25,7 +25,7 @@ mwset(test, phase = 2, slot = "metadata") <- list(
 )
 
 
-mwset(test, phase = 2, wave = 1, slot = "design") <-
+set_mw(test, phase = 2, wave = 1, slot = "design") <-
   data.frame(
     strata = unique(iris$Species),
     n_to_sample = c(5, 5, 5),
@@ -38,9 +38,9 @@ test <- apply_multiwave(test,
   wave = 1, "sample_strata", probs = "probs"
 ) # get samples
 
-samples <- mwget(test, phase = 2, wave = 1, slot = "samples")$ids
+samples <- get_mw(test, phase = 2, wave = 1, slot = "samples")$ids
 
-mwset(test, phase = 2, wave = 1, slot = "sampled_data") <-
+set_mw(test, phase = 2, wave = 1, slot = "sampled_data") <-
   dplyr::select(iris, id, Sepal.Width)[samples, ]
 
 # Testing Wave 1
@@ -70,9 +70,9 @@ test_that("merge_samples merges data with sampled data
 # Testing Wave 2
 samples2 <- sample(c(1:60)[-as.numeric(samples)], 15)
 # No duplicates
-mwset(test, phase = 2, wave = 2, slot = "samples") <-
+set_mw(test, phase = 2, wave = 2, slot = "samples") <-
   list(ids = samples2) # No duplicates
-mwset(test, phase = 2, wave = 2, slot = "sampled_data") <-
+set_mw(test, phase = 2, wave = 2, slot = "sampled_data") <-
   dplyr::select(iris, id, Sepal.Width)[samples2, ]
 test1 <- merge_samples(test,
   phase = 2, wave = 2, id = "id"
@@ -98,10 +98,10 @@ test_that("merge_samples merges data with sampled data
 
 test_that("warning if id already has value for what has been sampled", {
   temp <- test1
-  mwset(temp, phase = 2, wave = 2, slot = "sampled_data") <-
+  set_mw(temp, phase = 2, wave = 2, slot = "sampled_data") <-
     dplyr::select(iris, id, Sepal.Width)[samples2 + as.numeric(samples[1]), ]
   # Make dup
-  mwset(temp, phase = 2, wave = 2, slot = "samples") <-
+  set_mw(temp, phase = 2, wave = 2, slot = "samples") <-
     list(ids = c(samples2, samples[1])) # Make dup
   expect_warning(
     merge_samples(temp,
@@ -113,13 +113,13 @@ test_that("warning if id already has value for what has been sampled", {
 
 test_that("warning if new ids are in sampled data", {
   temp <- test1
-  mwset(temp, phase = 2, wave = 2, slot = "sampled_data") <-
+  set_mw(temp, phase = 2, wave = 2, slot = "sampled_data") <-
     rbind(
       dplyr::select(iris, id, Sepal.Width)[samples2, ],
       c(61, 3.5)
     )
   # Make dup
-  mwset(temp, phase = 2, wave = 2, slot = "samples") <-
+  set_mw(temp, phase = 2, wave = 2, slot = "samples") <-
     list(ids = c(samples2, "61")) # Make dup
   expect_warning(
     temp <- merge_samples(temp,
@@ -128,23 +128,23 @@ test_that("warning if new ids are in sampled data", {
     "sampled_data is introducing new ids"
   )
   # temp <- merge_samples(temp, phase = 2, wave = 2, id = "id")
-  expect_equal(nrow(mwget(temp, 2, 2, "data")), 61) # one extra row
+  expect_equal(nrow(get_mw(temp, 2, 2, "data")), 61) # one extra row
 })
 
 test_that("error if one of wave's 'samples' slots is empty, but
           design_data still has sampled", {
   temp <- test1
-  mwset(temp, phase = 2, wave = 2, slot = "sampled_data") <-
+  set_mw(temp, phase = 2, wave = 2, slot = "sampled_data") <-
     dplyr::select(iris, id, Sepal.Width)[samples2, ]
   # Make dup
-  mwset(temp, phase = 2, wave = 2, slot = "samples") <-
+  set_mw(temp, phase = 2, wave = 2, slot = "samples") <-
     list() # forget to specify samples
   expect_warning(
     temp <- merge_samples(temp,
       phase = 2, wave = 2, id = "id"),
     "slots of waves in this phase are"
   )
-  mwset(temp, phase = 2, wave = 2, slot = "samples") <-
+  set_mw(temp, phase = 2, wave = 2, slot = "samples") <-
     list(ids = c(3,4,5)) # specify wrong samples
   expect_warning(
     temp <- merge_samples(temp,
@@ -155,52 +155,52 @@ test_that("error if one of wave's 'samples' slots is empty, but
 
 test_that("arguments can be specified in metadata", {
   temp <- test1
-  mwset(temp, phase = NA, wave = NA, "metadata") <- list(
+  set_mw(temp, phase = NA, wave = NA, "metadata") <- list(
     id = "id", include_probs = FALSE
     )
-  mwset(temp, phase = 2, wave = 2, slot = "samples") <-
+  set_mw(temp, phase = 2, wave = 2, slot = "samples") <-
     list(ids = samples2)
   temp <- merge_samples(temp, phase = 2, wave = 2)
-  expect_equal(dim(mwget(temp, 2, 2, "data")), c(60, 8))
-  expect_equal(length(dplyr::filter(mwget(temp, 2, 2, "data"),
+  expect_equal(dim(get_mw(temp, 2, 2, "data")), c(60, 8))
+  expect_equal(length(dplyr::filter(get_mw(temp, 2, 2, "data"),
                                     !is.na(sampling_prob))$id),
                15)
-  expect_equal(length(dplyr::filter(mwget(temp, 2, 2, "data"),
+  expect_equal(length(dplyr::filter(get_mw(temp, 2, 2, "data"),
                                     sampled_phase2 == 1)$id),
                       30)
-  expect_equal(length(dplyr::filter(mwget(temp, 2, 2, "data"),
+  expect_equal(length(dplyr::filter(get_mw(temp, 2, 2, "data"),
                                     sampled_wave2.1 == 1)$id) +
-                 length(dplyr::filter(mwget(temp, 2, 2, "data"),
+                 length(dplyr::filter(get_mw(temp, 2, 2, "data"),
                                       sampled_wave2.2 == 1)$id),
                30)
 
-  expect_equivalent(mwget(temp, 2, 2, "data")$sampled_phase2,
-                    mwget(temp, 2, 2, "data")$sampled_wave2.1 +
-                    mwget(temp, 2, 2, "data")$sampled_wave2.2)
+  expect_equivalent(get_mw(temp, 2, 2, "data")$sampled_phase2,
+                    get_mw(temp, 2, 2, "data")$sampled_wave2.1 +
+                    get_mw(temp, 2, 2, "data")$sampled_wave2.2)
   temp <- test1
-  mwset(temp, phase = 2, wave = 2, "metadata") <- list(
+  set_mw(temp, phase = 2, wave = 2, "metadata") <- list(
     id = "id",
     phase_sample_ind = "already_sampled_phase2_ind"
   )
   temp <- merge_samples(temp, phase = 2, wave = 2)
-  expect_equal(dim(mwget(temp, 2, 2, "data")), c(60, 9))
+  expect_equal(dim(get_mw(temp, 2, 2, "data")), c(60, 9))
   temp <- test1
-  mwset(temp, phase = 2, wave = NA, "metadata") <- list(
+  set_mw(temp, phase = 2, wave = NA, "metadata") <- list(
     id = "id",
     phase_sample_ind = "already_sampled2_phase2_ind"
   )
   temp <- merge_samples(temp, phase = 2, wave = 2)
-  expect_equal(dim(mwget(temp, 2, 2, "data")), c(60, 9))
-  expect_true("already_sampled2_phase2_ind2" %in% names(mwget(temp,
+  expect_equal(dim(get_mw(temp, 2, 2, "data")), c(60, 9))
+  expect_true("already_sampled2_phase2_ind2" %in% names(get_mw(temp,
                                                             2, 2, "data")))
 })
 
 test_that("Errors as necessary", {
   temp <- test1
-  mwset(temp, phase = 2, wave = 2, slot = "sampled_data") <-
+  set_mw(temp, phase = 2, wave = 2, slot = "sampled_data") <-
     dplyr::select(iris, id, Sepal.Width)[samples2, ]
   # Make dup
-  mwset(temp, phase = 2, wave = 2, slot = "samples") <-
+  set_mw(temp, phase = 2, wave = 2, slot = "samples") <-
     list(ids = NULL) # forget to specify samples
   expect_error(
     merge_samples(temp,
@@ -244,27 +244,27 @@ test_that("Errors as necessary", {
 
 test_that("New wave and phase column names work", {
   temp <- test1
-  mwset(temp, phase = 2, wave = 2, slot = "sampled_data") <-
+  set_mw(temp, phase = 2, wave = 2, slot = "sampled_data") <-
     dplyr::select(iris, id, Sepal.Width)[samples2, ]
 
   temp <- merge_samples(temp,
                   phase = 2, wave = 2, id = "id",
                   wave_sample_ind = FALSE, include_probs = FALSE)
-  expect_false("sampled_wave2" %in% names(mwget(temp, phase = 2, wave = 2)))
+  expect_false("sampled_wave2" %in% names(get_mw(temp, phase = 2, wave = 2)))
   temp <- merge_samples(temp,
                         phase = 2, wave = 2, id = "id",
                         wave_sample_ind = "mytestwave",
                         phase_sample_ind = "mytestphase"
                         )
-  expect_equal(sort(dplyr::filter(mwget(temp, phase = 2, wave = 2),
+  expect_equal(sort(dplyr::filter(get_mw(temp, phase = 2, wave = 2),
                              mytestphase2 == 1)$id),
                sort(c(
-                 mwget(temp, phase = 2, wave = 1, slot = "samples")$id,
-                 mwget(temp, phase = 2, wave = 2, slot = "samples")$id
+                 get_mw(temp, phase = 2, wave = 1, slot = "samples")$id,
+                 get_mw(temp, phase = 2, wave = 2, slot = "samples")$id
                )))
-  expect_equivalent(sort(dplyr::filter(mwget(temp, phase = 2, wave = 2),
+  expect_equivalent(sort(dplyr::filter(get_mw(temp, phase = 2, wave = 2),
                                           mytestwave2.2 == 1)$id),
-               sort(mwget(temp, phase = 2, wave = 2, slot = "samples")$ids))
+               sort(get_mw(temp, phase = 2, wave = 2, slot = "samples")$ids))
 
 })
 
@@ -276,74 +276,74 @@ temp <- apply_multiwave(temp, phase = 2, wave = 2,
                         already_sampled = "sampled_phase2",
                         allocation_method = "WrightII",
                         nsample = 15)
-mwset(temp, phase = 2, wave = 2, slot = "design") <-
-  mwget(temp, phase = 2, wave = 2, slot = "design") %>%
+set_mw(temp, phase = 2, wave = 2, slot = "design") <-
+  get_mw(temp, phase = 2, wave = 2, slot = "design") %>%
   dplyr::mutate(probs = n_to_sample/(npop-nsample_prior))
 temp <- apply_multiwave(temp, phase = 2, wave = 2,
                         fun = "sample_strata", id = "id",
                         already_sampled = "sampled_phase2",
                         probs = "probs")
-mwset(temp, phase = 2, wave = 2, slot = "sampled_data") <-
-  dplyr::select(iris, id, Sepal.Width)[mwget(temp, 2, 2, "samples")$ids, ]
+set_mw(temp, phase = 2, wave = 2, slot = "sampled_data") <-
+  dplyr::select(iris, id, Sepal.Width)[get_mw(temp, 2, 2, "samples")$ids, ]
 
 test_that("include_probs works", {
   temp <- merge_samples(temp,
                         phase = 2, wave = 2, id = "id",
                         include_probs = TRUE)
-  expect_true("sampled_wave2.2" %in% names(mwget(temp, phase = 2, wave = 2)))
-  expect_true("sampling_prob" %in% names(mwget(temp, phase = 2, wave = 2)))
-  new_data <- dplyr::filter(mwget(temp, phase = 2, wave = 2),
+  expect_true("sampled_wave2.2" %in% names(get_mw(temp, phase = 2, wave = 2)))
+  expect_true("sampling_prob" %in% names(get_mw(temp, phase = 2, wave = 2)))
+  new_data <- dplyr::filter(get_mw(temp, phase = 2, wave = 2),
                             sampled_wave2.2 == 1)
   if(
     length(unique(new_data$sampling_prob)) ==
-    length(unique(mwget(temp, phase = 2, wave = 2, "design")$Species))){
-  expect_equal(as.numeric(table(new_data$Species)), mwget(temp, phase = 2,
+    length(unique(get_mw(temp, phase = 2, wave = 2, "design")$Species))){
+  expect_equal(as.numeric(table(new_data$Species)), get_mw(temp, phase = 2,
                                               wave = 2, "design")$n_to_sample)
   expect_equal(sort(as.numeric(table(new_data$sampling_prob))),
-               sort(mwget(temp, phase = 2, wave = 2, "design")$n_to_sample))
+               sort(get_mw(temp, phase = 2, wave = 2, "design")$n_to_sample))
   }
   expect_equal(sort(new_data$sampling_prob),
-               sort(mwget(temp, phase = 2, wave = 2, "samples")$probs))
+               sort(get_mw(temp, phase = 2, wave = 2, "samples")$probs))
 })
 
 test_that("include_probs arguments can be specified in metadata", {
   temp <- merge_samples(temp,
                         phase = 2, wave = 2, id = "id",
                         include_probs = TRUE)
-  mwset(temp, phase = NA, wave = NA, "metadata") <- list(
+  set_mw(temp, phase = NA, wave = NA, "metadata") <- list(
     include_probs = FALSE
   )
   temp <- merge_samples(temp,
                         phase = 2, wave = 2, id = "id")
-  expect_equal(nrow(dplyr::filter(mwget(temp, 2, 2), !is.na(sampling_prob))),
+  expect_equal(nrow(dplyr::filter(get_mw(temp, 2, 2), !is.na(sampling_prob))),
                15)
-  mwset(temp, phase = 2, wave = NA, "metadata") <- list(
+  set_mw(temp, phase = 2, wave = NA, "metadata") <- list(
     include_probs = TRUE
   )
 
   temp <- merge_samples(temp,
                         phase = 2, wave = 2, id = "id")
-  expect_equal(nrow(dplyr::filter(mwget(temp, 2, 2), !is.na(sampling_prob))), 30)
+  expect_equal(nrow(dplyr::filter(get_mw(temp, 2, 2), !is.na(sampling_prob))), 30)
 
-  mwset(temp, phase = 2, wave = 2, "metadata") <- list(
+  set_mw(temp, phase = 2, wave = 2, "metadata") <- list(
     include_probs = TRUE
   )
 
   temp <- merge_samples(temp,
                         phase = 2, wave = 2, id = "id")
-  expect_equal(nrow(dplyr::filter(mwget(temp, 2, 2), !is.na(sampling_prob))), 30)
+  expect_equal(nrow(dplyr::filter(get_mw(temp, 2, 2), !is.na(sampling_prob))), 30)
 })
 
 test_that("include_probs correctly overwrites sampling_prob if necessary", {
-  mwset(temp, phase = 2, wave = 1) <-
-    mwget(temp, phase = 2, wave = 1) %>%
+  set_mw(temp, phase = 2, wave = 1) <-
+    get_mw(temp, phase = 2, wave = 1) %>%
     dplyr::mutate(sampling_prob = 0.0001)
   temp <- merge_samples(temp,
                         phase = 2, wave = 2, id = "id",
                         include_probs = TRUE)
-  expect_equal(nrow(dplyr::filter(mwget(temp, 2, 2), !is.na(sampling_prob))),
+  expect_equal(nrow(dplyr::filter(get_mw(temp, 2, 2), !is.na(sampling_prob))),
                60)
-  expect_equal(nrow(dplyr::filter(mwget(temp, 2, 2), sampling_prob == 0.0001)),
+  expect_equal(nrow(dplyr::filter(get_mw(temp, 2, 2), sampling_prob == 0.0001)),
                45)
 })
 
@@ -353,8 +353,8 @@ test_that("include_probs warns if no probs in samples slot", {
                           fun = "sample_strata", id = "id", strata = "Species",
                           already_sampled = "sampled_phase2",
                           probs = NULL)
-  mwset(temp, phase = 2, wave = 2, slot = "sampled_data") <-
-    dplyr::select(iris, id, Sepal.Width)[mwget(temp, 2, 2, "samples")$ids, ]
+  set_mw(temp, phase = 2, wave = 2, slot = "sampled_data") <-
+    dplyr::select(iris, id, Sepal.Width)[get_mw(temp, 2, 2, "samples")$ids, ]
   expect_warning(merge_samples(temp,
                         phase = 2, wave = 2, id = "id",
                         include_probs = TRUE), "include_probs is TRUE")

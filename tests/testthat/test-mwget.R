@@ -1,4 +1,4 @@
-context("test-mwget")
+context("test-get_mw")
 
 library(optimall)
 library(dplyr)
@@ -13,7 +13,7 @@ MySurvey@metadata <-
 test_that("metadata access works", {
   # overall metadata
   expect_equal(
-    mwget(MySurvey, phase = NA, slot = "metadata"),
+    get_mw(MySurvey, phase = NA, slot = "metadata"),
     MySurvey@metadata
   )
 
@@ -22,7 +22,7 @@ test_that("metadata access works", {
     list(title = "Maternal Weight Survey Phase 1")
 
   expect_equal(
-    mwget(MySurvey, phase = 1, slot = "metadata"),
+    get_mw(MySurvey, phase = 1, slot = "metadata"),
     MySurvey@phases$phase1$metadata
   )
 
@@ -32,7 +32,7 @@ test_that("metadata access works", {
     list(title = "Maternal Weight Survey Phase 2")
 
   expect_equal(
-    mwget(MySurvey, phase = 2, slot = "metadata"),
+    get_mw(MySurvey, phase = 2, slot = "metadata"),
     MySurvey@phases$phase2@metadata
   )
 
@@ -43,7 +43,7 @@ test_that("metadata access works", {
     list(title = "Maternal Weight Survey Phase 2, Wave 1")
 
   expect_equal(
-    mwget(MySurvey, phase = 2, wave = 1, slot = "metadata"),
+    get_mw(MySurvey, phase = 2, wave = 1, slot = "metadata"),
     MySurvey@phases$phase2@waves$wave1@metadata
   )
 })
@@ -62,17 +62,17 @@ test_that("Design, samples, sampled_data, data work", {
   )
   iris$Sepal.Width <- iris$Sepal.Length + rnorm(60, 0, 0.5)
 
-  mwset(test, phase = 1, slot = "data") <-
+  set_mw(test, phase = 1, slot = "data") <-
     dplyr::select(iris, -Sepal.Width)
 
-  mwset(test, phase = 2, slot = "metadata") <- list(
+  set_mw(test, phase = 2, slot = "metadata") <- list(
     strata = "Species",
     design_strata = "strata",
     id = "id",
     n_allocated = "n_to_sample"
   )
 
-  mwset(test, phase = 2, wave = 1, slot = "design") <-
+  set_mw(test, phase = 2, wave = 1, slot = "design") <-
     data.frame(
       strata = unique(iris$Species),
       n_to_sample = c(5, 5, 5)
@@ -84,9 +84,9 @@ test_that("Design, samples, sampled_data, data work", {
     wave = 1, "sample_strata"
   ) # get samples
 
-  samples <- mwget(test, phase = 2, wave = 1, slot = "samples")$id
+  samples <- get_mw(test, phase = 2, wave = 1, slot = "samples")$id
 
-  mwset(test, phase = 2, wave = 1, slot = "sampled_data") <-
+  set_mw(test, phase = 2, wave = 1, slot = "sampled_data") <-
     dplyr::select(iris, id, Sepal.Width)[samples, ]
 
   test <- merge_samples(test,
@@ -102,28 +102,28 @@ test_that("Design, samples, sampled_data, data work", {
 
   expect_equal(
     test@phases$phase1$data,
-    mwget(test, phase = 1, slot = "data")
+    get_mw(test, phase = 1, slot = "data")
   )
 
   expect_equal(
     test@phases$phase2@waves$wave2@design,
-    mwget(test, phase = 2, wave = 2, slot = "design")
+    get_mw(test, phase = 2, wave = 2, slot = "design")
   )
 
   expect_equal(
     test@phases$phase2@waves$wave1@data,
-    mwget(test, phase = 2, wave = 1, slot = "data")
+    get_mw(test, phase = 2, wave = 1, slot = "data")
   )
   expect_equal(
     test@phases$phase2@waves$wave1@samples,
-    mwget(test, phase = 2, wave = 1, slot = "samples")
+    get_mw(test, phase = 2, wave = 1, slot = "samples")
   )
   expect_equal(
     test@phases$phase2@waves$wave1@sampled_data,
-    mwget(test, phase = 2, wave = 1, slot = "sampled_data")
+    get_mw(test, phase = 2, wave = 1, slot = "sampled_data")
   )
 
-  # and that writing them with mwget worked
+  # and that writing them with get_mw worked
   expect_equal(
     test@phases$phase2@waves$wave1@design,
     data.frame(
@@ -145,21 +145,21 @@ test_that("Design, samples, sampled_data, data work", {
 
 test_that("errors work when invalid slot is accessed", {
   expect_error(
-    mwget(MySurvey, phase = NA, slot = "data"),
+    get_mw(MySurvey, phase = NA, slot = "data"),
     "must specify a phase unless getting overall metadata"
   )
 
   expect_error(
-    mwget(MySurvey, phase = 2, wave = NA, slot = "data"),
+    get_mw(MySurvey, phase = 2, wave = NA, slot = "data"),
     "must specify wave number unless"
   )
   expect_error(
-    mwset(MySurvey, phase = NA, slot = "data") <-
+    set_mw(MySurvey, phase = NA, slot = "data") <-
       data.frame(),
     "must specify a phase unless getting overall metadata"
   )
   expect_error(
-    mwset(MySurvey, phase = 2, wave = NA, slot = "data") <-
+    set_mw(MySurvey, phase = 2, wave = NA, slot = "data") <-
       data.frame(),
     "must specify wave number unless"
   )

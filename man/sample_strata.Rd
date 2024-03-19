@@ -13,7 +13,8 @@ sample_strata(
   design_strata = "strata",
   n_allocated = "n_to_sample",
   probs = NULL,
-  wave = NULL
+  wave = NULL,
+  warn_prob_overwrite = TRUE
 )
 }
 \arguments{
@@ -54,10 +55,15 @@ dataframe. This column will be named "sampling_prob". Defaults to NULL.}
 
 \item{wave}{A numeric value or character string indicating the
 sampling wave. If specified, the input is appended to
-"sample indicator" in the new the sample indicator column name
+"sample_indicator" in the new the sample indicator column name
 (as long as such columns name do not already exist in \code{data}).
 Defaults to NULL. This argument does not
 apply when \code{sample_strata()} is called inside \code{allocate_wave()}.}
+
+\item{warn_prob_overwrite}{Logical indicator for whether warning should
+be printed if \code{probs} is specified and a "sampling_prob" columns is
+going to be overwritten. Defaults to TRUE. If function is called inside
+\code{apply_multiwave()}, then defaults to FALSE}
 
 \item{name}{description}
 }

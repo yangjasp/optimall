@@ -1,6 +1,6 @@
 #' Write Slots of a Multiwave Object
 #'
-#' \code{mwset} is used to assign values (write to) slots of
+#' \code{set_mw} is used to assign values (write to) slots of
 #' \code{Multiwave} class objects. It is used to set values of
 #' multiwave (mw) objects.
 #' @param x an object of class \code{'Multiwave'}
@@ -14,36 +14,36 @@
 #' \code{"data"}. See class documentation or package vignettes for more
 #'  information about slots.
 #'
-#' @name mwset
+#' @name set_mw
 #'
 #' @examples
 #' # To write overall metadata
-#' mwset(MySurvey, phase = NA, slot = "metadata") <- list(
+#' set_mw(MySurvey, phase = NA, slot = "metadata") <- list(
 #'   title = "Maternal Weight Survey"
 #'
 #' # To write Phase 2 metadata
-#' mwset(MySurvey, phase = 2, slot = "metadata") <- list(
+#' set_mw(MySurvey, phase = 2, slot = "metadata") <- list(
 #'   strata = "mystrata", id = "id")
 #'
 #' @export
 #' @include multiwave.R phase.R wave.R
 NULL
 
-#' @describeIn mwset
+#' @describeIn set_mw
 #' assign value to slot of a multiwave object
 #' @param value value to assign to specified slot
-#' @aliases mwset<-,Multiwave-method
+#' @aliases set_mw<-,Multiwave-method
 #' @export
 #'
-setGeneric("mwset<-", function(x, phase = 1, wave = NA,
+setGeneric("set_mw<-", function(x, phase = 1, wave = NA,
                                   slot = c("data", "design",
                                            "metadata", "samples",
                                            "sampled_data"),
                                   value) {
-  standardGeneric("mwset<-")
+  standardGeneric("set_mw<-")
 })
 
-setMethod("mwset<-", c(x = "Multiwave"), function(x, phase = 1, wave = NA,
+setMethod("set_mw<-", c(x = "Multiwave"), function(x, phase = 1, wave = NA,
                                                      slot = c("data",
                                                               "design",
                                                               "metadata",

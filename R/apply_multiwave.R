@@ -88,7 +88,7 @@
 #'   phase = 2, wave = 1,
 #'   fun = "optimum_allocation"
 #' )
-#' @include mwget.R mwset.R phase.R wave.R multiwave.R optimum_allocation.R
+#' @include get_mw.R mwset.R phase.R wave.R multiwave.R optimum_allocation.R
 #' @include allocate_wave.R merge_samples.R sample_strata.R
 #' @importFrom magrittr %>%
 #' @export

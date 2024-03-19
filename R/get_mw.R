@@ -1,6 +1,6 @@
 #' Access Slots of a Multiwave Object
 #'
-#' \code{mwget} is the accessor function for objects of
+#' \code{get_mw} is the accessor function for objects of
 #' class \code{Multiwave}. It is used to get values from multiwave (mw) objects.
 #' @param x an object of class \code{'Multiwave'}
 #' @param phase a numeric value specifying the phase that should be accessed.
@@ -14,14 +14,14 @@
 #'  information about slots.
 #' @return If accessing a multiwave object slot, returns the specified slot.
 #'
-#' @name mwget
+#' @name get_mw
 #'
 #' @examples
 #' # Intiate multiwave object
 #' MySurvey <- multiwave(phases = 2, waves = c(1, 3))
 #'
 #' # To access overall metadata
-#' mwget(MySurvey, phase = NA, slot = "metadata")
+#' get_mw(MySurvey, phase = NA, slot = "metadata")
 #'
 #' # To write overall metadata
 #' mwset(MySurvey, phase = NA, slot = "metadata") <- list(
@@ -29,26 +29,26 @@
 #' )
 #'
 #' # To access Phase 2 metadata
-#' mwget(MySurvey, phase = 2, slot = "metadata")
+#' get_mw(MySurvey, phase = 2, slot = "metadata")
 #'
 #' # To access Phase 2, Wave 2 design
-#' mwget(MySurvey, phase = 2, wave = 2, slot = "design")
+#' get_mw(MySurvey, phase = 2, wave = 2, slot = "design")
 #' @export
 #' @include multiwave.R phase.R wave.R
 NULL
 
-#' @aliases mwget,Multiwave-method
-#' @describeIn mwget
+#' @aliases get_mw,Multiwave-method
+#' @describeIn get_mw
 #' access slot of multiwave object
 #' @export
-setGeneric("mwget", function(x, phase = 1, wave = NA,
+setGeneric("get_mw", function(x, phase = 1, wave = NA,
                                 slot = c("data", "design",
                                          "metadata", "samples",
                                          "sampled_data")) {
-  standardGeneric("mwget")
+  standardGeneric("get_mw")
 })
 
-setMethod("mwget", c(x = "Multiwave"), function(x, phase = 1,
+setMethod("get_mw", c(x = "Multiwave"), function(x, phase = 1,
                                                    wave = NA,
                                                    slot = c("data",
                                                             "design",
@@ -96,7 +96,7 @@ setMethod("mwget", c(x = "Multiwave"), function(x, phase = 1,
 
 
 #' @aliases get_data,Multiwave-method
-#' @describeIn mwget
+#' @describeIn get_mw
 #' access slot of multiwave object
 #' @export
 setGeneric("get_data", function(x, phase = 1, wave = NA,
@@ -114,7 +114,7 @@ setMethod("get_data", c(x = "Multiwave"), function(x, phase = 1,
                                                             "samples",
                                                             "sampled_data")){
   warning("get_data() has been deprecated for accessing slots.
-          Please use mwget() instead.")
+          Please use get_mw() instead.")
   if (inherits(x, "Multiwave")  == FALSE) {
     stop("'x' must be an object of class 'Multiwave'")
   }
@@ -154,7 +154,7 @@ setMethod("get_data", c(x = "Multiwave"), function(x, phase = 1,
   }
 })
 
-#' @describeIn mwget
+#' @describeIn get_mw
 #' assign value to slot of a multiwave object
 #' @param value value to assign to specified slot
 #' @aliases get_data<-,Multiwave-method
