@@ -116,11 +116,11 @@ setMethod("summary", "Multiwave", function(object) {
           if (length(object@phases[[i]]@waves[[j]]@samples) == 0) {
             paste0(" NA \n")
           } else {
-            paste(" vector of length",
+            paste0(" list of length ",
               as.character(
                 length(object@phases[[i]]@waves[[j]]@samples)
-              ), "\n",
-              sep = " "
+              ), ": ", paste(names(object@phases[[i]]@waves[[j]]@samples),
+                            collapse = ", "), "\n"
             )
           }
         sampled_data_list[[j]] <-
@@ -159,7 +159,7 @@ setMethod("summary", "Multiwave", function(object) {
           " sample IDs:",
           paste(unlist(samples_list[[j]])),
           " sampled data:",
-          paste(unlist(samples_list[[j]])),
+          paste(unlist(sampled_data_list[[j]])),
           " data:",
           paste(unlist(data_list[[j]]))
         ))
