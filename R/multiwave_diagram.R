@@ -218,7 +218,7 @@ multiwave_diagram <- function(x, height = NULL, width = NULL) {
           ifelse(length(x@phases[[i]]@waves[[j]]@samples$ids) == 0,
             ">",
             paste(
-              "<br/> vector of length ",
+              "<br/> vector of length",
               as.character(length(x@phases[[i]]@waves[[j]]@samples$ids)),
               ">"
             )
