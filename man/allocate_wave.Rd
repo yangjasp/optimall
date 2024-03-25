@@ -62,7 +62,8 @@ re-runs the allocation with the 'iterative' method.
 dataframe should include details about each stratum including
 the true optimum allocation without the constraint of
 previous waves of sampling
-and stratum standard deviations. Defaults to FALSE.
+and stratum standard deviations. Defaults to FALSE, unless called within
+\code{apply_multiwave()}.
 These details are all available from
 \code{optimum_allocation()}.}
 }
