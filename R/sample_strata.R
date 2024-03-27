@@ -137,7 +137,7 @@ sample_strata <- function(data, strata, id, already_sampled = NULL,
     if (is(probs, "formula")){
       # Check if variables exist in the dataframe
       if (!all(all.vars(probs) %in% names(design_data))) {
-        stop("Variables in formula must exist in design_data.")
+        stop("Variables in probs formula must exist in design_data.")
       }
 
       # Evaluate the formula and create the new column

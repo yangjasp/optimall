@@ -315,4 +315,11 @@ test_that("probs argument is correctly accepted",{
                names(table(sampled_data$sampling_prob)))
   expect_equal((sum(df$n_to_sample)),
                sum(table(sampled_data$sampling_prob)))
+
+  expect_error(sample_strata(
+    data = data, strata = "strata",
+    id = "id", design_data = df,
+    already_sampled = "key", design_strata = "strata",
+    wave = "Wave2", probs = ~n_to_sample/(npopppp-nsample_prior),
+    n_allocated = "n_to_sample"), "Variables in probs formula must")
 })
