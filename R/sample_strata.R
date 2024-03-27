@@ -35,7 +35,9 @@
 #' stratum. Defaults to "n_to_sample".
 #' @param probs a character string specifying the name of the column in
 #' in \code{design_data} that indicates the sampling probability for each
-#' stratum. If specified, a new column containing the sampling probability
+#' stratum, or a formula indicating how the sampling probabilities can be
+#' computed. From existing columns.
+#' If specified, a new column containing the sampling probability
 #' attached to each sampled unit will be created in the outputted
 #' dataframe. This column will be named "sampling_prob". Defaults to NULL.
 #' @param wave A numeric value or character string indicating the
@@ -62,6 +64,7 @@
 #' # Define a design dataframe
 #' design <- data.frame(
 #'   strata = c("setosa", "virginica", "versicolor"),
+#'   npop = c(50, 50, 50)
 #'   n_to_sample = c(5, 5, 5)
 #' )
 #'
@@ -71,7 +74,15 @@
 #' # Run
 #' sample_strata(
 #'   data = iris, strata = "Species", id = "id",
-#'   design_data = design, design_strata = "strata", n_allocated = "n_to_sample"
+#'   design_data = design, design_strata = "strata",
+#'   n_allocated = "n_to_sample"
+#' )
+#'
+#' # To include probs as a formula
+#' sample_strata(
+#'   data = iris, strata = "Species", id = "id",
+#'   design_data = design, design_strata = "strata",
+#'   n_allocated = "n_to_sample", probs = ~npop/n_to_sample
 #' )
 #'
 #' # If some units had already been sampled
@@ -80,7 +91,8 @@
 #' sample_strata(
 #'   data = iris, strata = "Species", id = "id",
 #'   already_sampled = "already_sampled",
-#'   design_data = design, design_strata = "strata", n_allocated = "n_to_sample"
+#'   design_data = design, design_strata = "strata",
+#'   n_allocated = "n_to_sample"
 #' )
 sample_strata <- function(data, strata, id, already_sampled = NULL,
                           design_data, design_strata = "strata",
@@ -122,6 +134,18 @@ sample_strata <- function(data, strata, id, already_sampled = NULL,
   nsample <- sum(design_data[, n_allocated])
 
   if(is.null(probs) == FALSE){
+    if (is(probs, "formula")){
+      # Check if variables exist in the dataframe
+      if (!all(all.vars(probs) %in% names(design_data))) {
+        stop("Variables in formula must exist in design_data.")
+      }
+
+      # Evaluate the formula and create the new column
+      probs_expr <- as.character(probs)[[2]]
+      design_data <- design_data %>%
+        mutate(probs := !!rlang::parse_expr(probs_expr))
+      probs <- "probs"
+    }
     if (probs %in% names(design_data) == FALSE) {
       stop("If not NULL, 'probs' must be a character string matching
       a column name of 'design_data'.")

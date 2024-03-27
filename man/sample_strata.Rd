@@ -49,7 +49,9 @@ stratum. Defaults to "n_to_sample".}
 
 \item{probs}{a character string specifying the name of the column in
 in \code{design_data} that indicates the sampling probability for each
-stratum. If specified, a new column containing the sampling probability
+stratum, or a formula indicating how the sampling probabilities can be
+computed. From existing columns.
+If specified, a new column containing the sampling probability
 attached to each sampled unit will be created in the outputted
 dataframe. This column will be named "sampling_prob". Defaults to NULL.}
 
@@ -93,6 +95,7 @@ or \code{optimum_allocation()}.
 # Define a design dataframe
 design <- data.frame(
   strata = c("setosa", "virginica", "versicolor"),
+  npop = c(50, 50, 50)
   n_to_sample = c(5, 5, 5)
 )
 
@@ -102,7 +105,15 @@ iris$id <- 1:nrow(iris)
 # Run
 sample_strata(
   data = iris, strata = "Species", id = "id",
-  design_data = design, design_strata = "strata", n_allocated = "n_to_sample"
+  design_data = design, design_strata = "strata",
+  n_allocated = "n_to_sample"
+)
+
+# To include probs as a formula
+sample_strata(
+  data = iris, strata = "Species", id = "id",
+  design_data = design, design_strata = "strata",
+  n_allocated = "n_to_sample", probs = ~npop/n_to_sample
 )
 
 # If some units had already been sampled
@@ -111,6 +122,7 @@ iris$already_sampled <- rbinom(nrow(iris), 1, 0.25)
 sample_strata(
   data = iris, strata = "Species", id = "id",
   already_sampled = "already_sampled",
-  design_data = design, design_strata = "strata", n_allocated = "n_to_sample"
+  design_data = design, design_strata = "strata",
+  n_allocated = "n_to_sample"
 )
 }

@@ -281,7 +281,7 @@ test_that("probs argument is correctly accepted",{
     already_sampled = "key", y = "y", nsample = 15,
     detailed = TRUE
   )
-  df$sampprob <- df$n_to_sample/df$npop
+  df$sampprob <- df$n_to_sample/(df$npop - df$nsample_prior)
   sampled_data <- sample_strata(
     data = data, strata = "strata",
     id = "id", design_data = df,
@@ -301,4 +301,18 @@ test_that("probs argument is correctly accepted",{
     already_sampled = "key", design_strata = "strata",
     wave = "Wave2", probs = "sampprob",
     n_allocated = "n_to_sample"), "Overwriting prior")
+
+  # and still works if probs is given as a formula
+  sampled_data <- sample_strata(
+    data = data, strata = "strata",
+    id = "id", design_data = df,
+    already_sampled = "key", design_strata = "strata",
+    wave = "Wave2", probs = ~n_to_sample/(npop-nsample_prior),
+    n_allocated = "n_to_sample")
+  expect_equal(names(sampled_data)[6], "sampling_prob")
+
+  expect_equal(names(table(df$sampprob)),
+               names(table(sampled_data$sampling_prob)))
+  expect_equal((sum(df$n_to_sample)),
+               sum(table(sampled_data$sampling_prob)))
 })
