@@ -504,9 +504,11 @@ setMethod(
         } else {
           probs <- NULL
         }
-      } else if (!(arguments$probs %in% names(design_data))) {
-        stop("'probs' must be a column name of the 'design_data'
-         slot of the specified wave")
+      } else if (is.character(arguments$probs)) {
+        if(!(arguments$probs %in% names(design_data))){
+            stop("'probs' must be a formula or column name of the 'design_data'
+            slot of the specified wave")
+        }
       } else {
         probs <- arguments$probs
       }
