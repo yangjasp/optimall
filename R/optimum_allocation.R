@@ -83,9 +83,8 @@
 #' Constraint Patterns, Research Report Series (Statistics #2014-07),
 #' Center for Statistical Research and Methodology, U.S. Bureau
 #' of the Census, Washington, D.C.
-#' @return Returns a data frame with the specified total
-#' sample size, \code{nsample}, allocated across
-#' strata or the sampling fractions if nsample is NULL.
+#' @return Returns a data frame with the number of samples allocated to each
+#' stratum, or just the sampling fractions if nsample is NULL.
 #' @importFrom magrittr %>%
 
 optimum_allocation <- function(data, strata,

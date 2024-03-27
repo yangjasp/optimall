@@ -82,9 +82,8 @@ which may no longer be optimall.
 be allowed to have NA values. Defaults to \code{FALSE}.}
 }
 \value{
-Returns a data frame with the specified total
-sample size, \code{nsample}, allocated across
-strata or the sampling fractions if nsample is NULL.
+Returns a data frame with the number of samples allocated to each
+stratum, or just the sampling fractions if nsample is NULL.
 }
 \description{
 Determines the optimum sampling fraction and sample size for
