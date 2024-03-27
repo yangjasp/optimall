@@ -509,9 +509,9 @@ setMethod(
             stop("'probs' must be a formula or column name of the 'design_data'
             slot of the specified wave")
         }
-      } else {
-        probs <- arguments$probs
       }
+      probs <- arguments$probs
+
 
 
       # Now id
