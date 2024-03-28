@@ -71,7 +71,7 @@ Columns in \code{"sampled_data"} that do not match names of the
 the output dataframe. All ids that do not appear in
 \code{"sampled_data"} will receive NA values for these new variables.
 
-If a column name in the \code{"sampled data"} matches a column name in
+If a column name in the \code{"sampled_data"} matches a column name in
 the \code{"data"} slot of the previous wave, these columns will be
 merged into one column with the same name in the output dataframe.
 For ids that have non-missing values in both columns of the merge,
@@ -81,7 +81,7 @@ previous wave but missing from \code{"sampled_data"} will be given NA values
 for the newly merged variables.
 
 If columns with the name produced by \code{phase_sample_ind} or
-\code{phase_sample_ind} already exist, they will be overwritten.
+\code{wave_sample_ind} already exist, they will be overwritten.
 }
 \examples{
 library(datasets)

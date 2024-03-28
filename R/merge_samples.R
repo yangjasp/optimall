@@ -44,7 +44,7 @@
 #' metadata and does not create (or add to existing) "sampling_prob" column if
 #' none is found.
 #' @details
-#' If a column name in the \code{"sampled data"} matches a column name in
+#' If a column name in the \code{"sampled_data"} matches a column name in
 #' the \code{"data"} slot of the previous wave, these columns will be
 #' merged into one column with the same name in the output dataframe.
 #' For ids that have non-missing values in both columns of the merge,
@@ -54,7 +54,7 @@
 #' for the newly merged variables.
 #'
 #' If columns with the name produced by \code{phase_sample_ind} or
-#' \code{phase_sample_ind} already exist, they will be overwritten.
+#' \code{wave_sample_ind} already exist, they will be overwritten.
 #'
 #'
 #' @return A Multiwave object with the merged dataframe in the
