@@ -8,3 +8,6 @@
 ^Meta$
 ^\.git$
 ^\.github$
+^README.Rmd
+^optimall.Rproj
+^cran-comments.md
