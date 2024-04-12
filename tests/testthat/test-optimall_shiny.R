@@ -16,7 +16,7 @@ skip_on_os("linux")
 skip_on_os("windows")
 
 # New timeout issue with M1 Mac test, but it does work on local M1 Mac test
-skip_on_os("aarch64")
+skip_on_os("mac", "aarch64")
 
 if (!dependenciesInstalled()){
   shinytest::installDependencies()
