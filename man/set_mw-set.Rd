@@ -35,12 +35,15 @@ information about slots.}
 multiwave (mw) objects.
 }
 \examples{
+# Intiate multiwave object
+MySurvey <- multiwave(phases = 2, waves = c(1, 3))
+
 # To write overall metadata
-set_mw(MySurvey, phase = NA, slot = "metadata") <- list(
-  title = "Maternal Weight Survey"
+set_mw(MySurvey, phase = NA, slot = "metadata") <-
+ list(title = "Maternal Weight Survey")
 
 # To write Phase 2 metadata
-set_mw(MySurvey, phase = 2, slot = "metadata") <- list(
-  strata = "mystrata", id = "id")
+set_mw(MySurvey, phase = 2, slot = "metadata") <-
+ list(strata = "mystrata", id = "id")
 
 }
