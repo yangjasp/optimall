@@ -87,10 +87,12 @@ If columns with the name produced by \code{phase_sample_ind} or
 library(datasets)
 iris <- data.frame(iris, id = 1:150)
 
-MySurvey <- new_multiwave(phases = 2, waves = c(1, 3))
+MySurvey <- multiwave(phases = 2, waves = c(1, 3))
 set_mw(MySurvey, phase = 1, slot = "data") <-
   data.frame(dplyr::select(iris, -Sepal.Width))
 set_mw(MySurvey, phase = 2, wave = 1, slot = "sampled_data") <-
   dplyr::select(iris, id, Sepal.Width)[1:40, ]
+set_mw(MySurvey, phase = 2, wave = 1, slot = "samples") <-
+   list(ids = 1:40)
 MySurvey <- merge_samples(MySurvey, phase = 2, wave = 1, id = "id")
 }

@@ -66,8 +66,6 @@ apply when \code{sample_strata()} is called inside \code{allocate_wave()}.}
 be printed if \code{probs} is specified and a "sampling_prob" columns is
 going to be overwritten. Defaults to TRUE. If function is called inside
 \code{apply_multiwave()}, then defaults to FALSE}
-
-\item{name}{description}
 }
 \value{
 returns \code{data} as a dataframe with a new column named
@@ -95,7 +93,7 @@ or \code{optimum_allocation()}.
 # Define a design dataframe
 design <- data.frame(
   strata = c("setosa", "virginica", "versicolor"),
-  npop = c(50, 50, 50)
+  npop = c(50, 50, 50),
   n_to_sample = c(5, 5, 5)
 )
 
@@ -113,7 +111,7 @@ sample_strata(
 sample_strata(
   data = iris, strata = "Species", id = "id",
   design_data = design, design_strata = "strata",
-  n_allocated = "n_to_sample", probs = ~npop/n_to_sample
+  n_allocated = "n_to_sample", probs = ~n_to_sample/npop
 )
 
 # If some units had already been sampled

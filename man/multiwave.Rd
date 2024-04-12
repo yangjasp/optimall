@@ -2,9 +2,12 @@
 % Please edit documentation in R/multiwave.R
 \name{multiwave}
 \alias{multiwave}
+\alias{new_multiwave}
 \title{Initialize a Multiwave Object}
 \usage{
 multiwave(phases, waves, metadata = list(), phase1 = data.frame())
+
+new_multiwave(phases, waves, metadata = list(), phase1 = data.frame())
 }
 \arguments{
 \item{phases}{A numeric value specifying the number of phases in the
