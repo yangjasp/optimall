@@ -24,7 +24,7 @@
 #' get_mw(MySurvey, phase = NA, slot = "metadata")
 #'
 #' # To write overall metadata
-#' mwset(MySurvey, phase = NA, slot = "metadata") <- list(
+#' set_mw(MySurvey, phase = NA, slot = "metadata") <- list(
 #'   title = "Maternal Weight Survey"
 #' )
 #'
