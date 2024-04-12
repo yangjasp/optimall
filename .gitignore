@@ -1,0 +1,10 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.DS_Store
+inst/doc
+inst/.DS_Store
+inst/shiny-app/optimall_shiny/.DS_Store
+/doc/
+/Meta/
