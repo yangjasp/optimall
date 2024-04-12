@@ -1,3 +1,19 @@
+# optimall 1.1.0
+
+## Enhancements
+
+A number of enhancements were made to the Multiwave Object:
+
+- set_mw() and get_mw() for easy access to slots
+- Variance parameters and wave-specific sampling probabilities stored by default.
+- Added arguments to apply_multiwave() and sample_strata() for storing sampling probabilities.
+- Added arguments to apply_multiwave(), sample_strata(), and merge_samples() to store sampling waves.
+
+
+## Bug fixes
+
+- Updated function tests to pass CRAN check on M1Mac
+
 # optimall 0.1.5
 
 ## Bug fixes
