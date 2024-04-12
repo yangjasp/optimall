@@ -46,7 +46,6 @@
 #' (as long as such columns name do not already exist in \code{data}).
 #' Defaults to NULL. This argument does not
 #' apply when \code{sample_strata()} is called inside \code{allocate_wave()}.
-#' @param name description
 #' @param warn_prob_overwrite Logical indicator for whether warning should
 #' be printed if \code{probs} is specified and a "sampling_prob" columns is
 #' going to be overwritten. Defaults to TRUE. If function is called inside
@@ -64,7 +63,7 @@
 #' # Define a design dataframe
 #' design <- data.frame(
 #'   strata = c("setosa", "virginica", "versicolor"),
-#'   npop = c(50, 50, 50)
+#'   npop = c(50, 50, 50),
 #'   n_to_sample = c(5, 5, 5)
 #' )
 #'
@@ -82,7 +81,7 @@
 #' sample_strata(
 #'   data = iris, strata = "Species", id = "id",
 #'   design_data = design, design_strata = "strata",
-#'   n_allocated = "n_to_sample", probs = ~npop/n_to_sample
+#'   n_allocated = "n_to_sample", probs = ~n_to_sample/npop
 #' )
 #'
 #' # If some units had already been sampled
@@ -143,7 +142,7 @@ sample_strata <- function(data, strata, id, already_sampled = NULL,
       # Evaluate the formula and create the new column
       probs_expr <- as.character(probs)[[2]]
       design_data <- design_data %>%
-        mutate(probs := !!rlang::parse_expr(probs_expr))
+        dplyr::mutate(probs := !!rlang::parse_expr(probs_expr))
       probs <- "probs"
     }
     if (probs %in% names(design_data) == FALSE) {
@@ -230,6 +229,7 @@ sample_strata <- function(data, strata, id, already_sampled = NULL,
     }
     temp <- design_data[,c(design_strata, probs)]
     names(temp) <- c(strata, "sampling_prob")
+    sampling_prob <- NULL # to avoid global var note, ensure next line works
     output_df <- output_df %>%
       dplyr::left_join(temp, by = strata) %>%
       dplyr::mutate(sampling_prob = ifelse(id %in% sampled_ids,
