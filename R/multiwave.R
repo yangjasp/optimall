@@ -103,6 +103,7 @@ multiwave <- function(phases, waves,
   return(output)
 }
 
+#' @rdname multiwave
 #' @export
 new_multiwave <- function(phases, waves,
                           metadata = list(), phase1 = data.frame()) {
