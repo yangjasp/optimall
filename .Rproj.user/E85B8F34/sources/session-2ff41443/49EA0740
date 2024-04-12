@@ -1,0 +1,26 @@
+{
+    "id": "49EA0740",
+    "path": "~/Desktop/SummerWork2020/Practiceproj/optimall/tests/testthat/test-sample_strata.R",
+    "project_path": "tests/testthat/test-sample_strata.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1710445820392.0,
+    "source_on_save": false,
+    "relative_order": 25,
+    "properties": {
+        "cursorPosition": "309,46",
+        "scrollLine": "302",
+        "tempName": "Untitled3",
+        "Source": "Source"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1711581183,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1711581183639,
+    "read_only": false,
+    "read_only_alternatives": []
+}

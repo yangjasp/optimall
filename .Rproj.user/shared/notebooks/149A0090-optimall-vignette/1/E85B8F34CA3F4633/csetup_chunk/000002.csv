@@ -1,0 +1,30 @@
+"0","knitr::opts_chunk$set("
+"0","  collapse = TRUE,"
+"0","  comment = ""#>"""
+"0",")"
+"0",""
+"0","library(optimall)"
+"0","library(DiagrammeR)"
+"0","library(survey)"
+"2","Loading required package: grid
+"
+"2","Loading required package: Matrix
+"
+"2","Loading required package: survival
+"
+"2","
+Attaching package: ‘survey’
+
+"
+"2","The following object is masked from ‘package:graphics’:
+
+    dotchart
+
+"
+"0","library(survival)"
+"0","library(datasets)"
+"0","library(dplyr)"
+"0","library(here)"
+"2","here() starts at /Users/jasper/Desktop/SummerWork2020/Practiceproj/optimall
+"
+"0","data(MatWgt_Sim, package = ""optimall"")"

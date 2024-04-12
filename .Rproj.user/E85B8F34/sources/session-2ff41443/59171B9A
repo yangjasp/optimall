@@ -1,0 +1,25 @@
+{
+    "id": "59171B9A",
+    "path": "~/Desktop/SummerWork2020/Practiceproj/optimall/tests/testthat/test-allocate_wave.R",
+    "project_path": "tests/testthat/test-allocate_wave.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1710822189623.0,
+    "source_on_save": false,
+    "relative_order": 42,
+    "properties": {
+        "cursorPosition": "3,12",
+        "scrollLine": "0",
+        "Source": "Source"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1691510719,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1691510719,
+    "read_only": false,
+    "read_only_alternatives": []
+}

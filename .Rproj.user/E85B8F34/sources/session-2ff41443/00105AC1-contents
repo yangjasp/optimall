@@ -1,0 +1,93 @@
+Review of "Optimum Allocaiton for Adaptive Multi-Wave Sampling in
+R", by Yang, Shepher, Lumley and Shaw
+
+
+The paper introduces the R package optimall, which can be used for
+creating optimal stratified sampling designs. The novel things of
+optimall are:
+
+* it implements the Wright-I and -II algorithms for dealing with
+Neyman allocation and finding optimal integer numbers rather than
+fractions
+
+* it has flexible ways of handling stratification by choosing
+thresholds of a continuous variable
+
+* it provides tools for multi-wave sampling
+
+* it tries to provide a streamlined workflow for the whole process,
+integrating with the survey package for obtaining actual estimates
+from multi-wave samples.
+
+* it provides a shiny app that lets you go through many of these
+steps, given an input .csv data file
+
+The paper is very well written, and the R package provides a welcome
+addition to the existing package dealing with sampling designs.
+
+Before going into particular aspects of the I have two higher level
+issues with the paper.
+
+First: how do the sampling designs relate to model-assisted sampling?
+I am no expert in this area, but suspect that in any case in (5)
+model-assisted sampling is taking place, but maybe earlier when
+splitting based on continuous variables? If this is the case, I
+think the paper should point out where this is the case, and what
+exactly the model assumptions are.
+
+Second: the use of expressions like
+
+```
+get_data(MySurvey, phase = NA, slot = "metadata") <-
+  + list(title = "Sepal Width Survey")
+```
+
+(as was also mentioned during the prescreening). I think that if
+this package wants to facilitate a streamlined design process for
+stratified sampling, it should try to avoid expressions like this.
+It expresses that the author has a great mastering of replacement
+methods, but has little clue about what prospective users will
+experience as "streamlined". `get_data` should get data, not
+set data. Replacement methods as simple as
+```
+dim(x) = c(3, 4)
+```
+or 
+```
+data_frame[1:3, 4] = 5
+```
+are even considered unintuitive by many: the tidyverse
+tries to avoid such constructs entirely. Using all kind of arguments
+to replacement methods confuses much further. I think it should be
+easy to come up with functions that have a name that reflects what
+they do, with a simplicity similar to the other function of the
+package. This all gets even worse on the top of page 30.
+
+Also, constructs like
+```
+MySurvey@phases$phase2@waves$wave2@design
+```
+will, I believe, scare users away.
+
+
+Particular aspects:
+
+Section 2.1, "more optimal" - rephrase
+
+Equation (5): maybe explain what h_h(\beta) is?
+
+Section 4.2: The output of the shiny app is an R (template) command, like:
+```
+[1] "split_strata(data = 'df_name', strata = 'Species', split = NULL, split_var = 'Sepal.Length', type = 'global quantile', split_at = 0.59)"
+```
+I find this in sharp contrast with the user-friendlyness of a shiny
+app: cannot the app execute this command, possibly asking for a data
+name? Or return something to the R session? (I'm not very familiar
+with limitations of shiny).
+
+Section 5.4: it seems more intuitive to me to call the function that
+creates a multiwave object "multiwave", rather than "new_multiwave"; I
+believe this is also recommended style in S4 (and upcoming R7).
+
+Section 7: maybe you can reveal how the compatibility with survey could
+be increased.

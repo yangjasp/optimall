@@ -1,0 +1,25 @@
+{
+    "id": "6143DD85",
+    "path": "~/Desktop/SummerWork2020/Practiceproj/optimall/tests/testthat/test-optimall_shiny.R",
+    "project_path": "tests/testthat/test-optimall_shiny.R",
+    "type": "r_source",
+    "hash": "1941344356",
+    "contents": "",
+    "dirty": false,
+    "created": 1707795665830.0,
+    "source_on_save": false,
+    "relative_order": 12,
+    "properties": {
+        "cursorPosition": "18,0",
+        "scrollLine": "10",
+        "Source": "Source"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1712938319,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1712938319828,
+    "read_only": false,
+    "read_only_alternatives": []
+}

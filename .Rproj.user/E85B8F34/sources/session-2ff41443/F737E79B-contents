@@ -1,0 +1,36 @@
+#' Estimate Influence Functions for GLM
+#'
+#' Given a glm fit object and a model variable
+#'
+#' @param fit An object of of class "glm".
+#' @param var A character string holding the name of the variable whose 
+#' influence function is desired. Defaults to the first variable listed
+#' in the model.
+#' 
+#' @return Returns a dataframe with 
+#' 
+get_infl <- function(fit, var = NULL){
+  if(!(any(c("glm",'svyglm') %in% class(fit)))){
+    stop("'fit' must be of class 'glm' or 'svyglm")
+  }
+  if(fit$family$link != "logit"){
+    stop("Fit must use 'logit' link")
+  }
+  if(!(var %in% names(fit$coefficients))){
+    stop("'var' must be a character value matching a variable name in 'fit'")
+  }
+# Fisher Information
+design_mat <- model.matrix(fit) 
+I_hat <- (t(design_mat) %*% (design_mat * 
+                             fit$fitted.values *  
+                             (1 - fit$fitted.values))) / nrow(design_mat)
+  
+# Calculate influence function 
+influence <- (design_mat * resid(fit, type = "response")) %*% solve(I_hat)
+influence <- as.data.frame(influence)
+influence$row <- rownames(influence)
+  
+# Generate output
+output <- influence[,c("row",var)]
+return(output)
+}

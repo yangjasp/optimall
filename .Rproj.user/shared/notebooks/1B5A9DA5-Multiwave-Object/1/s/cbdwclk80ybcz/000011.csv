@@ -1,0 +1,8 @@
+"0","#Design for Wave 1"
+"0","MySurvey <- apply_multiwave(MySurvey, phase = 2, wave = 1,"
+"0","                           fun = ""optimum_allocation"","
+"0","                           strata = ""new_strata"","
+"0","                           y = ""mat_weight_est"","
+"0","                           nsample = 250, method = ""Neyman"")"
+"0",""
+"0","get_mw(MySurvey, phase = 2, wave = 1, slot = ""design"")"

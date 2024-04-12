@@ -1,0 +1,25 @@
+{
+    "id": "5A0CC36D",
+    "path": "~/Desktop/SummerWork2020/Practiceproj/optimall/tests/testthat/test-apply_multiwave.R",
+    "project_path": "tests/testthat/test-apply_multiwave.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1710446816591.0,
+    "source_on_save": false,
+    "relative_order": 26,
+    "properties": {
+        "cursorPosition": "758,53",
+        "scrollLine": "751",
+        "Source": "Source"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1710822360,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1710822360417,
+    "read_only": false,
+    "read_only_alternatives": []
+}

@@ -1,0 +1,2 @@
+"0","IrisSurvey <- merge_samples(IrisSurvey, phase = 2, wave = 1,"
+"0","                          id = ""id"", include_probs = TRUE)"

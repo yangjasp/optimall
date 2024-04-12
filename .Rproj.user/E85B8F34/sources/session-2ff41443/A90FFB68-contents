@@ -1,0 +1,26 @@
+#### Need survey version 4.2-2 
+
+### in this example the dataframe is "dat.target"
+### dat.target$auto_inc is the phase 2 indicator for the phase 2 subset= autopsy sub-cohort
+### auto_inc =1 for those in phase 2 
+
+## Fit selection model for whether included in autopsy sample (logistic regression for odds of auto_inc=1)
+## Covariates are all phase 1 variables, including outcome of interest=dementia
+selection.formula <-as.formula("auto_inc ~ postHS + sex + age_f + cohort + dementia")
+
+fit.sel  <- glm(selection.formula,
+                family = binomial(link="logit"),
+                data = dat.target)
+
+## generate inverse probability of selection weights among the autopsy sample
+dat.target$sel.prob<-predict(fit.sel, type="response")
+dat.target$wts.sel <- 1/dat.target$sel.prob
+
+#### Setting up two phase design for the calibration
+sampObj<-poisson_sampling(1/dat.target$wts.sel[dat.target$auto_inc==1])
+phase2design<-twophase(id=list(~1,~1),subset=~I(dat.target$auto_inc==1),prob=list(NULL,~I(1/wts.sel)),data=dat.target,pps=list(NULL,sampObj))
+
+### outcome model using IPW (selection) weights
+fit<-svyglm(braak_bin~postHS+sex+age_death +cohort, design = phase2design, family = quasipoisson)
+
+### From this point could calibrate as usual.

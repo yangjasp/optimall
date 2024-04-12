@@ -1,0 +1,9 @@
+"0","#To access Phase 2, Wave 2 design
+get_data(MySurvey, phase = 2, wave = 2, slot = ""design"")
+"
+"1","Object of class """
+"1",""
+"1","data.frame"
+"1",""
+"1","""
+"

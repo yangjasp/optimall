@@ -1,0 +1,27 @@
+#' Example Dataset: Maternal Weights
+#'
+#' This SIMULATED dataset contains data on demographic
+#' characteristics and clinical data related to childhood obesity
+#' for 10335 mother-child pairs. It is used to generate the
+#' workflow in the main package vignette. It is based on a study
+#' that used multi-wave adaptive sampling to validate electronic
+#' health records that target factors related to childhood obesity
+#' (see https://www.pcori.org/research-results/2017/developin-methods-estimate-and-address-errors-studies-using-electronic-health).
+#'
+#' See package vignettes for more details.
+#'
+#' @docType data
+#'
+#' @name MatWgt_Sim
+#' @format \code{MatWgt_Sim:} a data frame with 10335 rows and 6 columns
+#' \describe{
+#'  \item{\code{id}}{unique ID for each mother-child pair}
+#'  \item{\code{mat_weight_true}}{true (but unknown in phase 1) mother weight
+#'  change during pregnancy}
+#'  \item{\code{mat_weight_est}}{estimated mother weight
+#'  change during pregnancy based on error-prone phase-1 measurement}
+#'  \item{\code{race}}{specifies mother's race}
+#'  \item{\code{diabetes}}{binary indicator for diabetes in the mother}
+#'  \item{\code{obesity}}{binary indicator for childhood obesity in child}
+#'  }
+NULL
