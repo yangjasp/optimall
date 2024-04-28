@@ -1,8 +1,0 @@
- # To write overall metadata
- set_mw(MySurvey, phase = NA, slot = "metadata") <-
-  list(title = "Maternal Weight Survey")
-
- # To write Phase 2 metadata
- set_mw(MySurvey, phase = 2, slot = "metadata") <-
-  list(strata = "mystrata", id = "id")
- 

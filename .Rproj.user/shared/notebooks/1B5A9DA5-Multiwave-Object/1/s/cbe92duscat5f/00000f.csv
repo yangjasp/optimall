@@ -1,5 +1,0 @@
-"0","IrisSurvey <- apply_multiwave(IrisSurvey, phase = 2, wave = 1,"
-"0","                            fun = ""sample_strata"", id = ""id"","
-"0","                            design_strata = ""strata"","
-"0","                            n_allocated = ""stratum_size"","
-"0","                            probs = ""stratum_fraction"")"
