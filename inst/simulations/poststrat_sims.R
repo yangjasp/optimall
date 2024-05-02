@@ -8,7 +8,7 @@
 ## Over 1,000 iterations, it conducts stratified sampling
 ## to sample from the 3 strata of species, with x-optimal allocation
 ## in Wave 1 and then use Neyman allocation in Waves 2 and 3. It then
-## estimates the mean Sepal Width using 5 different strategies
+## estimates the mean Petal Length using 5 different strategies
 
 
 ######
@@ -37,12 +37,12 @@ run_sim_pstrat <- function(n_per_wave = 50){
   col1 <- c(rep("setosa", times = n[1]),
             rep("versicolor", times = n[2]),
             rep("virginica", times = n[3]))
-  pl <- c(rnorm(n[1], 1.462, 0.173),
+  pl <- c(rnorm(n[1], 1.462, 0.432),
           rnorm(n[2], 4.260, 0.470),
           rnorm(n[3], 5.552, 0.552))
   sl <- c(rnorm(n[1], pl[1:n[1]] * 3.35, 0.341),
           rnorm(n[2], pl[(n[1]+1):(n[1]+n[2])] * 1.32, 0.366),
-          rnorm(n[3],  sl[(n[2]+1):996] * 1.14, 0.302))
+          rnorm(n[3],  pl[(n[2]+1):996] * 1.14, 0.302))
   full_data <- data.frame("id" = 1:996,
                           "Species" = as.factor(col1),
                           "Sepal.Length" = sl,
@@ -188,6 +188,8 @@ run_sim_pstrat <- function(n_per_wave = 50){
                                  sampling_prob * cumprod(1 - lag(sampling_prob, default = 0))))%>%
     ungroup()
 
+  flag <- ifelse(nrow(denom_data) == 9, 1, 0)
+
   ## Merge back with original dataframe, attaching the denominator to each obs.
   survey_data <- survey_data %>%
     dplyr::left_join(dplyr::select(denom_data, Species, wave, denom),
@@ -195,9 +197,10 @@ run_sim_pstrat <- function(n_per_wave = 50){
 
   ####
   #### Specify design
-  cp_design <- twophase(id = list(~id, ~id), strata = list(NULL, ~Species),
+  cp_design <- twophase(id = list(~id, ~id), strata = list(NULL, NULL),
                         subset = ~as.logical(sampled_phase2),
-                        data = survey_data, probs = list(NULL, ~denom))
+                        data = survey_data, probs = list(NULL, ~denom),
+                        method = "simple")
 
   cp_est <- svymean(~Petal.Length, design = cp_design)
   cp_est_CI <- confint(cp_est)
@@ -205,9 +208,9 @@ run_sim_pstrat <- function(n_per_wave = 50){
   ######
   ##### 2b. Conditional probs with raking
   #######
-  cp_design_rake <- calibrate(cp_design, formula = ~Sepal.Length,
+  cp_design_rake <- calibrate(cp_design, formula = ~Sepal.Length + Species,
                               phase = 2, calfun = "raking")
-  cp_est_rake <- svymean(~Petal.Length + Species, design = cp_design_rake)
+  cp_est_rake <- svymean(~Petal.Length, design = cp_design_rake)
   cp_est_rake_CI <- confint(cp_est_rake)
 
   ######
@@ -291,7 +294,7 @@ run_sim_pstrat <- function(n_per_wave = 50){
            cp_est[1], SE(cp_est)[1], cp_est_CI[1], cp_est_CI[2],
            cp_est_rake[1], SE(cp_est_rake)[1], cp_est_rake_CI[1],
            cp_est_rake_CI[2],
-           pool_est[1], SE(pool_est)[1], pool_est_CI[1], pool_est_CI[2]))
+           pool_est[1], SE(pool_est)[1], pool_est_CI[1], pool_est_CI[2], flag))
 }
 
 ########
@@ -323,6 +326,7 @@ upper2 <- c()
 upper3 <- c()
 upper4 <- c()
 upper5 <- c()
+flags <- c()
 
 nreps <- 1000
 for (i in 1:nreps){
@@ -347,6 +351,7 @@ for (i in 1:nreps){
   upper3 <- c(upper3, results[12])
   upper4 <- c(upper4, results[16])
   upper5 <- c(upper5, results[20])
+  flags <- c(flags, results[21])
 }
 
 ### True mean
@@ -363,9 +368,9 @@ stats <- data.frame(case = c(1,2,3,4,5),
                     true_mean = rep(true_mean, 5),
                     est = c(mean(unlist(estimates1)),
                             mean(unlist(estimates2)),
-                            mean(unlist(estimates3)),
+                            mean(unlist(estimates3[flags == 1])),
                             mean(unlist(estimates4)),
-                            mean(unlist(estimates5))
+                            mean(unlist(estimates5[flags == 1]))
                     ),
                     coverage = c(sum(true_mean >= lower1 & true_mean <= upper1)/nreps,
                                  sum(true_mean >= lower2 & true_mean <= upper2)/nreps,
@@ -379,14 +384,14 @@ stats <- data.frame(case = c(1,2,3,4,5),
                             "-"),
                     ESE = c(sqrt(var(unlist(estimates1))),
                             sqrt(var(unlist(estimates2))),
-                            sqrt(var(unlist(estimates3))),
+                            sqrt(var(unlist(estimates3[flags == 1]))),
                             sqrt(var(unlist(estimates4))),
-                            sqrt(var(unlist(estimates5)))),
+                            sqrt(var(unlist(estimates5[flags == 1])))),
                     RMSE = c(sqrt(mean((unlist(estimates1)- true_mean)^2)),
                              sqrt(mean((unlist(estimates2)- true_mean)^2)),
-                             sqrt(mean((unlist(estimates3)- true_mean)^2)),
+                             sqrt(mean((unlist(estimates3[flags == 1])- true_mean)^2)),
                              sqrt(mean((unlist(estimates4)- true_mean)^2)),
-                             sqrt(mean((unlist(estimates5)- true_mean)^2))))
+                             sqrt(mean((unlist(estimates5[flags == 1])- true_mean)^2))))
 
 # stats$bias <- stats$est - true_mean
 stats50 <- stats
@@ -417,6 +422,7 @@ upper2 <- c()
 upper3 <- c()
 upper4 <- c()
 upper5 <- c()
+flags <- c()
 
 nreps <- 1000
 for (i in 1:nreps){
@@ -441,6 +447,7 @@ for (i in 1:nreps){
   upper3 <- c(upper3, results[12])
   upper4 <- c(upper4, results[16])
   upper5 <- c(upper5, results[20])
+  flags <- c(flags, results[21])
 }
 
 ### True mean
@@ -457,15 +464,15 @@ stats <- data.frame(case = c(1,2,3,4,5),
                     true_mean = rep(true_mean, 5),
                     est = c(mean(unlist(estimates1)),
                             mean(unlist(estimates2)),
-                            mean(unlist(estimates3)),
+                            mean(unlist(estimates3[flags == 1])),
                             mean(unlist(estimates4)),
-                            mean(unlist(estimates5))
+                            mean(unlist(estimates5[flags == 1]))
                     ),
                     coverage = c(sum(true_mean >= lower1 & true_mean <= upper1)/nreps,
                                  sum(true_mean >= lower2 & true_mean <= upper2)/nreps,
                                  "-",
-                                "-",
-                                "-"),
+                                 "-",
+                                 "-"),
                     ASE = c(mean(unlist(ase1)),
                             mean(unlist(ase2)),
                             "-",
@@ -473,14 +480,14 @@ stats <- data.frame(case = c(1,2,3,4,5),
                             "-"),
                     ESE = c(sqrt(var(unlist(estimates1))),
                             sqrt(var(unlist(estimates2))),
-                            sqrt(var(unlist(estimates3))),
+                            sqrt(var(unlist(estimates3[flags == 1]))),
                             sqrt(var(unlist(estimates4))),
-                            sqrt(var(unlist(estimates5)))),
+                            sqrt(var(unlist(estimates5[flags == 1])))),
                     RMSE = c(sqrt(mean((unlist(estimates1)- true_mean)^2)),
                              sqrt(mean((unlist(estimates2)- true_mean)^2)),
-                             sqrt(mean((unlist(estimates3)- true_mean)^2)),
+                             sqrt(mean((unlist(estimates3[flags == 1])- true_mean)^2)),
                              sqrt(mean((unlist(estimates4)- true_mean)^2)),
-                             sqrt(mean((unlist(estimates5)- true_mean)^2))))
+                             sqrt(mean((unlist(estimates5[flags == 1])- true_mean)^2))))
 
 # stats$bias <- stats$est - true_mean
 stats20 <- stats
@@ -511,6 +518,7 @@ upper2 <- c()
 upper3 <- c()
 upper4 <- c()
 upper5 <- c()
+flags <- c()
 
 nreps <- 1000
 for (i in 1:nreps){
@@ -535,6 +543,7 @@ for (i in 1:nreps){
   upper3 <- c(upper3, results[12])
   upper4 <- c(upper4, results[16])
   upper5 <- c(upper5, results[20])
+  flags <- c(flags,results[21])
 }
 
 ### True mean
@@ -551,9 +560,9 @@ stats <- data.frame(case = c(1,2,3,4,5),
                     true_mean = rep(true_mean, 5),
                     est = c(mean(unlist(estimates1)),
                             mean(unlist(estimates2)),
-                            mean(unlist(estimates3)),
+                            mean(unlist(estimates3[flags == 1])),
                             mean(unlist(estimates4)),
-                            mean(unlist(estimates5))
+                            mean(unlist(estimates5[flags == 1]))
                     ),
                     coverage = c(sum(true_mean >= lower1 & true_mean <= upper1)/nreps,
                                  sum(true_mean >= lower2 & true_mean <= upper2)/nreps,
@@ -567,16 +576,15 @@ stats <- data.frame(case = c(1,2,3,4,5),
                             "-"),
                     ESE = c(sqrt(var(unlist(estimates1))),
                             sqrt(var(unlist(estimates2))),
-                            sqrt(var(unlist(estimates3))),
+                            sqrt(var(unlist(estimates3[flags == 1]))),
                             sqrt(var(unlist(estimates4))),
-                            sqrt(var(unlist(estimates5)))),
+                            sqrt(var(unlist(estimates5[flags == 1])))),
                     RMSE = c(sqrt(mean((unlist(estimates1)- true_mean)^2)),
                              sqrt(mean((unlist(estimates2)- true_mean)^2)),
-                             sqrt(mean((unlist(estimates3)- true_mean)^2)),
+                             sqrt(mean((unlist(estimates3[flags == 1])- true_mean)^2)),
                              sqrt(mean((unlist(estimates4)- true_mean)^2)),
-                             sqrt(mean((unlist(estimates5)- true_mean)^2))))
+                             sqrt(mean((unlist(estimates5[flags == 1])- true_mean)^2))))
 
 # stats$bias <- stats$est - true_mean
 stats80 <- stats
 stats80
-
