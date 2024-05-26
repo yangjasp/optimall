@@ -169,6 +169,13 @@ run_sim_pstrat <- function(n_per_wave = 50){
   #### 2. Wave-specific conditional probabilities
   #######
 
+  ### Computing this estimator requires some extra work (equation 6 of vignette),
+  ### but the steps are made less complex by optimall and survey
+
+  ###
+  ### Step 1: Calculate denominator of Estimation Vignette equation 6
+
+  ## Prepare data
   denom_data <- survey_data %>%
     dplyr::mutate(wave = case_when(sampled_wave2.1 == 1 ~ 1,
                                    sampled_wave2.2 == 1 ~ 2,
@@ -177,7 +184,7 @@ run_sim_pstrat <- function(n_per_wave = 50){
   survey_data <- survey_data %>%
     dplyr::left_join(dplyr::select(denom_data, c(id, wave)), by = "id")
 
-  ## Find denominator from eq. 6 for each wave, species
+  ## Find denominator for each wave, species
   denom_data <- denom_data %>%
     dplyr::select(Species, wave, sampling_prob) %>%
     dplyr::distinct() %>%
@@ -195,30 +202,134 @@ run_sim_pstrat <- function(n_per_wave = 50){
     dplyr::left_join(dplyr::select(denom_data, Species, wave, denom),
                      by = c("Species","wave"))
 
-  ####
-  #### Specify design
-  cp_design <- twophase(id = list(~id, ~id), strata = list(NULL, NULL),
-                        subset = ~as.logical(sampled_phase2),
-                        data = survey_data, probs = list(NULL, ~denom),
-                        method = "simple")
+  ##### Step 2: Estimate total using computed denominator as weight
+  #####
+  ##### If not every stratum is sampled in each wave, we have to compute the mean
+  ##### stratum-wise (as long as we guaranteed that each sample had a non-zero sampling
+  ##### probability in at least one wave):
+  phase2_data <- survey_data[survey_data$sampled_phase2 == 1,]
+  phase2_data$weighted_obs <- phase2_data$Petal.Length/phase2_data$denom
 
-  cp_est <- svymean(~Petal.Length, design = cp_design)
-  cp_est_CI <- confint(cp_est)
+  sampled_waves <- denom_data[denom_data$sampling_prob > 0,]
+  n_waves_sampled <- table(sampled_waves$Species)
+
+  total_est <- (sum(phase2_data[phase2_data$Species == "setosa","weighted_obs"])*3/
+                  n_waves_sampled["setosa"] +
+                  sum(phase2_data[phase2_data$Species == "virginica","weighted_obs"])*3/
+                  n_waves_sampled["virginica"]+
+                  sum(phase2_data[phase2_data$Species == "versicolor","weighted_obs"])*3/
+                  n_waves_sampled["versicolor"])/3
+  cp_est <- total_est/nrow(phase1_data)
+
+  ## Step 3: Construct variance estimator
+
+  ## Here we compute an estimator for variance according to vignette equation 7
+  ## Augment denom dataframe with the N and n at each wave. These N and n are
+  ## stored in the design dataframe
+  designW123 <- dplyr::bind_rows(cbind(phase2_wave = 1,
+                                       get_mw(Survey, 2, 1, "design")),
+                                 cbind(phase2_wave = 2,
+                                       get_mw(Survey, 2, 2, "design")),
+                                 cbind(phase2_wave = 3,
+                                       get_mw(Survey, 2, 3, "design")))
+
+  ### Merge any differing column names, compute dependent probability as n_k/N_k*
+  ### n_k/(N_k-1), merge with phase2_data
+  designW123 <- designW123 |>
+    dplyr::mutate(n_to_sample = dplyr::coalesce(n_to_sample, stratum_size),
+                  nsample_prior = ifelse(is.na(nsample_prior),
+                                         0 , nsample_prior))
+
+  ### Now add three columns to design: prob of two obs being sampled in a given
+  ### wave, prob of neither being sampled in given wave, or prob of only (specific)
+  ### one being sampled in given wave. pp = pairwise probability.
+  designW123 <- designW123 |>
+    dplyr::mutate(both_pp = n_to_sample/(npop - nsample_prior)*
+                    (n_to_sample-1)/(npop - nsample_prior - 1), #n/N*(n-1)/(N-1)
+                  onlyone_pp = n_to_sample/(npop - nsample_prior)*
+                    (npop- nsample_prior- n_to_sample)/(npop - nsample_prior - 1),
+                  neither_pp =
+                    (npop- nsample_prior- n_to_sample)/(npop - nsample_prior)*
+                    (npop- nsample_prior- n_to_sample-1)/(npop - nsample_prior - 1),
+                  single_prob = n_to_sample/(npop - nsample_prior))
+
+  # Wide version for merging with survey_data
+  designW123_wide <- designW123 %>%
+    dplyr::select(phase2_wave, strata, both_pp, onlyone_pp, neither_pp, single_prob) %>%
+    tidyr::pivot_wider(names_from = phase2_wave, values_from = c(both_pp, onlyone_pp,
+                                                                 neither_pp, single_prob))
+
+  ### Now calculate estimator for variance (vignette equation 7)
+  ### Only observations in same wave and stratum are dependent
+  phase2_ids <- dplyr::filter(survey_data, sampled_phase2 == 1)$id
+  pairwise_df <- expand.grid("id1" = phase2_ids, "id2" = phase2_ids) %>%
+    dplyr::left_join(dplyr::select(survey_data, id, "Species1" = Species,
+                                   "wave1" = wave,
+                                   "denom1" = denom,
+                                   "Petal.Length1" = Petal.Length),
+                     by = c("id1" = "id")) %>%
+    dplyr::left_join(dplyr::select(survey_data, id, "Species2" = Species,
+                                   "wave2" = wave,
+                                   "denom2" = denom,
+                                   "Petal.Length2" = Petal.Length),
+                     by = c("id2" = "id")) %>%
+    dplyr::left_join(designW123_wide, by = c("Species1" = "strata")) %>%
+    dplyr::mutate(pairwise_prob =
+                    case_when(id1 == id2 ~ denom1,
+                              Species1 != Species2 ~ denom1*denom2,
+                              wave1 == 1 & wave2 == 1 ~ both_pp_1,
+                              wave1 == 2 & wave2 == 2 ~ neither_pp_1*both_pp_2,
+                              wave1 == 3 & wave2 == 3 ~ neither_pp_1*neither_pp_2*both_pp_3,
+                              TRUE ~ denom1*denom2),
+                  phase2_variance_contribution = (1-denom1*denom2/pairwise_prob)*
+                    Petal.Length1*Petal.Length2/(denom1*denom2)
+    )
+
+  phase2_variance_est <- sum(pairwise_df$phase2_variance_contribution)/nrow(phase1_data)^2/9
+
+
+  ##
+  ## Final variance estimator combines the phase 2 variance that we just calculated with
+  ## phase 1 variance (which was already calculated in post-stratified estimator)
+
+  ### Extract phase 1 variance estimate from pst_est
+  phase1_variance_est <- attr(SE(pst_est), "phases")$phase1[1]
+
+  ### Estimate variance with two-phase()
+  cp_est_ase <- sqrt(phase2_variance_est + phase1_variance_est)
+
+  ### Compute confidence interval
+  cp_est_CI <- c(cp_est - qnorm(.975)*cp_est_ase, cp_est + qnorm(.975)*cp_est_ase)
+
+  ##
+  ##
+  ## Note: using svymean() in survey leads to almost the exact phase 2 variance
+  ## calculation.
+
+  # phase2_data <- survey_data[survey_data$sampled_phase2 == 1,]
+  # phase2_data$strata_int <- paste0(phase2_data$Species, ".", phase2_data$wave)
+  # svydesign_phase2 <- svydesign(data = phase2_data,
+  #                               ids = ~id,
+  #                               strata = ~strata_int,
+  #                               probs = ~denom)
+  #
+  # cp_est_ase <- sqrt(phase1_variance_est + (SE(svytotal(~Petal.Length, design = svydesign_phase2))/996/3)^2)
+  # cp_est_CI <- c(cp_est - qnorm(.975)*cp_est_ase, cp_est + qnorm(.975)*cp_est_ase)
+
 
   ######
-  ##### 2b. Conditional probs with raking
-  #######
-  cp_design_rake <- calibrate(cp_design, formula = ~Sepal.Length + Species,
-                              phase = 2, calfun = "raking")
-  cp_est_rake <- svymean(~Petal.Length, design = cp_design_rake)
-  cp_est_rake_CI <- confint(cp_est_rake)
+  ### The below example is NOT recommended, nor included in the estimation vignette
+  ### but demonstrates the performance of an unconditional estimator that simply uses
+  ### the wave-specific probabilities as the sampling probabilities without conditioning
+  ### on previous waves.
+  ######
 
   ######
   ##### 3. Replace denominator above (demon of Eq. 6 in Estimation Vignette)
   ##### with wave-specific sampling prob (not conditioning on prior waves)
   #####
   ##### Note: There are two ways of doing this which lead to the same
-  ##### estimate (asymptotic SE differs, but neither closely approximates ESE).
+  ##### estimate (Asymptotic ASE estimates are not computed in this case).
   ##### One is using weights and the other is using the sampling probabilities.
   ##### Here we use weights.
 
@@ -273,28 +384,23 @@ run_sim_pstrat <- function(n_per_wave = 50){
 
   # Estimate and sampling variance samp$new_strata <- as.factor(samp$new_strata)
   pool_design <- twophase(data=samp, id=list(~id, ~id),
-                          strata = list(NULL, ~Species),
                           subset = ~as.logical(sampled_phase2),
-                          method = "approx",
+                          method = "simple",
                           weights= list(NULL, ~weight_norm))
 
   # Note: the following code generates the exact same estimate without requiring
   # the weights to be calculated/normalized.
-  # cp_design <- twophase(id = list(~id, ~id), strata = list(NULL, ~Species),
-  #                       subset = ~as.logical(sampled_phase2),
+  # pool_design <- twophase(id = list(~id, ~id), strata = list(NULL, ~Species),
+  #                       subset = ~as.logical(sampled_phase2), method = "simple",
   #                       data = survey_data, probs = list(NULL, ~sampling_prob))
 
-  pool_est <- svymean(~Petal.Length, design = pool_design)
-  pool_est
-  pool_est_CI <- confint(pool_est)
+  pool_est <- svymean(~Petal.Length, design = pool_design)[1]
 
   return(c(pst_est[1], SE(pst_est), pst_est_CI[1], pst_est_CI[2],
            pst_est_rake[1], SE(pst_est_rake)[1], pst_est_rake_CI[1],
            pst_est_rake_CI[2],
-           cp_est[1], SE(cp_est)[1], cp_est_CI[1], cp_est_CI[2],
-           cp_est_rake[1], SE(cp_est_rake)[1], cp_est_rake_CI[1],
-           cp_est_rake_CI[2],
-           pool_est[1], SE(pool_est)[1], pool_est_CI[1], pool_est_CI[2], flag))
+           cp_est[1], cp_est_ase, cp_est_CI[1], cp_est_CI[2],
+           pool_est[1],  flag))
 }
 
 ########
@@ -310,88 +416,65 @@ estimates1 <- c()
 estimates2 <- c()
 estimates3 <- c()
 estimates4 <- c()
-estimates5 <- c()
 ase1 <- c()
 ase2 <- c()
 ase3 <- c()
 ase4 <- c()
-ase5 <- c()
 lower1 <- c()
 lower2 <- c()
 lower3 <- c()
 lower4 <- c()
-lower5 <- c()
 upper1 <- c()
 upper2 <- c()
 upper3 <- c()
 upper4 <- c()
-upper5 <- c()
 flags <- c()
 
-nreps <- 1000
+nreps <- 2000
 for (i in 1:nreps){
   results <- run_sim_pstrat(n_per_wave = 50)
   estimates1 <- c(estimates1, results[1])
   estimates2 <- c(estimates2, results[5])
   estimates3 <- c(estimates3, results[9])
   estimates4 <- c(estimates4, results[13])
-  estimates5 <- c(estimates5, results[17])
   ase1 <- c(ase1, results[2])
   ase2 <- c(ase2, results[6])
   ase3 <- c(ase3, results[10])
-  ase4 <- c(ase4, results[14])
-  ase5 <- c(ase5, results[18])
   lower1 <- c(lower1, results[3])
   lower2 <- c(lower2, results[7])
   lower3 <- c(lower3, results[11])
-  lower4 <- c(lower4, results[15])
-  lower5 <- c(lower5, results[19])
   upper1 <- c(upper1, results[4])
   upper2 <- c(upper2, results[8])
   upper3 <- c(upper3, results[12])
-  upper4 <- c(upper4, results[16])
-  upper5 <- c(upper5, results[20])
-  flags <- c(flags, results[21])
+  flags <- c(flags, results[14])
 }
 
 ### True mean
 true_mean <- mean(c(1.462, 4.260, 5.552))
 
-### oracle_SE function
-cover <- function(true, est, SE){
-  ## return indicator mu in the interval (est-1.96SE, est+1.96SE)
-  return((true > est-qnorm(.975)*SE)*(true<est+qnorm(0.975)*SE))
-}
-
 ### Output dataset
-stats <- data.frame(case = c(1,2,3,4,5),
-                    true_mean = rep(true_mean, 5),
-                    est = c(mean(unlist(estimates1)),
-                            mean(unlist(estimates2)),
-                            mean(unlist(estimates3[flags == 1])),
-                            mean(unlist(estimates4)),
-                            mean(unlist(estimates5[flags == 1]))
-                    ),
+stats <- data.frame(case = c(1,2,3,4),
+                    true_mean = rep(true_mean, 4),
+                    est = c(median(unlist(estimates1)),
+                            median(unlist(estimates2)),
+                            median(unlist(estimates3)),
+                            median(unlist(estimates4))),
                     coverage = c(sum(true_mean >= lower1 & true_mean <= upper1)/nreps,
                                  sum(true_mean >= lower2 & true_mean <= upper2)/nreps,
-                                 "-",
-                                 "-",
-                                 "-"),
-                    ASE = c(mean(unlist(ase1)),
-                            mean(unlist(ase2)),
-                            "-",
-                            "-",
+                                 sum(true_mean >= lower3 & true_mean <= upper3)/nreps,
+                                "-"),
+                    ASE = c(median(unlist(ase1)),
+                            median(unlist(ase2)),
+                            median(unlist(ase3)),
                             "-"),
                     ESE = c(sqrt(var(unlist(estimates1))),
                             sqrt(var(unlist(estimates2))),
                             sqrt(var(unlist(estimates3[flags == 1]))),
-                            sqrt(var(unlist(estimates4))),
-                            sqrt(var(unlist(estimates5[flags == 1])))),
+                            sqrt(var(unlist(estimates4)))),
                     RMSE = c(sqrt(mean((unlist(estimates1)- true_mean)^2)),
                              sqrt(mean((unlist(estimates2)- true_mean)^2)),
-                             sqrt(mean((unlist(estimates3[flags == 1])- true_mean)^2)),
-                             sqrt(mean((unlist(estimates4)- true_mean)^2)),
-                             sqrt(mean((unlist(estimates5[flags == 1])- true_mean)^2))))
+                             sqrt(mean((unlist(estimates3)- true_mean)^2)),
+                             sqrt(mean((unlist(estimates4)- true_mean)^2))))
 
 # stats$bias <- stats$est - true_mean
 stats50 <- stats
@@ -406,88 +489,65 @@ estimates1 <- c()
 estimates2 <- c()
 estimates3 <- c()
 estimates4 <- c()
-estimates5 <- c()
 ase1 <- c()
 ase2 <- c()
 ase3 <- c()
 ase4 <- c()
-ase5 <- c()
 lower1 <- c()
 lower2 <- c()
 lower3 <- c()
 lower4 <- c()
-lower5 <- c()
 upper1 <- c()
 upper2 <- c()
 upper3 <- c()
 upper4 <- c()
-upper5 <- c()
 flags <- c()
 
-nreps <- 1000
+nreps <- 2000
 for (i in 1:nreps){
   results <- run_sim_pstrat(n_per_wave = 20)
   estimates1 <- c(estimates1, results[1])
   estimates2 <- c(estimates2, results[5])
   estimates3 <- c(estimates3, results[9])
   estimates4 <- c(estimates4, results[13])
-  estimates5 <- c(estimates5, results[17])
   ase1 <- c(ase1, results[2])
   ase2 <- c(ase2, results[6])
   ase3 <- c(ase3, results[10])
-  ase4 <- c(ase4, results[14])
-  ase5 <- c(ase5, results[18])
   lower1 <- c(lower1, results[3])
   lower2 <- c(lower2, results[7])
   lower3 <- c(lower3, results[11])
-  lower4 <- c(lower4, results[15])
-  lower5 <- c(lower5, results[19])
   upper1 <- c(upper1, results[4])
   upper2 <- c(upper2, results[8])
   upper3 <- c(upper3, results[12])
-  upper4 <- c(upper4, results[16])
-  upper5 <- c(upper5, results[20])
-  flags <- c(flags, results[21])
+  flags <- c(flags, results[14])
 }
 
 ### True mean
 true_mean <- mean(c(1.462, 4.260, 5.552))
 
-### oracle_SE function
-cover <- function(true, est, SE){
-  ## return indicator mu in the interval (est-1.96SE, est+1.96SE)
-  return((true > est-qnorm(.975)*SE)*(true<est+qnorm(0.975)*SE))
-}
-
 ### Output dataset
-stats <- data.frame(case = c(1,2,3,4,5),
-                    true_mean = rep(true_mean, 5),
-                    est = c(mean(unlist(estimates1)),
-                            mean(unlist(estimates2)),
-                            mean(unlist(estimates3[flags == 1])),
-                            mean(unlist(estimates4)),
-                            mean(unlist(estimates5[flags == 1]))
-                    ),
+stats <- data.frame(case = c(1,2,3,4),
+                    true_mean = rep(true_mean, 4),
+                    est = c(median(unlist(estimates1)),
+                            median(unlist(estimates2)),
+                            median(unlist(estimates3)),
+                            median(unlist(estimates4))),
                     coverage = c(sum(true_mean >= lower1 & true_mean <= upper1)/nreps,
                                  sum(true_mean >= lower2 & true_mean <= upper2)/nreps,
-                                 "-",
-                                 "-",
+                                 sum(true_mean >= lower3 & true_mean <= upper3)/nreps,
                                  "-"),
-                    ASE = c(mean(unlist(ase1)),
-                            mean(unlist(ase2)),
-                            "-",
-                            "-",
+                    ASE = c(median(unlist(ase1)),
+                            median(unlist(ase2)),
+                            median(unlist(ase3)),
                             "-"),
                     ESE = c(sqrt(var(unlist(estimates1))),
                             sqrt(var(unlist(estimates2))),
                             sqrt(var(unlist(estimates3[flags == 1]))),
-                            sqrt(var(unlist(estimates4))),
-                            sqrt(var(unlist(estimates5[flags == 1])))),
+                            sqrt(var(unlist(estimates4)))),
                     RMSE = c(sqrt(mean((unlist(estimates1)- true_mean)^2)),
                              sqrt(mean((unlist(estimates2)- true_mean)^2)),
-                             sqrt(mean((unlist(estimates3[flags == 1])- true_mean)^2)),
-                             sqrt(mean((unlist(estimates4)- true_mean)^2)),
-                             sqrt(mean((unlist(estimates5[flags == 1])- true_mean)^2))))
+                             sqrt(mean((unlist(estimates3)- true_mean)^2)),
+                             sqrt(mean((unlist(estimates4)- true_mean)^2))))
 
 # stats$bias <- stats$est - true_mean
 stats20 <- stats
@@ -502,88 +562,65 @@ estimates1 <- c()
 estimates2 <- c()
 estimates3 <- c()
 estimates4 <- c()
-estimates5 <- c()
 ase1 <- c()
 ase2 <- c()
 ase3 <- c()
 ase4 <- c()
-ase5 <- c()
 lower1 <- c()
 lower2 <- c()
 lower3 <- c()
 lower4 <- c()
-lower5 <- c()
 upper1 <- c()
 upper2 <- c()
 upper3 <- c()
 upper4 <- c()
-upper5 <- c()
 flags <- c()
 
-nreps <- 1000
+nreps <- 2000
 for (i in 1:nreps){
   results <- run_sim_pstrat(n_per_wave = 80)
   estimates1 <- c(estimates1, results[1])
   estimates2 <- c(estimates2, results[5])
   estimates3 <- c(estimates3, results[9])
   estimates4 <- c(estimates4, results[13])
-  estimates5 <- c(estimates5, results[17])
   ase1 <- c(ase1, results[2])
   ase2 <- c(ase2, results[6])
   ase3 <- c(ase3, results[10])
-  ase4 <- c(ase4, results[14])
-  ase5 <- c(ase5, results[18])
   lower1 <- c(lower1, results[3])
   lower2 <- c(lower2, results[7])
   lower3 <- c(lower3, results[11])
-  lower4 <- c(lower4, results[15])
-  lower5 <- c(lower5, results[19])
   upper1 <- c(upper1, results[4])
   upper2 <- c(upper2, results[8])
   upper3 <- c(upper3, results[12])
-  upper4 <- c(upper4, results[16])
-  upper5 <- c(upper5, results[20])
-  flags <- c(flags,results[21])
+  flags <- c(flags, results[14])
 }
 
 ### True mean
 true_mean <- mean(c(1.462, 4.260, 5.552))
 
-### oracle_SE function
-cover <- function(true, est, SE){
-  ## return indicator mu in the interval (est-1.96SE, est+1.96SE)
-  return((true > est-qnorm(.975)*SE)*(true<est+qnorm(0.975)*SE))
-}
-
 ### Output dataset
-stats <- data.frame(case = c(1,2,3,4,5),
-                    true_mean = rep(true_mean, 5),
-                    est = c(mean(unlist(estimates1)),
-                            mean(unlist(estimates2)),
-                            mean(unlist(estimates3[flags == 1])),
-                            mean(unlist(estimates4)),
-                            mean(unlist(estimates5[flags == 1]))
-                    ),
+stats <- data.frame(case = c(1,2,3,4),
+                    true_mean = rep(true_mean, 4),
+                    est = c(median(unlist(estimates1)),
+                            median(unlist(estimates2)),
+                            median(unlist(estimates3)),
+                            median(unlist(estimates4))),
                     coverage = c(sum(true_mean >= lower1 & true_mean <= upper1)/nreps,
                                  sum(true_mean >= lower2 & true_mean <= upper2)/nreps,
-                                 "-",
-                                 "-",
+                                 sum(true_mean >= lower3 & true_mean <= upper3)/nreps,
                                  "-"),
-                    ASE = c(mean(unlist(ase1)),
-                            mean(unlist(ase2)),
-                            "-",
-                            "-",
+                    ASE = c(median(unlist(ase1)),
+                            median(unlist(ase2)),
+                            median(unlist(ase3)),
                             "-"),
                     ESE = c(sqrt(var(unlist(estimates1))),
                             sqrt(var(unlist(estimates2))),
                             sqrt(var(unlist(estimates3[flags == 1]))),
-                            sqrt(var(unlist(estimates4))),
-                            sqrt(var(unlist(estimates5[flags == 1])))),
+                            sqrt(var(unlist(estimates4)))),
                     RMSE = c(sqrt(mean((unlist(estimates1)- true_mean)^2)),
                              sqrt(mean((unlist(estimates2)- true_mean)^2)),
-                             sqrt(mean((unlist(estimates3[flags == 1])- true_mean)^2)),
-                             sqrt(mean((unlist(estimates4)- true_mean)^2)),
-                             sqrt(mean((unlist(estimates5[flags == 1])- true_mean)^2))))
+                             sqrt(mean((unlist(estimates3)- true_mean)^2)),
+                             sqrt(mean((unlist(estimates4)- true_mean)^2))))
 
 # stats$bias <- stats$est - true_mean
 stats80 <- stats
