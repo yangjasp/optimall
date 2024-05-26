@@ -5,7 +5,7 @@
 ## This script uses simulated version of the iris dataset
 ## (with n=996) to conduct a simple
 ## simulation example of (three-wave) multiwave sampling.
-## Over 1,000 iterations, it conducts stratified sampling
+## Over 2,000 iterations, it conducts stratified sampling
 ## to sample from the 3 strata of species, with x-optimal allocation
 ## in Wave 1 and then use Neyman allocation in Waves 2 and 3. It then
 ## estimates the mean Petal Length using 5 different strategies
@@ -195,8 +195,6 @@ run_sim_pstrat <- function(n_per_wave = 50){
                                  sampling_prob * cumprod(1 - lag(sampling_prob, default = 0))))%>%
     ungroup()
 
-  flag <- ifelse(nrow(denom_data) == 9, 1, 0)
-
   ## Merge back with original dataframe, attaching the denominator to each obs.
   survey_data <- survey_data %>%
     dplyr::left_join(dplyr::select(denom_data, Species, wave, denom),
@@ -329,7 +327,8 @@ run_sim_pstrat <- function(n_per_wave = 50){
   ##### with wave-specific sampling prob (not conditioning on prior waves)
   #####
   ##### Note: There are two ways of doing this which lead to the same
-  ##### estimate (Asymptotic ASE estimates are not computed in this case).
+  ##### estimate when all strata are sampled in all waves.
+  ##### (Asymptotic ASE estimates are not computed in this case).
   ##### One is using weights and the other is using the sampling probabilities.
   ##### Here we use weights.
 
@@ -388,13 +387,17 @@ run_sim_pstrat <- function(n_per_wave = 50){
                           method = "simple",
                           weights= list(NULL, ~weight_norm))
 
+  pool_est <- svymean(~Petal.Length, design = pool_design)[1]
+
   # Note: the following code generates the exact same estimate without requiring
   # the weights to be calculated/normalized.
   # pool_design <- twophase(id = list(~id, ~id), strata = list(NULL, ~Species),
   #                       subset = ~as.logical(sampled_phase2), method = "simple",
   #                       data = survey_data, probs = list(NULL, ~sampling_prob))
 
-  pool_est <- svymean(~Petal.Length, design = pool_design)[1]
+  # But the above two strategies do not work when at least one stratum is not sampled
+  # during a wave. The flag below keeps track of such occurences
+  flag <- ifelse(nrow(denom_data) == 9, 1, 0)
 
   return(c(pst_est[1], SE(pst_est), pst_est_CI[1], pst_est_CI[2],
            pst_est_rake[1], SE(pst_est_rake)[1], pst_est_rake_CI[1],
@@ -458,7 +461,7 @@ stats <- data.frame(case = c(1,2,3,4),
                     est = c(median(unlist(estimates1)),
                             median(unlist(estimates2)),
                             median(unlist(estimates3)),
-                            median(unlist(estimates4))),
+                            median(unlist(estimates4[flags==1]))),
                     coverage = c(sum(true_mean >= lower1 & true_mean <= upper1)/nreps,
                                  sum(true_mean >= lower2 & true_mean <= upper2)/nreps,
                                  sum(true_mean >= lower3 & true_mean <= upper3)/nreps,
@@ -469,12 +472,12 @@ stats <- data.frame(case = c(1,2,3,4),
                             "-"),
                     ESE = c(sqrt(var(unlist(estimates1))),
                             sqrt(var(unlist(estimates2))),
-                            sqrt(var(unlist(estimates3[flags == 1]))),
-                            sqrt(var(unlist(estimates4)))),
+                            sqrt(var(unlist(estimates3))),
+                            sqrt(var(unlist(estimates4[flags==1])))),
                     RMSE = c(sqrt(mean((unlist(estimates1)- true_mean)^2)),
                              sqrt(mean((unlist(estimates2)- true_mean)^2)),
                              sqrt(mean((unlist(estimates3)- true_mean)^2)),
-                             sqrt(mean((unlist(estimates4)- true_mean)^2))))
+                             sqrt(mean((unlist(estimates4[flags==1])- true_mean)^2))))
 
 # stats$bias <- stats$est - true_mean
 stats50 <- stats
@@ -531,7 +534,7 @@ stats <- data.frame(case = c(1,2,3,4),
                     est = c(median(unlist(estimates1)),
                             median(unlist(estimates2)),
                             median(unlist(estimates3)),
-                            median(unlist(estimates4))),
+                            median(unlist(estimates4[flags==1]))),
                     coverage = c(sum(true_mean >= lower1 & true_mean <= upper1)/nreps,
                                  sum(true_mean >= lower2 & true_mean <= upper2)/nreps,
                                  sum(true_mean >= lower3 & true_mean <= upper3)/nreps,
@@ -542,12 +545,12 @@ stats <- data.frame(case = c(1,2,3,4),
                             "-"),
                     ESE = c(sqrt(var(unlist(estimates1))),
                             sqrt(var(unlist(estimates2))),
-                            sqrt(var(unlist(estimates3[flags == 1]))),
-                            sqrt(var(unlist(estimates4)))),
+                            sqrt(var(unlist(estimates3))),
+                            sqrt(var(unlist(estimates4[flags==1])))),
                     RMSE = c(sqrt(mean((unlist(estimates1)- true_mean)^2)),
                              sqrt(mean((unlist(estimates2)- true_mean)^2)),
                              sqrt(mean((unlist(estimates3)- true_mean)^2)),
-                             sqrt(mean((unlist(estimates4)- true_mean)^2))))
+                             sqrt(mean((unlist(estimates4[flags==1])- true_mean)^2))))
 
 # stats$bias <- stats$est - true_mean
 stats20 <- stats
@@ -604,7 +607,7 @@ stats <- data.frame(case = c(1,2,3,4),
                     est = c(median(unlist(estimates1)),
                             median(unlist(estimates2)),
                             median(unlist(estimates3)),
-                            median(unlist(estimates4))),
+                            median(unlist(estimates4[flags==1]))),
                     coverage = c(sum(true_mean >= lower1 & true_mean <= upper1)/nreps,
                                  sum(true_mean >= lower2 & true_mean <= upper2)/nreps,
                                  sum(true_mean >= lower3 & true_mean <= upper3)/nreps,
@@ -615,12 +618,12 @@ stats <- data.frame(case = c(1,2,3,4),
                             "-"),
                     ESE = c(sqrt(var(unlist(estimates1))),
                             sqrt(var(unlist(estimates2))),
-                            sqrt(var(unlist(estimates3[flags == 1]))),
-                            sqrt(var(unlist(estimates4)))),
+                            sqrt(var(unlist(estimates3))),
+                            sqrt(var(unlist(estimates4[flags==1])))),
                     RMSE = c(sqrt(mean((unlist(estimates1)- true_mean)^2)),
                              sqrt(mean((unlist(estimates2)- true_mean)^2)),
                              sqrt(mean((unlist(estimates3)- true_mean)^2)),
-                             sqrt(mean((unlist(estimates4)- true_mean)^2))))
+                             sqrt(mean((unlist(estimates4[flags==1])- true_mean)^2))))
 
 # stats$bias <- stats$est - true_mean
 stats80 <- stats
