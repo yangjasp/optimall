@@ -285,6 +285,20 @@ run_sim_pstrat <- function(n_per_wave = 50){
 
   phase2_variance_est <- sum(pairwise_df$phase2_variance_contribution)/nrow(phase1_data)^2/9
 
+  ## An equivalent answer for the phase 2 variance can be extracted from survey
+  ## using the following:
+  # pairwise_probs <- matrix(pairwise_df$pairwise_prob,
+  #                          ncol = length(phase2_ids), byrow = TRUE)
+  #
+  # cp_design <- twophase(id = list(~id, ~id),
+  #                       subset = ~as.logical(sampled_phase2),
+  #                       data = survey_data, probs = list(NULL, ~denom)#,
+  #                       ,pps = list(NULL, ppsmat(pairwise_probs))
+  # )
+  #
+  # phase2_variance_est <- attr(SE(svytotal(~Petal.Length, design = cp_design)),
+  #                           "phases")$phase2/nrow(phase1_data)^2/3^2
+
 
   ##
   ## Final variance estimator combines the phase 2 variance that we just calculated with
@@ -313,7 +327,6 @@ run_sim_pstrat <- function(n_per_wave = 50){
   #
   # cp_est_ase <- sqrt(phase1_variance_est + (SE(svytotal(~Petal.Length, design = svydesign_phase2))/996/3)^2)
   # cp_est_CI <- c(cp_est - qnorm(.975)*cp_est_ase, cp_est + qnorm(.975)*cp_est_ase)
-
 
   ######
   ### The below example is NOT recommended, nor included in the estimation vignette
