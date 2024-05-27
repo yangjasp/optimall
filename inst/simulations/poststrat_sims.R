@@ -176,13 +176,10 @@ run_sim_pstrat <- function(n_per_wave = 50){
   ### Step 1: Calculate denominator of Estimation Vignette equation 6
 
   ## Prepare data
-  denom_data <- survey_data %>%
+  survey_data <- survey_data %>%
     dplyr::mutate(wave = case_when(sampled_wave2.1 == 1 ~ 1,
                                    sampled_wave2.2 == 1 ~ 2,
                                    sampled_wave2.3 == 1 ~ 3))
-
-  survey_data <- survey_data %>%
-    dplyr::left_join(dplyr::select(denom_data, c(id, wave)), by = "id")
 
   ## Find denominator for each wave, species
   denom_data <- denom_data %>%
