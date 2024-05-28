@@ -33,7 +33,7 @@ run_sim_pstrat <- function(n_per_wave = 50){
   #####
   ## Generate data
   #####
-  n <- c(rmultinom(1, 996, c(1/3, 1/3, 1/3)))
+  n <- c(rmultinom(1, 996, c(1/3, 1/3, 1/3))) # no need to be be even though
   col1 <- c(rep("setosa", times = n[1]),
             rep("versicolor", times = n[2]),
             rep("virginica", times = n[3]))
@@ -182,7 +182,7 @@ run_sim_pstrat <- function(n_per_wave = 50){
                                    sampled_wave2.3 == 1 ~ 3))
 
   ## Find denominator for each wave, species
-  denom_data <- denom_data %>%
+  denom_data <- survey_data %>%
     dplyr::select(Species, wave, sampling_prob) %>%
     dplyr::distinct() %>%
     dplyr::filter(!is.na(wave)) %>%
