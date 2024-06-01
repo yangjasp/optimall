@@ -1,8 +1,9 @@
 ---
 title: "Estimation in Two-phase, Multi-wave Sampling"
 author: "Jasper Yang"
-date: "2024-05-26"
-output: html_document
+date: "2024-05-31"
+output:
+  html_document: default
 ---
 
 ```{r setup, include = FALSE}
@@ -23,9 +24,11 @@ data(MatWgt_Sim, package = "optimall")
 
 ## Introduction
 
-Two-phase, multi-wave sampling is an appealing strategy for the design of validation studies when initially observed data are subject to measurement error (McIsaac and Cook 2015, Chen and Lumley 2020, Shepherd et al. 2023). One of `optimall`'s primary objectives is to facilitate the implementation of these studies in `R`, focusing particularly on the optimum allocation of samples, stratification, and storage of relevant information during the design stage. The `optimall` workflow is designed to blend smoothly with packages specific to the estimation stage, such as the comprehensive `survey` package, so `optimall` itself does not offer functions for estimation.
+Two-phase, multi-wave sampling is an appealing strategy for the design of validation studies where a large set of data is available for a whole cohort, but some variables of interest can only be observed on a subset of the cohort. A classic example is when inexpensive error-prone data is available on everyone (phase I), but the error-free or gold standard data is only available on a subset (phase II) (McIsaac and Cook 2015, Chen and Lumley 2020, Shepherd et al. 2023). 
 
-Nevertheless, estimation is the ultimate goal of a survey. This vignette describes how estimation with the `survey` package can be conducted from a survey designed with `optimall`. It begins with a brief summary of the theoretical considerations for multi-phase and multi-wave sampling. It then presents three unbiased estimators that can be used in these settings and demonstrates how they can be calculated using `optimall` and `survey`. The final section presents the results of simulations comparing the three estimators. In most cases, post-stratified weights lead to the most efficient estimators. 
+One of `optimall`'s primary objectives is to facilitate the implementation of two-phase, multi-wave studies in `R`, focusing particularly on the optimum allocation of samples, stratification, and storage of relevant information during the design stage. The `optimall` workflow is designed to blend smoothly with packages specific to the estimation stage, such as the comprehensive `survey` package, so `optimall` itself does not offer functions for estimation.
+
+Nevertheless, estimation is the ultimate goal of a survey. This vignette describes how estimation with the `survey` package can be conducted from a survey designed with `optimall`. It begins with a brief summary of the theoretical considerations for multi-phase and multi-wave sampling. It then presents two estimators that can be used in these settings and demonstrates how they can be calculated using `optimall` and `survey`. The final section presents the results of simulations comparing the three estimators. In most cases, post-stratified weights lead to the most efficient estimators. 
 
 ## Theoretical background
 
@@ -60,7 +63,7 @@ When the auxiliary variable is correlated with the variable of interest, general
 
 #### Special considerations for Two-phase sampling
 
-Two-phase sampling involves collecting a large sample of relatively inexpensive variables in phase 1 and then collecting expensive variables on a subset of the phase 1 samples in phase 2. Rather than treating the phase 1 cohort as the population and phase 2 as a single sample from it, the typical two-phase approach considers phase 1 itself to be a sample from an even larger super-population of interest. A key feature of two-phase sampling is that the information collected in phase 1 is used to inform a more efficient phase 2 sampling design. A side effect of this gain in efficiency is that the marginal inclusion probabilities, $\pi_i$, for elements sampled in phase 2 are unknown because their calculation requires consideration of the phase 2 sampling designs that would arise under every possible phase 1. Specifically, the exact inclusion probability $\pi_i$ in a two-phase design is
+Two-phase sampling involves collecting a large sample of relatively inexpensive variables in phase 1 and then collecting expensive variables on a subset of the phase 1 samples in phase 2. Rather than treating the phase 1 cohort as the population and phase 2 as a single sample from it, the typical two-phase approach considers phase 1 itself to be a sample from an even larger super-population of interest. A key feature of two-phase sampling is that the information collected in phase 1 is used to inform a more efficient phase 2 sampling design. For example, standard deviation estimates required for Neyman allocation of phase 2 can be approximated by phase 1 (Neyman 1938). A side effect of this gain in efficiency is that the marginal inclusion probabilities, $\pi_i$, for elements sampled in phase 2 are unknown because their calculation requires consideration of the phase 2 sampling designs that would arise under every possible phase 1. Specifically, the exact inclusion probability $\pi_i$ in a two-phase design is
 
 $$
 \pi_i = \sum_{s_a}R_{ai} P(s_a)\pi_{i|s_a}
@@ -127,7 +130,7 @@ Phase 2, Wave T: Allocate samples to strata according to optimum allocation dete
 Here, we present three potential estimators for a population total under two-phase, multi-wave sampling.
 
 #### 1. Post-stratification
-The examples contained in the `optimall` package vignettes use post-stratification weights to conduct estimation. As discussed by Holt and Smith (1979), Valliant (1993) and Lumley, Shaw, and Dai (2011), post-stratification is a robust and efficient estimation method that assigns weights to sample elements based on strata constructed after the sample has been collected rather than relying on pre-specified sampling probabilities as traditional IPW estimators do. This approach is useful in the multi-wave sampling setting because it does not require computation of exact, or even wave-conditional, inclusion probabilities (nor does variance estimation involve their pairwise covariances). Instead, the post-stratification approach assigns the same weight to every member of stratum $k$, $\frac{N_k}{n_k} = \frac{N_k}{\sum_{t=1}^T n_{tk}}$, where $n_{tk}$ is the number of samples selected from stratum $k$ at wave $t$. This weight is the inverse of the final sampling fractions, and it reflects what the exact IPW weights would be if the sampling at each wave was independent and SRS was used within each stratum. The final estimator is simple to calculate and takes the form 
+The examples contained in the `optimall` package vignettes use post-stratification weights to conduct estimation. As discussed by Holt and Smith (1979), Valliant (1993) and Lumley, Shaw, and Dai (2011), post-stratification is a robust and efficient estimation method that assigns weights to sample elements based on strata constructed after the sample has been collected rather than relying on pre-specified sampling probabilities as traditional IPW estimators do. This approach is useful in the multi-wave sampling setting because it does not require computation of exact, or even wave-conditional, inclusion probabilities (nor does variance estimation involve their pairwise inclusion probabilities). Instead, the post-stratification approach assigns the same weight to every member of stratum $k$, $\frac{N_k}{n_k} = \frac{N_k}{\sum_{t=1}^T n_{tk}}$, where $n_{tk}$ is the number of samples selected from stratum $k$ at wave $t$. This weight is the inverse of the final sampling fractions, and it reflects what the exact IPW weights would be if the sampling at each wave was independent and SRS was used within each stratum. The final estimator is simple to calculate and takes the form 
 
 $$
 \hat{T}_{POST} = \sum_{k=1}^K\sum_{i \in I_k}R_i\frac{N_k}{n_k}y_i,
@@ -187,14 +190,14 @@ The following section demonstrates how to compute this estimator in `R`using `op
 
 ## How to implement each strategy with `optimall` and `survey`
 
-In this section we demonstrate how to estimate a population mean using the three estimators defined in the previous section with `optimall` and `survey`. For this example, we simulate a phase 1 `iris` dataset with n = 996 observations from three species, which we use as strata, assuming phase 1 is drawn as a simple random sample from a superpopulation. Sepal Length and Species are available at phase 1, and Petal Length is the variable of interest available at phase 2. We conduct phase 2 sampling over three waves using `optimall`, collecting Petal Length for 50 samples at each wave. The final dataset looks like:
+In this section we demonstrate how to estimate a population mean using the three estimators defined in the previous section with `optimall` and `survey`. For this example, we simulate a phase 1 dataset with n = 1,000 observations modelled after the `iris` dataset (see appendix). The dataset contains information on three species, which we use as strata, assuming phase 1 is drawn as a simple random sample from a superpopulation. Sepal Length and Species are available at phase 1, and Petal Length is the variable of interest available at phase 2. We conduct phase 2 sampling over three waves using `optimall`, collecting Petal Length for 50 samples at each wave. The final dataset looks like:
 
 ```{r example, echo = FALSE, results = 'hide'}
 #####
 ## Generate data
 #####
 set.seed(1)
-n <- c(rmultinom(1, 996, c(1/3, 1/3, 1/3)))
+n <- c(rmultinom(1, 1000, c(1/3, 1/3, 1/3)))
 col1 <- c(rep("setosa", times = n[1]),
           rep("versicolor", times = n[2]),
           rep("virginica", times = n[3]))
@@ -203,8 +206,8 @@ pl <- c(rnorm(n[1], 1.462, 0.432),
         rnorm(n[3], 5.552, 0.552))
 sl <- c(rnorm(n[1], pl[1:n[1]] * 3.35, 0.341),
         rnorm(n[2], pl[(n[1]+1):(n[1]+n[2])] * 1.32, 0.366),
-        rnorm(n[3],  pl[(n[2]+1):996] * 1.14, 0.302))
-full_data <- data.frame("id" = 1:996,
+        rnorm(n[3],  pl[(n[2]+1):1000] * 1.14, 0.302))
+full_data <- data.frame("id" = 1:1000,
                         "Species" = as.factor(col1),
                         "Sepal.Length" = sl,
                         "Petal.Length" = pl)
@@ -311,7 +314,10 @@ survey_data <- survey_data[,c("id", "Species", "Sepal.Length",
                               "sampled_wave2.1", "sampled_wave2.2",
                               "sampled_wave2.3", "sampling_prob")]
 survey_data <- survey_data[order(-survey_data$sampled_phase2, 
-                                 survey_data$id), , drop = FALSE]
+                                 survey_data$id), , drop = FALSE] %>%
+  dplyr::mutate(wave = case_when(sampled_wave2.1 == 1 ~ 1,
+                                   sampled_wave2.2 == 1 ~ 2,
+                                   sampled_wave2.3 == 1 ~ 3))
 ```
 
 ```{r}
@@ -322,7 +328,7 @@ The code to conduct multi-wave sampling and generate this data frame using `opti
 
 #### 1. Post-stratification
 
-Post-stratification is straightforward to implement with the `twophase` function in `survey`. We start by initializing the twophase design.
+Post-stratification is straightforward to implement with the `twophase` function in `survey`. We start by initializing the two-phase design.
 
 ```{r}
 pst_design <- twophase(id = list(~id, ~id), strata = list(NULL, ~Species),
@@ -337,11 +343,11 @@ pst_est <- svymean(~Petal.Length, design = pst_design)
 pst_est
 ```
 
-Note that another option would be to use the `calibrate()` function to perform post-stratification using Species as the stratification variable. See the "Two phase" vignette in the Survey package for more information.
+Note that another option would be to use the `calibrate()` function to perform post-stratification using Species as the stratification variable. See the "Two phase" vignette in the `survey` package for more information.
 
 ##### Post-stratification with raking
 
-To obtain an even more efficient estimator, we can rake on the Sepal.Length variable.
+To obtain an even more efficient estimator, we can rake on both the Sepal.Length and stratification variable. This is also straightforward to implement with the `survey` package.
 
 ```{r}
 pst_design_rake <- calibrate(pst_design, ~Sepal.Length + Species,
@@ -352,7 +358,7 @@ pst_est_rake
 
 #### 2. Wave-specific conditional probabilities
 
-The wave-specific conditional probabilities approach is less efficient than post-stratification and more complicated because it requires computation of the denominator of (\ref{eq:eq6}), and variance estimation involves pairwise element inclusion probabilities of (\ref{eq:eq7}). Still, it is possible to obtain estimates and asymptotic standard errors through this approach with `optimall` and `survey`.
+The wave-specific conditional probabilities approach is more complicated because it requires computation of the denominator of (\ref{eq:eq6}), and variance estimation involves pairwise element inclusion probabilities of (\ref{eq:eq7}). Still, it is possible to obtain estimates and asymptotic standard errors through this approach with `optimall` and `Survey`.
 
 <!--
 As of `survey` package version 4.4-2, the `twophase()` function accepts a matrix of pairwise sampling probabilities through the `pps` argument. (\ref{eq:eq3}) requires these pairwise sampling probabilities, and `twophase()` cannot calculate them on its own because they depend on both the stratum that an element belongs to and the wave in which it was sampled. Elements sampled in different waves or belonging to different strata have independent sampling probabilities, so their pairwise probability is simply the product of their individual inclusion probabilities, but elements from the same stratum and sampled in the same wave have correlated sampling probabilities. 
@@ -361,16 +367,8 @@ As of `survey` package version 4.4-2, the `twophase()` function accepts a matrix
 We can compute the denominator of (\ref{eq:eq6}) with:
 
 ```{r}
-denom_data <- survey_data %>%
-    dplyr::mutate(wave = case_when(sampled_wave2.1 == 1 ~ 1,
-                                   sampled_wave2.2 == 1 ~ 2,
-                                   sampled_wave2.3 == 1 ~ 3))
-  
-survey_data <- survey_data %>%
-  dplyr::left_join(dplyr::select(denom_data, c(id, wave)), by = "id")
-  
 ## Find denominator from eq. 6 for each wave, species
-denom_data <- denom_data %>%
+denom_data <- survey_data %>%
   dplyr::select(Species, wave, sampling_prob) %>%
   dplyr::distinct() %>%
   dplyr::filter(!is.na(wave)) %>%
@@ -397,7 +395,7 @@ cp_est <- svymean(~Petal.Length, design = cp_design)
 cp_est[1]
 ```
 
-If some strata were not sampled in any wave, we can still compute the estimator for the mean by hand:
+If some strata were not sampled in any wave, we can still compute the estimator for the mean (Equation \ref{eq:eq6}) by hand:
 ```{r}
 phase2_data <- survey_data[survey_data$sampled_phase2 == 1,]
 
@@ -410,11 +408,11 @@ n_waves_sampled <- table(sampled_waves$Species)
   
 # Compute estimate for total in equation 6
 total_est <- (sum(phase2_data[phase2_data$Species == "setosa",
-                              "weighted_obs"])*3/ n_waves_sampled["setosa"] +
+                              "weighted_obs"])/ n_waves_sampled["setosa"] +
               sum(phase2_data[phase2_data$Species == "virginica",
-                                "weighted_obs"])*3/n_waves_sampled["virginica"]+
+                                "weighted_obs"])/n_waves_sampled["virginica"]+
               sum(phase2_data[phase2_data$Species == "versicolor",
-                            "weighted_obs"])*3/n_waves_sampled["versicolor"])/3
+                            "weighted_obs"])/n_waves_sampled["versicolor"])
 names(total_est) <- "Petal.Length"
 
 # Finally, compute the mean
@@ -422,11 +420,11 @@ cp_est <- total_est/nrow(survey_data)
 cp_est # this matches svymean() output above if all strata sampled in all waves
 ```
 
-Finally, we can compute standard error by directly calculation (Equation \ref{eq:eq7}).
+Finally, we can estimate standard error by directly evaluating Equation (\ref{eq:eq7}).
 
 ```{r}
-### Combine designs for waves 1-3. 
-designW123 <- dplyr::bind_rows(cbind(phase2_wave = 1, 
+### Combine design dataframes for waves 1-3. 
+design_all_waves <- dplyr::bind_rows(cbind(phase2_wave = 1, 
                                      get_mw(Survey, 2, 1, "design")),
                                cbind(phase2_wave = 2, 
                                      get_mw(Survey, 2, 2, "design")),
@@ -440,7 +438,7 @@ designW123 <- dplyr::bind_rows(cbind(phase2_wave = 1,
 ### Now add three columns to design: prob of two obs being sampled in a given
 ### wave, prob of neither being sampled in given wave, or prob of only (specific) 
 ### one being sampled in given wave
-designW123 <- designW123 |>
+design_all_waves <- design_all_waves |>
   dplyr::mutate(both_pp = n_to_sample/(npop - nsample_prior)*
                   (n_to_sample-1)/(npop - nsample_prior - 1), #n/N*(n-1)/(N-1)
                 onlyone_pp = n_to_sample/(npop - nsample_prior)*
@@ -450,7 +448,8 @@ designW123 <- designW123 |>
                   (npop- nsample_prior- n_to_sample-1)/(npop - nsample_prior - 1),
                 single_prob = n_to_sample/(npop - nsample_prior)) 
 
-designW123_wide <- designW123 %>%
+### One row for each stratum
+design_all_waves_wide <- design_all_waves %>%
   dplyr::select(phase2_wave, strata, both_pp, onlyone_pp, neither_pp, single_prob) %>%
   tidyr::pivot_wider(names_from = phase2_wave, values_from = c(both_pp, onlyone_pp,
                                                                neither_pp, single_prob))
@@ -469,7 +468,7 @@ pairwise_df <- expand.grid("id1" = phase2_ids, "id2" = phase2_ids) %>%
                                  "denom2" = denom,
                                  "Petal.Length2" = Petal.Length),
                    by = c("id2" = "id")) %>%
-  dplyr::left_join(designW123_wide, by = c("Species1" = "strata")) %>%
+  dplyr::left_join(design_all_waves_wide, by = c("Species1" = "strata")) %>%
   dplyr::mutate(pairwise_prob =
                   case_when(id1 == id2 ~ denom1,
                             Species1 != Species2 ~ denom1*denom2,
@@ -481,7 +480,7 @@ pairwise_df <- expand.grid("id1" = phase2_ids, "id2" = phase2_ids) %>%
                   Petal.Length1*Petal.Length2/(denom1*denom2)
   )
 
-phase2_variance_est <- sum(pairwise_df$phase2_variance_contribution)/nrow(phase1_data)^2/9
+phase2_variance_est <- sum(pairwise_df$phase2_variance_contribution)/nrow(phase1_data)^2/3^2
 
 ##
 ## Final variance estimator combines the phase 2 variance that we just calculated with
@@ -495,7 +494,24 @@ cp_est_ase <- sqrt(phase2_variance_est + phase1_variance_est)
 cp_est_ase
 ```
 
-Or, when each stratum is sampled at least twice in each wave, the above computation of the phase 2 variance is closely approximated by `svymean` when stratified by wave and Species:
+Rather than computing the variance entirely by hand as in the final steps above, another option is to feed the pairwise sampling probability matrix to `survey`. This will lead to the same answer.
+
+```{r}
+pairwise_probs <- matrix(pairwise_df$pairwise_prob,
+                          ncol = length(phase2_ids), byrow = TRUE)
+
+phase2_data <- survey_data[survey_data$sampled_phase2 == 1,]
+cp_design_phase2 <- svydesign(id = ~id,
+                       data = phase2_data, probs = ~denom,
+                       pps = ppsmat(pairwise_probs))
+
+phase2_variance_est <- (SE(svytotal(~Petal.Length, design = cp_design_phase2))/nrow(phase1_data)/3)^2
+
+cp_est_ase <- sqrt(phase2_variance_est + phase1_variance_est)
+cp_est_ase
+```
+
+The above computation of the Phase 2 variance Equation (\ref{eq:eq7}) can be a bit arduous, but when each stratum is sampled at least twice in each wave, the result is closely approximated by only a few lines in the `survey` package. This can be done by stratifying on both original strata and sampling wave in a phase 2-specific call to `svydesign`:
 ```{r}
 phase2_data <- survey_data[survey_data$sampled_phase2 == 1,]
 phase2_data$strata_int <- paste0(phase2_data$Species, ".", phase2_data$wave)
@@ -504,38 +520,41 @@ svydesign_phase2 <- svydesign(data = phase2_data,
                               strata = ~strata_int,
                               probs = ~denom)
 
-sqrt(phase1_variance_est + (SE(svytotal(~Petal.Length, svydesign_phase2))/nrow(phase1_data)/3)^2)
+estimate_approx <- svytotal(~Petal.Length, svydesign_phase2)/nrow(phase1_data)/3
+estimate_approx[1]
+variance_approx <- sqrt(phase1_variance_est + (SE(estimate_approx)/nrow(phase1_data)/3)^2)
+variance_approx
 ```
 
 
 ## Comparing estimation methods through simulation
 
-To compare the performance of these two estimators, we perform two-phase, multiwave sampling on repeatedly simulated phase 2 datasets of the same form as the large `iris` dataset in the previous section. The tables below show the results from each estimation strategy. Here we use the abbreviations ASE: asymptotic standard error estimated with `survey`, ESE: empirical standard error, RMSE: root mean square error. Median over 2,000 simulations was reported for each point estimate and ASE. The code to run these simulations is available on Github [here](https://github.com/yangjasp/optimall/blob/master/inst/simulations/poststrat_sims.R).
+To compare the performance of these estimators, we perform two-phase, multiwave sampling on repeatedly simulated phase 2 datasets of the same form as the large `iris` dataset in the previous section. The tables below show the results from each estimation strategy. Here we use the abbreviations ASE: asymptotic standard error estimated with `survey`, ESE: empirical standard error, RMSE: root mean square error. Median over 2,000 simulations was reported for each point estimate and ASE. The code to run these simulations is available on Github [here](https://github.com/yangjasp/optimall/blob/master/inst/simulations/poststrat_sims.R).
 
 **With n = 80 per wave:**
 
 | Case                                  |True mean |Estimate |Coverage  |ASE    |ESE    |RMSE   |
 |---------------------------------------|-----------|----------|-----------|--------|--------|--------|
-| Post-stratification                   | 3.76    | 3.76   | 0.952        | 0.062 | 0.061 | 0.061 |
-| Post-stratification w/ raking         | 3.76      | 3.76   | 0.954     | 0.060 | 0.060 | 0.060 | 
-| Conditional estimator (eq. 6)         | 3.76    | 3.76  | 0.955       | 0.065  | 0.064 |   0.064  | 
+| Post-stratification                   | 3.76    | 3.76   | 0.953        | 0.062 | 0.061 | 0.061 |
+| Post-stratification w/ raking         | 3.76      | 3.76   | 0.957     | 0.060 | 0.059 | 0.059 | 
+| Wave-specific probs. (eq. 6)         | 3.76    | 3.76  | 0.955       | 0.064  | 0.064 |   0.064  | 
 
 **With n = 50 per wave:**
 
 | Case                                  |True mean |Estimate |Coverage  |ASE    |ESE    |RMSE   |
 |---------------------------------------|-----------|----------|-----------|--------|--------|--------|
-| Post-stratification                   | 3.76    | 3.76   | 0.952        | 0.067 | 0.068 | 0.068 |
-| Post-stratification w/ raking         | 3.76      | 3.76   | 0.945     | 0.063 | 0.063 | 0.064 | 
-| Conditional estimator (eq. 6)         | 3.76    | 3.76  | 0.956       | 0.070  | 0.071 |   0.071  | 
+| Post-stratification                   | 3.76    | 3.76   | 0.952        | 0.067 | 0.066 | 0.066 |
+| Post-stratification w/ raking         | 3.76      | 3.76   | 0.952     | 0.063 | 0.062 | 0.062 | 
+| Wave-specific probs. (eq. 6)         | 3.76    | 3.76  | 0.956       | 0.070  | 0.071 |   0.071  | 
 
 
 **With n = 20 per wave:**
 
 | Case                                  |True mean |Estimate |Coverage  |ASE    |ESE    |RMSE   | 
 |---------------------------------------|-----------|----------|----------|--------|--------|--------|
-| Post-stratification                   | 3.76    | 3.76  | 0.932        | 0.081 | 0.086| 0.086|  
-| Post-stratification w/ raking         | 3.76      | 3.76   | 0.939     | 0.072 | 0.076 | 0.076 | 
-| Conditional estimator (eq. 6)         | 3.76    | 3.76  | 0.943       | 0.088  | 0.091 |   0.092  | 
+| Post-stratification                   | 3.76    | 3.75  | 0.936        | 0.081 | 0.085| 0.085|  
+| Post-stratification w/ raking         | 3.76      | 3.76   | 0.941     | 0.072 | 0.075 | 0.075 | 
+| Wave-specific probs. (eq. 6)         | 3.76    | 3.76  | 0.944       | 0.087  | 0.091 |   0.091  | 
 
 <!--
 Note on these variance estimates: As $n$ gets smaller, the post-stratified ase estimate starts to underestimate the ese more - see Sarndal 7.6 and (here)[https://www.sciencedirect.com/topics/mathematics/poststratification] for an idea about why - there is a second order term that makes true post-stratified variance larger that just a stratified random sampling estimate with the same strata. This happens because the groups/strata are also random. 
