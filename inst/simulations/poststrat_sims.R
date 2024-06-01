@@ -3,7 +3,7 @@
 #######
 
 ## This script uses simulated version of the iris dataset
-## (with n=996) to conduct a simple
+## (with n=1000) to conduct a simple
 ## simulation example of (three-wave) multiwave sampling.
 ## Over 2,000 iterations, it conducts stratified sampling
 ## to sample from the 3 strata of species, with x-optimal allocation
@@ -33,7 +33,7 @@ run_sim_pstrat <- function(n_per_wave = 50){
   #####
   ## Generate data
   #####
-  n <- c(rmultinom(1, 996, c(1/3, 1/3, 1/3))) # no need to be be even though
+  n <- c(rmultinom(1, 1000, c(1/3, 1/3, 1/3))) # no need to be be even though
   col1 <- c(rep("setosa", times = n[1]),
             rep("versicolor", times = n[2]),
             rep("virginica", times = n[3]))
@@ -42,8 +42,8 @@ run_sim_pstrat <- function(n_per_wave = 50){
           rnorm(n[3], 5.552, 0.552))
   sl <- c(rnorm(n[1], pl[1:n[1]] * 3.35, 0.341),
           rnorm(n[2], pl[(n[1]+1):(n[1]+n[2])] * 1.32, 0.366),
-          rnorm(n[3],  pl[(n[2]+1):996] * 1.14, 0.302))
-  full_data <- data.frame("id" = 1:996,
+          rnorm(n[3],  pl[(n[2]+1):1000] * 1.14, 0.302))
+  full_data <- data.frame("id" = 1:1000,
                           "Species" = as.factor(col1),
                           "Sepal.Length" = sl,
                           "Petal.Length" = pl)
@@ -322,7 +322,7 @@ run_sim_pstrat <- function(n_per_wave = 50){
   #                               strata = ~strata_int,
   #                               probs = ~denom)
   #
-  # cp_est_ase <- sqrt(phase1_variance_est + (SE(svytotal(~Petal.Length, design = svydesign_phase2))/996/3)^2)
+  # cp_est_ase <- sqrt(phase1_variance_est + (SE(svytotal(~Petal.Length, design = svydesign_phase2))/1000/3)^2)
   # cp_est_CI <- c(cp_est - qnorm(.975)*cp_est_ase, cp_est + qnorm(.975)*cp_est_ase)
 
   ######
