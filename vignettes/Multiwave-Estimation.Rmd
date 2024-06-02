@@ -17,6 +17,7 @@ library(survey)
 library(datasets)
 library(dplyr)
 library(tidyr)
+library(MASS)
 
 data(MatWgt_Sim, package = "optimall")
 ```
