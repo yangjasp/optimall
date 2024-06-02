@@ -1,9 +1,10 @@
 ---
 title: "Estimation in Two-phase, Multi-wave Sampling"
-author: "Jasper Yang"
-date: "2024-05-31"
-output:
-  html_document: default
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Multiwave Object}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include = FALSE}
