@@ -339,7 +339,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Using Optimall</h1>
 <h4 class="author">Jasper Yang and Pamela Shaw</h4>
-<h4 class="date">Last updated: January 10, 2024</h4>
+<h4 class="date">Last updated: June 02, 2024</h4>
 
 
 
@@ -388,37 +388,37 @@ based on <code>&quot;Species&quot;</code>, but we want to split two out of the
 three, setosa and virginica, in half based on the within-stratum median
 of <code>&quot;Sepal.Width&quot;</code>. In <code>optimall</code>, we can do this
 by calling the <code>split_strata()</code> function:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(optimall)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(datasets)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>iris <span class="ot">&lt;-</span> datasets<span class="sc">::</span>iris</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(iris<span class="sc">$</span>Species)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     setosa versicolor  virginica </span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         50         50         50</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>iris2 <span class="ot">&lt;-</span> <span class="fu">split_strata</span>(<span class="at">data =</span> iris,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                     <span class="at">strata =</span> <span class="st">&quot;Species&quot;</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>                     <span class="at">split =</span> <span class="fu">c</span>(<span class="st">&quot;setosa&quot;</span>, <span class="st">&quot;virginica&quot;</span>), </span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>                     <span class="at">split_var =</span> <span class="st">&quot;Sepal.Width&quot;</span>,</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>                     <span class="at">split_at =</span> <span class="fu">c</span>(<span class="fl">0.5</span>), <span class="at">type =</span> <span class="st">&quot;local quantile&quot;</span>)</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(iris2<span class="sc">$</span>new_strata)</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  setosa.Sepal.Width_(3.4,4.4]  setosa.Sepal.Width_[2.3,3.4] </span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                            22                            28 </span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    versicolor virginica.Sepal.Width_(3,3.8] </span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                            50                            17 </span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; virginica.Sepal.Width_[2.2,3] </span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                            33</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(optimall)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(datasets)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>iris <span class="ot">&lt;-</span> datasets<span class="sc">::</span>iris</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">table</span>(iris<span class="sc">$</span>Species)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt;     setosa versicolor  virginica </span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt;         50         50         50</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>iris2 <span class="ot">&lt;-</span> <span class="fu">split_strata</span>(<span class="at">data =</span> iris,</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>                     <span class="at">strata =</span> <span class="st">&quot;Species&quot;</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>                     <span class="at">split =</span> <span class="fu">c</span>(<span class="st">&quot;setosa&quot;</span>, <span class="st">&quot;virginica&quot;</span>), </span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>                     <span class="at">split_var =</span> <span class="st">&quot;Sepal.Width&quot;</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>                     <span class="at">split_at =</span> <span class="fu">c</span>(<span class="fl">0.5</span>), <span class="at">type =</span> <span class="st">&quot;local quantile&quot;</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="fu">table</span>(iris2<span class="sc">$</span>new_strata)</span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt;  setosa.Sepal.Width_(3.4,4.4]  setosa.Sepal.Width_[2.3,3.4] </span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co">#&gt;                            22                            28 </span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co">#&gt;                    versicolor virginica.Sepal.Width_(3,3.8] </span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt;                            50                            17 </span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt; virginica.Sepal.Width_[2.2,3] </span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co">#&gt;                            33</span></span></code></pre></div>
 <p>Similarly, we can merge strata using the function
 <code>merge_strata()</code>:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>iris3 <span class="ot">&lt;-</span> <span class="fu">merge_strata</span>(<span class="at">data =</span> iris,</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">strata =</span> <span class="st">&quot;Species&quot;</span>,</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">merge =</span> <span class="fu">c</span>(<span class="st">&quot;setosa&quot;</span>, <span class="st">&quot;versicolor&quot;</span>), </span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">name =</span> <span class="st">&quot;set_or_vers&quot;</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(iris3<span class="sc">$</span>new_strata)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; set_or_vers   virginica </span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         100          50</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>iris3 <span class="ot">&lt;-</span> <span class="fu">merge_strata</span>(<span class="at">data =</span> iris,</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>                     <span class="at">strata =</span> <span class="st">&quot;Species&quot;</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>                     <span class="at">merge =</span> <span class="fu">c</span>(<span class="st">&quot;setosa&quot;</span>, <span class="st">&quot;versicolor&quot;</span>), </span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>                     <span class="at">name =</span> <span class="st">&quot;set_or_vers&quot;</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="fu">table</span>(iris3<span class="sc">$</span>new_strata)</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt; set_or_vers   virginica </span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt;         100          50</span></span></code></pre></div>
 <p>The <code>split_strata</code> and <code>merge_strata()</code>
 functions are quite versatile. See function documentation for more
 information.</p>
@@ -469,28 +469,28 @@ Algorithm III.</p>
 called to optimally allocate 40 samples among <code>&quot;Species&quot;</code> in
 the <code>iris</code> dataset, minimizing the variance of the
 <code>&quot;Sepal.Width&quot;</code> sample mean.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>sampling_design <span class="ot">&lt;-</span> <span class="fu">optimum_allocation</span>(<span class="at">data =</span> iris, <span class="at">strata =</span> <span class="st">&quot;Species&quot;</span>, </span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">y =</span> <span class="st">&quot;Sepal.Width&quot;</span>,</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">nsample =</span> <span class="dv">40</span>, <span class="at">method =</span> <span class="st">&quot;WrightII&quot;</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>sampling_design</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       strata npop   sd  n_sd stratum_fraction stratum_size</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1     setosa   50 0.38 18.95             0.38           15</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 versicolor   50 0.31 15.69             0.30           12</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3  virginica   50 0.32 16.12             0.32           13</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>sampling_design <span class="ot">&lt;-</span> <span class="fu">optimum_allocation</span>(<span class="at">data =</span> iris, <span class="at">strata =</span> <span class="st">&quot;Species&quot;</span>, </span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>                                      <span class="at">y =</span> <span class="st">&quot;Sepal.Width&quot;</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>                                      <span class="at">nsample =</span> <span class="dv">40</span>, <span class="at">method =</span> <span class="st">&quot;WrightII&quot;</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>sampling_design</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt;       strata npop   sd  n_sd stratum_fraction stratum_size</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; 1     setosa   50 0.38 18.95             0.38           15</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; 2 versicolor   50 0.31 15.69             0.30           12</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; 3  virginica   50 0.32 16.12             0.32           13</span></span></code></pre></div>
 <p>If we have a dataframe that holds the <span class="math inline">\(N_h\)</span> and <span class="math inline">\(sd_h\)</span> for each stratum instead of data for
 each individual unit, we can still use
 <code>optimum_allocation()</code>:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>iris_summary <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">strata =</span> <span class="fu">unique</span>(iris<span class="sc">$</span>Species),</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">size =</span> <span class="fu">c</span>(<span class="dv">50</span>, <span class="dv">50</span>, <span class="dv">50</span>),</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                           <span class="at">sd =</span> <span class="fu">c</span>(<span class="fl">0.3791</span>, <span class="fl">0.3138</span>, <span class="fl">0.3225</span>))</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">optimum_allocation</span>(<span class="at">data =</span> iris_summary, <span class="at">strata =</span> <span class="st">&quot;strata&quot;</span>,</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">sd_h =</span> <span class="st">&quot;sd&quot;</span>, <span class="at">N_h =</span> <span class="st">&quot;size&quot;</span>, </span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">nsample =</span> <span class="dv">40</span>, <span class="at">method =</span> <span class="st">&quot;WrightII&quot;</span>)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       strata npop   sd  n_sd stratum_fraction stratum_size</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1     setosa   50 0.38 18.95             0.38           15</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 versicolor   50 0.31 15.69             0.30           12</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3  virginica   50 0.32 16.12             0.32           13</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>iris_summary <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">strata =</span> <span class="fu">unique</span>(iris<span class="sc">$</span>Species),</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>                           <span class="at">size =</span> <span class="fu">c</span>(<span class="dv">50</span>, <span class="dv">50</span>, <span class="dv">50</span>),</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>                           <span class="at">sd =</span> <span class="fu">c</span>(<span class="fl">0.3791</span>, <span class="fl">0.3138</span>, <span class="fl">0.3225</span>))</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="fu">optimum_allocation</span>(<span class="at">data =</span> iris_summary, <span class="at">strata =</span> <span class="st">&quot;strata&quot;</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>                   <span class="at">sd_h =</span> <span class="st">&quot;sd&quot;</span>, <span class="at">N_h =</span> <span class="st">&quot;size&quot;</span>, </span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>                   <span class="at">nsample =</span> <span class="dv">40</span>, <span class="at">method =</span> <span class="st">&quot;WrightII&quot;</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt;       strata npop   sd  n_sd stratum_fraction stratum_size</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; 1     setosa   50 0.38 18.95             0.38           15</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt; 2 versicolor   50 0.31 15.69             0.30           12</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; 3  virginica   50 0.32 16.12             0.32           13</span></span></code></pre></div>
 </div>
 <div id="selecting-ids-to-sample" class="section level2">
 <h2>Selecting IDs to Sample</h2>
@@ -498,31 +498,31 @@ each individual unit, we can still use
 dataframe, <code>optimall</code> can select the IDs of the units to be
 sampled using simple random sampling within strata with the function
 <code>sample_strata()</code>:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>iris<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">150</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">743</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>iris <span class="ot">&lt;-</span> <span class="fu">sample_strata</span>(<span class="at">data =</span> iris, <span class="at">strata =</span> <span class="st">&quot;Species&quot;</span>, <span class="at">id =</span> <span class="st">&quot;id&quot;</span>,</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                               <span class="at">design_data =</span> sampling_design, <span class="at">design_strata =</span> <span class="st">&quot;strata&quot;</span>,</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                               <span class="at">n_allocated =</span> <span class="st">&quot;stratum_size&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>iris<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">150</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">743</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>iris <span class="ot">&lt;-</span> <span class="fu">sample_strata</span>(<span class="at">data =</span> iris, <span class="at">strata =</span> <span class="st">&quot;Species&quot;</span>, <span class="at">id =</span> <span class="st">&quot;id&quot;</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>                               <span class="at">design_data =</span> sampling_design, <span class="at">design_strata =</span> <span class="st">&quot;strata&quot;</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>                               <span class="at">n_allocated =</span> <span class="st">&quot;stratum_size&quot;</span>)</span></code></pre></div>
 <p>The output of <code>sample_strata()</code> is the same input
 dataframe with a new column called <code>&quot;sample_indicator&quot;</code> that
 holds a binary indicator for whether each unit should be sampled in the
 specified wave:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(iris)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species id sample_indicator</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1          5.1         3.5          1.4         0.2  setosa  1                0</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2          4.9         3.0          1.4         0.2  setosa  2                0</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3          4.7         3.2          1.3         0.2  setosa  3                0</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4          4.6         3.1          1.5         0.2  setosa  4                1</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5          5.0         3.6          1.4         0.2  setosa  5                0</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6          5.4         3.9          1.7         0.4  setosa  6                1</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">head</span>(iris)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species id sample_indicator</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt; 1          5.1         3.5          1.4         0.2  setosa  1                0</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt; 2          4.9         3.0          1.4         0.2  setosa  2                0</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt; 3          4.7         3.2          1.3         0.2  setosa  3                0</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt; 4          4.6         3.1          1.5         0.2  setosa  4                1</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt; 5          5.0         3.6          1.4         0.2  setosa  5                0</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt; 6          5.4         3.9          1.7         0.4  setosa  6                1</span></span></code></pre></div>
 <p>From this dataframe, we can easily extract a vector of the ids to
 sample:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>ids_to_sample <span class="ot">&lt;-</span> iris<span class="sc">$</span>id[iris<span class="sc">$</span>sample_indicator <span class="sc">==</span> <span class="dv">1</span>]</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ids_to_sample)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1]  4  6  8 11 14 15</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(ids_to_sample)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 40</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>ids_to_sample <span class="ot">&lt;-</span> iris<span class="sc">$</span>id[iris<span class="sc">$</span>sample_indicator <span class="sc">==</span> <span class="dv">1</span>]</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">head</span>(ids_to_sample)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt; [1]  4  6  8 11 14 15</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="fu">length</span>(ids_to_sample)</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt; [1] 40</span></span></code></pre></div>
 <p>Note that <code>design_data</code> is the output of
 <code>optimum_allocation()</code> in this example, but in practice it
 can be any dataframe that has one row per stratum and one column
@@ -579,51 +579,51 @@ from the virginica species, 7 from setosa, and 7 from versicolor.
 Assuming we only have those 30 samples to base our within-stratum
 standard deviation estimates on, we can allocate the next 10 samples
 using <code>allocate_wave()</code>:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up Wave 1</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>wave1_design <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">strata =</span> <span class="fu">c</span>(<span class="st">&quot;setosa&quot;</span>,</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">&quot;virginica&quot;</span>,</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                                      <span class="st">&quot;versicolor&quot;</span>),</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                           <span class="at">stratum_size =</span> <span class="fu">c</span>(<span class="dv">7</span>, <span class="dv">16</span>, <span class="dv">7</span>))</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Collect Sepal.Width from only the 30 samples</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>phase1_data <span class="ot">&lt;-</span> <span class="fu">subset</span>(datasets<span class="sc">::</span>iris, <span class="at">select =</span>  <span class="sc">-</span>Sepal.Width)</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>phase1_data<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(phase1_data) <span class="co">#Add id column</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">234</span>)</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>phase1_data <span class="ot">&lt;-</span> <span class="fu">sample_strata</span>(<span class="at">data =</span> phase1_data, </span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>                               <span class="at">strata =</span> <span class="st">&quot;Species&quot;</span>, <span class="at">id =</span> <span class="st">&quot;id&quot;</span>,</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>                               <span class="at">design_data =</span> wave1_design,</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>                               <span class="at">design_strata =</span> <span class="st">&quot;strata&quot;</span>,</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>                               <span class="at">n_allocated =</span> <span class="st">&quot;stratum_size&quot;</span>)</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>wave1_ids <span class="ot">&lt;-</span> iris<span class="sc">$</span>id[phase1_data<span class="sc">$</span>sample_indicator <span class="sc">==</span> <span class="dv">1</span>]</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>wave1_sampled_data <span class="ot">&lt;-</span> iris[iris<span class="sc">$</span>id <span class="sc">%in%</span> wave1_ids, <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>,<span class="st">&quot;Sepal.Width&quot;</span>)]</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>wave1_data <span class="ot">&lt;-</span> <span class="fu">merge</span>(phase1_data, wave1_sampled_data, <span class="at">by =</span> <span class="st">&quot;id&quot;</span>, </span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>                    <span class="at">no.dups =</span>  <span class="cn">TRUE</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="co"># We have our 30 samples</span></span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">is.na</span>(wave1_data<span class="sc">$</span>Sepal.Width), wave1_data<span class="sc">$</span>Species)</span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        </span></span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         setosa versicolor virginica</span></span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   FALSE      7          7        16</span></span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   TRUE      43         43        34</span></span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, allocate the next 10:</span></span>
-<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>wave2_design <span class="ot">&lt;-</span> <span class="fu">allocate_wave</span>(<span class="at">data =</span> wave1_data,</span>
-<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>                              <span class="at">strata =</span> <span class="st">&quot;Species&quot;</span>, </span>
-<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>                              <span class="at">y =</span> <span class="st">&quot;Sepal.Width&quot;</span>,</span>
-<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>                              <span class="at">already_sampled =</span> <span class="st">&quot;sample_indicator&quot;</span>,</span>
-<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>                              <span class="at">nsample =</span> <span class="dv">10</span>, </span>
-<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>                              <span class="at">detailed =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>wave2_design</span>
-<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       strata npop nsample_optimal nsample_actual nsample_prior n_to_sample   sd</span></span>
-<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1     setosa   50              19             15             7           8 0.47</span></span>
-<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 versicolor   50              12              9             7           2 0.29</span></span>
-<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3  virginica   50               9             16            16           0 0.24</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Set up Wave 1</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>wave1_design <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">strata =</span> <span class="fu">c</span>(<span class="st">&quot;setosa&quot;</span>,</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>                                       <span class="st">&quot;virginica&quot;</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>                                      <span class="st">&quot;versicolor&quot;</span>),</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>                           <span class="at">stratum_size =</span> <span class="fu">c</span>(<span class="dv">7</span>, <span class="dv">16</span>, <span class="dv">7</span>))</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co"># Collect Sepal.Width from only the 30 samples</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>phase1_data <span class="ot">&lt;-</span> <span class="fu">subset</span>(datasets<span class="sc">::</span>iris, <span class="at">select =</span>  <span class="sc">-</span>Sepal.Width)</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>phase1_data<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(phase1_data) <span class="co">#Add id column</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">234</span>)</span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>phase1_data <span class="ot">&lt;-</span> <span class="fu">sample_strata</span>(<span class="at">data =</span> phase1_data, </span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>                               <span class="at">strata =</span> <span class="st">&quot;Species&quot;</span>, <span class="at">id =</span> <span class="st">&quot;id&quot;</span>,</span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>                               <span class="at">design_data =</span> wave1_design,</span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>                               <span class="at">design_strata =</span> <span class="st">&quot;strata&quot;</span>,</span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a>                               <span class="at">n_allocated =</span> <span class="st">&quot;stratum_size&quot;</span>)</span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a>wave1_ids <span class="ot">&lt;-</span> iris<span class="sc">$</span>id[phase1_data<span class="sc">$</span>sample_indicator <span class="sc">==</span> <span class="dv">1</span>]</span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a>wave1_sampled_data <span class="ot">&lt;-</span> iris[iris<span class="sc">$</span>id <span class="sc">%in%</span> wave1_ids, <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>,<span class="st">&quot;Sepal.Width&quot;</span>)]</span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a></span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a>wave1_data <span class="ot">&lt;-</span> <span class="fu">merge</span>(phase1_data, wave1_sampled_data, <span class="at">by =</span> <span class="st">&quot;id&quot;</span>, </span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a>                    <span class="at">no.dups =</span>  <span class="cn">TRUE</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a></span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a><span class="co"># We have our 30 samples</span></span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">is.na</span>(wave1_data<span class="sc">$</span>Sepal.Width), wave1_data<span class="sc">$</span>Species)</span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a><span class="co">#&gt;        </span></span>
+<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a><span class="co">#&gt;         setosa versicolor virginica</span></span>
+<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a><span class="co">#&gt;   FALSE      7          7        16</span></span>
+<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a><span class="co">#&gt;   TRUE      43         43        34</span></span>
+<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a></span>
+<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a><span class="co"># Now, allocate the next 10:</span></span>
+<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a>wave2_design <span class="ot">&lt;-</span> <span class="fu">allocate_wave</span>(<span class="at">data =</span> wave1_data,</span>
+<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a>                              <span class="at">strata =</span> <span class="st">&quot;Species&quot;</span>, </span>
+<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a>                              <span class="at">y =</span> <span class="st">&quot;Sepal.Width&quot;</span>,</span>
+<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a>                              <span class="at">already_sampled =</span> <span class="st">&quot;sample_indicator&quot;</span>,</span>
+<span id="cb8-38"><a href="#cb8-38" tabindex="-1"></a>                              <span class="at">nsample =</span> <span class="dv">10</span>, </span>
+<span id="cb8-39"><a href="#cb8-39" tabindex="-1"></a>                              <span class="at">detailed =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-40"><a href="#cb8-40" tabindex="-1"></a></span>
+<span id="cb8-41"><a href="#cb8-41" tabindex="-1"></a>wave2_design</span>
+<span id="cb8-42"><a href="#cb8-42" tabindex="-1"></a><span class="co">#&gt;       strata npop nsample_optimal nsample_actual nsample_prior n_to_sample   sd</span></span>
+<span id="cb8-43"><a href="#cb8-43" tabindex="-1"></a><span class="co">#&gt; 1     setosa   50              19             15             7           8 0.47</span></span>
+<span id="cb8-44"><a href="#cb8-44" tabindex="-1"></a><span class="co">#&gt; 2 versicolor   50              12              9             7           2 0.29</span></span>
+<span id="cb8-45"><a href="#cb8-45" tabindex="-1"></a><span class="co">#&gt; 3  virginica   50               9             16            16           0 0.24</span></span></code></pre></div>
 <p>Notice that in this case, <code>&quot;nsample_optimal&quot;</code> does not
 match <code>&quot;nsample_actual&quot;</code> for every stratum in the outputted
 design dataframe. This occurred because we <em>oversampled</em> from the
@@ -641,16 +641,16 @@ oversampling occurs, <code>&quot;nsample_optimal&quot;</code> will match
 <code>design_strata</code> or <code>n_allocated</code> because the
 default arguments are the column names of the
 <code>allocate_wave()</code> output:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a> <span class="co"># Run sample_strata</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>wave2_data <span class="ot">&lt;-</span> <span class="fu">sample_strata</span>(<span class="at">data =</span> wave1_data, <span class="at">strata =</span> <span class="st">&quot;Species&quot;</span>,</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>                            <span class="at">id =</span> <span class="st">&quot;id&quot;</span>, <span class="at">already_sampled =</span> <span class="st">&quot;sample_indicator&quot;</span>,</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                            <span class="at">design_data =</span> wave2_design)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a> <span class="co"># Extract the 10 ids to sample</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>wave2_ids <span class="ot">&lt;-</span> iris<span class="sc">$</span>id[wave2_data<span class="sc">$</span>sample_indicator <span class="sc">==</span> <span class="dv">1</span>]</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>wave2_ids</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1]  8 15 22 24 26 32 40 47 57 68</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a> <span class="co"># Run sample_strata</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>wave2_data <span class="ot">&lt;-</span> <span class="fu">sample_strata</span>(<span class="at">data =</span> wave1_data, <span class="at">strata =</span> <span class="st">&quot;Species&quot;</span>,</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>                            <span class="at">id =</span> <span class="st">&quot;id&quot;</span>, <span class="at">already_sampled =</span> <span class="st">&quot;sample_indicator&quot;</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>                            <span class="at">design_data =</span> wave2_design)</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a> <span class="co"># Extract the 10 ids to sample</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>wave2_ids <span class="ot">&lt;-</span> iris<span class="sc">$</span>id[wave2_data<span class="sc">$</span>sample_indicator <span class="sc">==</span> <span class="dv">1</span>]</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>wave2_ids</span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co">#&gt;  [1]  8 15 22 24 26 32 40 47 57 68</span></span></code></pre></div>
 </div>
 <div id="examples-using-optimall-to-determine-study-design-and-sample-data" class="section level2">
 <h2>Examples: Using <code>optimall</code> to Determine Study Design and
@@ -697,15 +697,15 @@ through an adaptive, multi-wave sampling design.</p>
 <code>optimall</code>. The dataset <code>MatWgt_Sim</code> contains
 10335 rows, one for each mother-child pair, and 6 columns containing ID
 numbers and covariates which we see below:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(MatWgt_Sim, <span class="at">package =</span> <span class="st">&quot;optimall&quot;</span>)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(MatWgt_Sim)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     id mat_weight_est  race diabetes obesity mat_weight_true</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 7667      12.954711 Asian        0       0       10.768935</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 8554       9.607124 Asian        0       1        8.892049</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 6324      10.998284 Asian        0       0       12.075861</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 8320      10.702210 Asian        0       0       10.887584</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 8543       6.485988 Asian        1       0        7.331542</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6  127      13.338445 Asian        0       1       12.936826</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">data</span>(MatWgt_Sim, <span class="at">package =</span> <span class="st">&quot;optimall&quot;</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="fu">head</span>(MatWgt_Sim)</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co">#&gt;     id mat_weight_est  race diabetes obesity mat_weight_true</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#&gt; 1 7667      12.954711 Asian        0       0       10.768935</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co">#&gt; 2 8554       9.607124 Asian        0       1        8.892049</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">#&gt; 3 6324      10.998284 Asian        0       0       12.075861</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co">#&gt; 4 8320      10.702210 Asian        0       0       10.887584</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="co">#&gt; 5 8543       6.485988 Asian        1       0        7.331542</span></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="co">#&gt; 6  127      13.338445 Asian        0       1       12.936826</span></span></code></pre></div>
 <p>Three of the covariates, child race, diabetes, and estimated maternal
 weight, are inexpensive to collect for all subjects, but determining the
 true maternal weight requires a tedious validation process. This full
@@ -722,11 +722,11 @@ sampled for the inexpensive covariates. Accordingly, we define our phase
 In the examples that follow, we will assume the validated maternal
 weight variable <code>mat_weight_true</code> will only be available
 through phase 2 sampling.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Get phase 1 data, remove mat_weight_true which we assume is unknown</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>phase1 <span class="ot">&lt;-</span> <span class="fu">subset</span>(MatWgt_Sim, <span class="at">select =</span>  <span class="sc">-</span>mat_weight_true)</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(phase1)</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 10335     5</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="co"># Get phase 1 data, remove mat_weight_true which we assume is unknown</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>phase1 <span class="ot">&lt;-</span> <span class="fu">subset</span>(MatWgt_Sim, <span class="at">select =</span>  <span class="sc">-</span>mat_weight_true)</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="fu">dim</span>(phase1)</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co">#&gt; [1] 10335     5</span></span></code></pre></div>
 </div>
 <div id="example-1-defining-sample-strata" class="section level4">
 <h4><em>Example 1: Defining Sample Strata</em></h4>
@@ -737,50 +737,50 @@ be defined by a unique combination of race and global percentile of
 maternal weight gain (≤25th, 25th - 75th, &gt;75th). We can accomplish
 this quickly in <code>optimall</code> using the
 <code>split_strata()</code> function.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>phase1<span class="sc">$</span>strata <span class="ot">&lt;-</span> phase1<span class="sc">$</span>race <span class="co">#initialize a strata column first</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge the smallest race categories</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>phase1 <span class="ot">&lt;-</span> <span class="fu">merge_strata</span>(<span class="at">data =</span> phase1, </span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>                          <span class="at">strata =</span> <span class="st">&quot;race&quot;</span>,</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>                          <span class="at">merge =</span> <span class="fu">c</span>(<span class="st">&quot;Other&quot;</span>,<span class="st">&quot;Asian&quot;</span>),</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>                          <span class="at">name =</span> <span class="st">&quot;Other&quot;</span>)</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>phase1 <span class="ot">&lt;-</span> <span class="fu">split_strata</span>(<span class="at">data =</span> phase1, <span class="at">strata =</span> <span class="st">&quot;new_strata&quot;</span>, <span class="at">split =</span> <span class="cn">NULL</span>, </span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>                       <span class="at">split_var =</span> <span class="st">&quot;mat_weight_est&quot;</span>, </span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>                       <span class="at">type =</span> <span class="st">&quot;global quantile&quot;</span>, </span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>                       <span class="at">split_at =</span> <span class="fu">c</span>(<span class="fl">0.25</span>,<span class="fl">0.75</span>),</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>                       <span class="at">trunc =</span> <span class="st">&quot;MWC_est&quot;</span>)</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Trunc argument specifies how to refer to mat_weight_est in new strata names</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>phase1<span class="sc">$</span>strata <span class="ot">&lt;-</span> phase1<span class="sc">$</span>race <span class="co">#initialize a strata column first</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co"># Merge the smallest race categories</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>phase1 <span class="ot">&lt;-</span> <span class="fu">merge_strata</span>(<span class="at">data =</span> phase1, </span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>                          <span class="at">strata =</span> <span class="st">&quot;race&quot;</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>                          <span class="at">merge =</span> <span class="fu">c</span>(<span class="st">&quot;Other&quot;</span>,<span class="st">&quot;Asian&quot;</span>),</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>                          <span class="at">name =</span> <span class="st">&quot;Other&quot;</span>)</span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>phase1 <span class="ot">&lt;-</span> <span class="fu">split_strata</span>(<span class="at">data =</span> phase1, <span class="at">strata =</span> <span class="st">&quot;new_strata&quot;</span>, <span class="at">split =</span> <span class="cn">NULL</span>, </span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a>                       <span class="at">split_var =</span> <span class="st">&quot;mat_weight_est&quot;</span>, </span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a>                       <span class="at">type =</span> <span class="st">&quot;global quantile&quot;</span>, </span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a>                       <span class="at">split_at =</span> <span class="fu">c</span>(<span class="fl">0.25</span>,<span class="fl">0.75</span>),</span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a>                       <span class="at">trunc =</span> <span class="st">&quot;MWC_est&quot;</span>)</span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a><span class="co"># Trunc argument specifies how to refer to mat_weight_est in new strata names</span></span></code></pre></div>
 <p>We now have the same <code>phase1</code> data with a new column
 specifying the strata we have defined.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(phase1)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                   new_strata old_strata   id mat_weight_est diabetes obesity</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 Other.MWC_est_(9.75,15.06]      Other 7667      12.954711        0       0</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 Other.MWC_est_[-5.39,9.75]      Other 8554       9.607124        0       1</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 Other.MWC_est_(9.75,15.06]      Other 6324      10.998284        0       0</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 Other.MWC_est_(9.75,15.06]      Other 8320      10.702210        0       0</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 Other.MWC_est_[-5.39,9.75]      Other 8543       6.485988        1       0</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 Other.MWC_est_(9.75,15.06]      Other  127      13.338445        0       1</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   strata</span></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1  Asian</span></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2  Asian</span></span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3  Asian</span></span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4  Asian</span></span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5  Asian</span></span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6  Asian</span></span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(phase1<span class="sc">$</span>new_strata) <span class="co"># 9 strata</span></span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Black.MWC_est_(15.06,38.46]  Black.MWC_est_(9.75,15.06] </span></span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                         628                        1154 </span></span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Black.MWC_est_[-30.21,9.75] Other.MWC_est_(15.06,30.94] </span></span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                         745                         325 </span></span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Other.MWC_est_(9.75,15.06]  Other.MWC_est_[-5.39,9.75] </span></span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                         929                         456 </span></span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; White.MWC_est_(15.06,51.69]  White.MWC_est_(9.75,15.06] </span></span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                        1631                        3084 </span></span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; White.MWC_est_[-25.68,9.75] </span></span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                        1383</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">head</span>(phase1)</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="co">#&gt;                   new_strata old_strata   id mat_weight_est diabetes obesity</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="co">#&gt; 1 Other.MWC_est_(9.75,15.06]      Other 7667      12.954711        0       0</span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co">#&gt; 2 Other.MWC_est_[-5.39,9.75]      Other 8554       9.607124        0       1</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="co">#&gt; 3 Other.MWC_est_(9.75,15.06]      Other 6324      10.998284        0       0</span></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="co">#&gt; 4 Other.MWC_est_(9.75,15.06]      Other 8320      10.702210        0       0</span></span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="co">#&gt; 5 Other.MWC_est_[-5.39,9.75]      Other 8543       6.485988        1       0</span></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="co">#&gt; 6 Other.MWC_est_(9.75,15.06]      Other  127      13.338445        0       1</span></span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a><span class="co">#&gt;   strata</span></span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a><span class="co">#&gt; 1  Asian</span></span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a><span class="co">#&gt; 2  Asian</span></span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a><span class="co">#&gt; 3  Asian</span></span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a><span class="co">#&gt; 4  Asian</span></span>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a><span class="co">#&gt; 5  Asian</span></span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a><span class="co">#&gt; 6  Asian</span></span>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a><span class="fu">table</span>(phase1<span class="sc">$</span>new_strata) <span class="co"># 9 strata</span></span>
+<span id="cb13-17"><a href="#cb13-17" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-18"><a href="#cb13-18" tabindex="-1"></a><span class="co">#&gt; Black.MWC_est_(15.06,38.46]  Black.MWC_est_(9.75,15.06] </span></span>
+<span id="cb13-19"><a href="#cb13-19" tabindex="-1"></a><span class="co">#&gt;                         628                        1154 </span></span>
+<span id="cb13-20"><a href="#cb13-20" tabindex="-1"></a><span class="co">#&gt; Black.MWC_est_[-30.21,9.75] Other.MWC_est_(15.06,30.94] </span></span>
+<span id="cb13-21"><a href="#cb13-21" tabindex="-1"></a><span class="co">#&gt;                         745                         325 </span></span>
+<span id="cb13-22"><a href="#cb13-22" tabindex="-1"></a><span class="co">#&gt;  Other.MWC_est_(9.75,15.06]  Other.MWC_est_[-5.39,9.75] </span></span>
+<span id="cb13-23"><a href="#cb13-23" tabindex="-1"></a><span class="co">#&gt;                         929                         456 </span></span>
+<span id="cb13-24"><a href="#cb13-24" tabindex="-1"></a><span class="co">#&gt; White.MWC_est_(15.06,51.69]  White.MWC_est_(9.75,15.06] </span></span>
+<span id="cb13-25"><a href="#cb13-25" tabindex="-1"></a><span class="co">#&gt;                        1631                        3084 </span></span>
+<span id="cb13-26"><a href="#cb13-26" tabindex="-1"></a><span class="co">#&gt; White.MWC_est_[-25.68,9.75] </span></span>
+<span id="cb13-27"><a href="#cb13-27" tabindex="-1"></a><span class="co">#&gt;                        1383</span></span></code></pre></div>
 </div>
 <div id="example-2-create-an-initial-phase-2-subsample-phase-iia" class="section level4">
 <h4><em>Example 2: Create an Initial Phase 2 Subsample:
@@ -804,52 +804,52 @@ contain at least two columns:</p>
 <p>In our example, we want the proportion of samples randomly taken from
 each stratum to reflect its population proportion and a total of 250
 samples.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>phase2a_design <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">strata_name =</span> <span class="fu">names</span>(<span class="fu">table</span>(phase1<span class="sc">$</span>new_strata)), </span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">strata_prop =</span> <span class="fu">as.vector</span>(<span class="fu">table</span>(phase1<span class="sc">$</span>new_strata))<span class="sc">/</span><span class="dv">10335</span>,</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">strata_n =</span> <span class="fu">round</span>(<span class="fl">250.3</span><span class="sc">*</span><span class="fu">as.vector</span>(<span class="fu">table</span>(phase1<span class="sc">$</span>new_strata))<span class="sc">/</span><span class="dv">10335</span>)</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="co"># 250.3 to make sure 250 samples after rounding</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(phase2a_design<span class="sc">$</span>strata_n) </span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 250</span></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>phase2a_design</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                   strata_name strata_prop strata_n</span></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 Black.MWC_est_(15.06,38.46]  0.06076439       15</span></span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2  Black.MWC_est_(9.75,15.06]  0.11165941       28</span></span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 Black.MWC_est_[-30.21,9.75]  0.07208515       18</span></span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 Other.MWC_est_(15.06,30.94]  0.03144654        8</span></span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5  Other.MWC_est_(9.75,15.06]  0.08988873       22</span></span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6  Other.MWC_est_[-5.39,9.75]  0.04412192       11</span></span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7 White.MWC_est_(15.06,51.69]  0.15781326       40</span></span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 8  White.MWC_est_(9.75,15.06]  0.29840348       75</span></span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 9 White.MWC_est_[-25.68,9.75]  0.13381713       33</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>phase2a_design <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>  <span class="at">strata_name =</span> <span class="fu">names</span>(<span class="fu">table</span>(phase1<span class="sc">$</span>new_strata)), </span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>  <span class="at">strata_prop =</span> <span class="fu">as.vector</span>(<span class="fu">table</span>(phase1<span class="sc">$</span>new_strata))<span class="sc">/</span><span class="dv">10335</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>  <span class="at">strata_n =</span> <span class="fu">round</span>(<span class="fl">250.3</span><span class="sc">*</span><span class="fu">as.vector</span>(<span class="fu">table</span>(phase1<span class="sc">$</span>new_strata))<span class="sc">/</span><span class="dv">10335</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>  ) <span class="co"># 250.3 to make sure 250 samples after rounding</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a><span class="fu">sum</span>(phase2a_design<span class="sc">$</span>strata_n) </span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a><span class="co">#&gt; [1] 250</span></span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>phase2a_design</span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a><span class="co">#&gt;                   strata_name strata_prop strata_n</span></span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a><span class="co">#&gt; 1 Black.MWC_est_(15.06,38.46]  0.06076439       15</span></span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="co">#&gt; 2  Black.MWC_est_(9.75,15.06]  0.11165941       28</span></span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a><span class="co">#&gt; 3 Black.MWC_est_[-30.21,9.75]  0.07208515       18</span></span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a><span class="co">#&gt; 4 Other.MWC_est_(15.06,30.94]  0.03144654        8</span></span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a><span class="co">#&gt; 5  Other.MWC_est_(9.75,15.06]  0.08988873       22</span></span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a><span class="co">#&gt; 6  Other.MWC_est_[-5.39,9.75]  0.04412192       11</span></span>
+<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a><span class="co">#&gt; 7 White.MWC_est_(15.06,51.69]  0.15781326       40</span></span>
+<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a><span class="co">#&gt; 8  White.MWC_est_(9.75,15.06]  0.29840348       75</span></span>
+<span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a><span class="co">#&gt; 9 White.MWC_est_[-25.68,9.75]  0.13381713       33</span></span></code></pre></div>
 <p>We can now call <code>sample_strata()</code> to randomly draw the
 specified number samples from each stratum. It will output the same
 <code>phase1</code> dataframe with an extra column indicating which
 units should be sampled. We can then extract the ids to sample based on
 this indicator.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>phase1 <span class="ot">&lt;-</span> <span class="fu">sample_strata</span>(<span class="at">data =</span> phase1, <span class="at">strata =</span> <span class="st">&quot;new_strata&quot;</span>, </span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">id =</span> <span class="st">&quot;id&quot;</span>, <span class="at">design_data =</span> phase2a_design, </span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">design_strata =</span> <span class="st">&quot;strata_name&quot;</span>, </span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">n_allocated =</span> <span class="st">&quot;strata_n&quot;</span>)</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>ids_to_sample2a <span class="ot">&lt;-</span> phase1[phase1<span class="sc">$</span>sample_indicator <span class="sc">==</span> <span class="dv">1</span>,<span class="st">&quot;id&quot;</span>]</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(ids_to_sample2a) <span class="co"># 250 ids to sample</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 250</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>phase1 <span class="ot">&lt;-</span> <span class="fu">sample_strata</span>(<span class="at">data =</span> phase1, <span class="at">strata =</span> <span class="st">&quot;new_strata&quot;</span>, </span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>                        <span class="at">id =</span> <span class="st">&quot;id&quot;</span>, <span class="at">design_data =</span> phase2a_design, </span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>                        <span class="at">design_strata =</span> <span class="st">&quot;strata_name&quot;</span>, </span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>                        <span class="at">n_allocated =</span> <span class="st">&quot;strata_n&quot;</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>ids_to_sample2a <span class="ot">&lt;-</span> phase1[phase1<span class="sc">$</span>sample_indicator <span class="sc">==</span> <span class="dv">1</span>,<span class="st">&quot;id&quot;</span>]</span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="fu">length</span>(ids_to_sample2a) <span class="co"># 250 ids to sample</span></span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="co">#&gt; [1] 250</span></span></code></pre></div>
 <p>We submit these 250 ids for validation. Hypothetically, this involves
 the hard work of trained nurses, but for our example it involves only a
 few lines of code.</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>phase2a_samples <span class="ot">&lt;-</span> MatWgt_Sim[MatWgt_Sim<span class="sc">$</span>id <span class="sc">%in%</span> ids_to_sample2a, </span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                              <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>,<span class="st">&quot;mat_weight_true&quot;</span>)]</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>phase2a <span class="ot">&lt;-</span> <span class="fu">merge</span>(phase1, phase2a_samples, <span class="at">by =</span> <span class="st">&quot;id&quot;</span>,</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">no.dups =</span>  <span class="cn">TRUE</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(phase2a)</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;id&quot;               &quot;new_strata&quot;       &quot;old_strata&quot;       &quot;mat_weight_est&quot;  </span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [5] &quot;diabetes&quot;         &quot;obesity&quot;          &quot;strata&quot;           &quot;sample_indicator&quot;</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [9] &quot;mat_weight_true&quot;</span></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">is.na</span>(phase2a<span class="sc">$</span>mat_weight_true)) </span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; FALSE  TRUE </span></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   250 10085</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>phase2a_samples <span class="ot">&lt;-</span> MatWgt_Sim[MatWgt_Sim<span class="sc">$</span>id <span class="sc">%in%</span> ids_to_sample2a, </span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>                              <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>,<span class="st">&quot;mat_weight_true&quot;</span>)]</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>phase2a <span class="ot">&lt;-</span> <span class="fu">merge</span>(phase1, phase2a_samples, <span class="at">by =</span> <span class="st">&quot;id&quot;</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>                 <span class="at">no.dups =</span>  <span class="cn">TRUE</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="fu">names</span>(phase2a)</span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a><span class="co">#&gt; [1] &quot;id&quot;               &quot;new_strata&quot;       &quot;old_strata&quot;       &quot;mat_weight_est&quot;  </span></span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a><span class="co">#&gt; [5] &quot;diabetes&quot;         &quot;obesity&quot;          &quot;strata&quot;           &quot;sample_indicator&quot;</span></span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a><span class="co">#&gt; [9] &quot;mat_weight_true&quot;</span></span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">is.na</span>(phase2a<span class="sc">$</span>mat_weight_true)) </span>
+<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a><span class="co">#&gt; FALSE  TRUE </span></span>
+<span id="cb16-13"><a href="#cb16-13" tabindex="-1"></a><span class="co">#&gt;   250 10085</span></span></code></pre></div>
 <p>We notice that all of the units that were not validated have
 <code>NA</code> values in the new columns. We will use the non-missing
 validated data to inform optimum allocation in our future sampling
@@ -872,38 +872,38 @@ units have already been sampled in previous waves (only Phase-IIa in
 this case), and allocating the 250 samples of the current wave to make
 up the difference. The output is a design dataframe summarizing the
 results for each stratum.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>phase2b <span class="ot">&lt;-</span> phase2a</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Add indicator for units that were already sampled</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>phase2b<span class="sc">$</span>already_sampled <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(phase2b<span class="sc">$</span>id <span class="sc">%in%</span> ids_to_sample2a, <span class="dv">1</span>, <span class="dv">0</span>)</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Make design </span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>phase2b_design <span class="ot">&lt;-</span> <span class="fu">allocate_wave</span>(<span class="at">data =</span> phase2b, <span class="at">strata =</span> <span class="st">&quot;new_strata&quot;</span>,</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>                             <span class="at">y =</span> <span class="st">&quot;mat_weight_true&quot;</span>,</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>                             <span class="at">already_sampled =</span> <span class="st">&quot;already_sampled&quot;</span>, </span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>                             <span class="at">nsample =</span> <span class="dv">250</span>,</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>                             <span class="at">detailed =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>phase2b_design</span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                        strata npop nsample_optimal nsample_actual nsample_prior</span></span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 Black.MWC_est_(15.06,38.46]  628              46             46            15</span></span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2  Black.MWC_est_(9.75,15.06] 1154              38             38            28</span></span>
-<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 Black.MWC_est_[-30.21,9.75]  745              52             52            18</span></span>
-<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 Other.MWC_est_(15.06,30.94]  325              12             12             8</span></span>
-<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5  Other.MWC_est_(9.75,15.06]  929              34             34            22</span></span>
-<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6  Other.MWC_est_[-5.39,9.75]  456              30             30            11</span></span>
-<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7 White.MWC_est_(15.06,51.69] 1631              83             83            40</span></span>
-<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 8  White.MWC_est_(9.75,15.06] 3084             117            117            75</span></span>
-<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 9 White.MWC_est_[-25.68,9.75] 1383              88             88            33</span></span>
-<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   n_to_sample   sd</span></span>
-<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1          31 3.51</span></span>
-<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2          10 1.58</span></span>
-<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3          34 3.32</span></span>
-<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4           4 1.75</span></span>
-<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5          12 1.73</span></span>
-<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6          19 3.18</span></span>
-<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7          43 2.44</span></span>
-<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 8          42 1.80</span></span>
-<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 9          55 3.04</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>phase2b <span class="ot">&lt;-</span> phase2a</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="co"># Add indicator for units that were already sampled</span></span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>phase2b<span class="sc">$</span>already_sampled <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(phase2b<span class="sc">$</span>id <span class="sc">%in%</span> ids_to_sample2a, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="co"># Make design </span></span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a>phase2b_design <span class="ot">&lt;-</span> <span class="fu">allocate_wave</span>(<span class="at">data =</span> phase2b, <span class="at">strata =</span> <span class="st">&quot;new_strata&quot;</span>,</span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a>                             <span class="at">y =</span> <span class="st">&quot;mat_weight_true&quot;</span>,</span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a>                             <span class="at">already_sampled =</span> <span class="st">&quot;already_sampled&quot;</span>, </span>
+<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a>                             <span class="at">nsample =</span> <span class="dv">250</span>,</span>
+<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a>                             <span class="at">detailed =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a>phase2b_design</span>
+<span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a><span class="co">#&gt;                        strata npop nsample_optimal nsample_actual nsample_prior</span></span>
+<span id="cb17-14"><a href="#cb17-14" tabindex="-1"></a><span class="co">#&gt; 1 Black.MWC_est_(15.06,38.46]  628              46             46            15</span></span>
+<span id="cb17-15"><a href="#cb17-15" tabindex="-1"></a><span class="co">#&gt; 2  Black.MWC_est_(9.75,15.06] 1154              38             38            28</span></span>
+<span id="cb17-16"><a href="#cb17-16" tabindex="-1"></a><span class="co">#&gt; 3 Black.MWC_est_[-30.21,9.75]  745              52             52            18</span></span>
+<span id="cb17-17"><a href="#cb17-17" tabindex="-1"></a><span class="co">#&gt; 4 Other.MWC_est_(15.06,30.94]  325              12             12             8</span></span>
+<span id="cb17-18"><a href="#cb17-18" tabindex="-1"></a><span class="co">#&gt; 5  Other.MWC_est_(9.75,15.06]  929              34             34            22</span></span>
+<span id="cb17-19"><a href="#cb17-19" tabindex="-1"></a><span class="co">#&gt; 6  Other.MWC_est_[-5.39,9.75]  456              30             30            11</span></span>
+<span id="cb17-20"><a href="#cb17-20" tabindex="-1"></a><span class="co">#&gt; 7 White.MWC_est_(15.06,51.69] 1631              83             83            40</span></span>
+<span id="cb17-21"><a href="#cb17-21" tabindex="-1"></a><span class="co">#&gt; 8  White.MWC_est_(9.75,15.06] 3084             117            117            75</span></span>
+<span id="cb17-22"><a href="#cb17-22" tabindex="-1"></a><span class="co">#&gt; 9 White.MWC_est_[-25.68,9.75] 1383              88             88            33</span></span>
+<span id="cb17-23"><a href="#cb17-23" tabindex="-1"></a><span class="co">#&gt;   n_to_sample   sd</span></span>
+<span id="cb17-24"><a href="#cb17-24" tabindex="-1"></a><span class="co">#&gt; 1          31 3.51</span></span>
+<span id="cb17-25"><a href="#cb17-25" tabindex="-1"></a><span class="co">#&gt; 2          10 1.58</span></span>
+<span id="cb17-26"><a href="#cb17-26" tabindex="-1"></a><span class="co">#&gt; 3          34 3.32</span></span>
+<span id="cb17-27"><a href="#cb17-27" tabindex="-1"></a><span class="co">#&gt; 4           4 1.75</span></span>
+<span id="cb17-28"><a href="#cb17-28" tabindex="-1"></a><span class="co">#&gt; 5          12 1.73</span></span>
+<span id="cb17-29"><a href="#cb17-29" tabindex="-1"></a><span class="co">#&gt; 6          19 3.18</span></span>
+<span id="cb17-30"><a href="#cb17-30" tabindex="-1"></a><span class="co">#&gt; 7          43 2.44</span></span>
+<span id="cb17-31"><a href="#cb17-31" tabindex="-1"></a><span class="co">#&gt; 8          42 1.80</span></span>
+<span id="cb17-32"><a href="#cb17-32" tabindex="-1"></a><span class="co">#&gt; 9          55 3.04</span></span></code></pre></div>
 <p>Looking at the output of <code>allocate_wave()</code>, we notice that
 the optimum sample sizes for the next wave vary greatly between strata,
 but all are greater than one. Because we set
@@ -927,85 +927,85 @@ that our strata are relatively imbalanced. We decide to split the
 largest stratum into three similarly-sized strata along mat_weight_est
 using the <code>local quantile</code> option of
 <code>split_strata()</code>.</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>phase2b <span class="ot">&lt;-</span> <span class="fu">split_strata</span>(<span class="at">data =</span> phase2b, </span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">split =</span> <span class="st">&quot;White.MWC_est_(9.75,15.06]&quot;</span>,</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">strata =</span> <span class="st">&quot;new_strata&quot;</span>, </span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">split_var =</span> <span class="st">&quot;mat_weight_est&quot;</span>,</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">type =</span> <span class="st">&quot;local quantile&quot;</span>, <span class="at">split_at =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>,<span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>phase2b <span class="ot">&lt;-</span> <span class="fu">split_strata</span>(<span class="at">data =</span> phase2b, </span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>                        <span class="at">split =</span> <span class="st">&quot;White.MWC_est_(9.75,15.06]&quot;</span>,</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>                        <span class="at">strata =</span> <span class="st">&quot;new_strata&quot;</span>, </span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>                        <span class="at">split_var =</span> <span class="st">&quot;mat_weight_est&quot;</span>,</span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a>                        <span class="at">type =</span> <span class="st">&quot;local quantile&quot;</span>, <span class="at">split_at =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>,<span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>))</span></code></pre></div>
 <p>With our strata now more balanced in size, we can re-run
 <code>allocate_wave()</code> to make a new design dataframe for
 <code>sample_strata()</code> to use to determine which ids to sample in
 phase-IIb.</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>phase2b_design <span class="ot">&lt;-</span> <span class="fu">allocate_wave</span>(<span class="at">data =</span> phase2b, </span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>                             <span class="at">strata =</span> <span class="st">&quot;new_strata&quot;</span>,</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>                             <span class="at">y =</span> <span class="st">&quot;mat_weight_true&quot;</span>,</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>                             <span class="at">already_sampled =</span> <span class="st">&quot;already_sampled&quot;</span>,</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>                             <span class="at">nsample =</span> <span class="dv">250</span>)</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>phase2b_design</span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                     strata npop nsample_actual</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1                              Black.MWC_est_(15.06,38.46]  628             49</span></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2                               Black.MWC_est_(9.75,15.06] 1154             40</span></span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3                              Black.MWC_est_[-30.21,9.75]  745             55</span></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4                              Other.MWC_est_(15.06,30.94]  325             13</span></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5                               Other.MWC_est_(9.75,15.06]  929             35</span></span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6                               Other.MWC_est_[-5.39,9.75]  456             32</span></span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7                              White.MWC_est_(15.06,51.69] 1631             88</span></span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 8  White.MWC_est_(9.75,15.06].mat_weight_est_(11.44,12.99] 1028             29</span></span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 9  White.MWC_est_(9.75,15.06].mat_weight_est_(12.99,15.05] 1028             39</span></span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10  White.MWC_est_(9.75,15.06].mat_weight_est_[9.75,11.44] 1028             28</span></span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 11                             White.MWC_est_[-25.68,9.75] 1383             92</span></span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    nsample_prior n_to_sample</span></span>
-<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1             15          34</span></span>
-<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2             28          12</span></span>
-<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3             18          37</span></span>
-<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4              8           5</span></span>
-<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5             22          13</span></span>
-<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6             11          21</span></span>
-<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7             40          48</span></span>
-<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 8             29           0</span></span>
-<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 9             21          18</span></span>
-<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10            25           3</span></span>
-<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 11            33          59</span></span>
-<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract IDs to sample</span></span>
-<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a>ids_to_sample2b <span class="ot">&lt;-</span> <span class="fu">sample_strata</span>(<span class="at">data =</span> phase2b, </span>
-<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">strata =</span> <span class="st">&quot;new_strata&quot;</span>, </span>
-<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">id =</span> <span class="st">&quot;id&quot;</span>, </span>
-<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">already_sampled =</span> <span class="st">&quot;already_sampled&quot;</span>, </span>
-<span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">design_data =</span> phase2b_design,</span>
-<span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">design_strata =</span> <span class="st">&quot;strata&quot;</span>, </span>
-<span id="cb19-39"><a href="#cb19-39" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">n_allocated =</span> <span class="st">&quot;n_to_sample&quot;</span>)</span>
-<span id="cb19-40"><a href="#cb19-40" aria-hidden="true" tabindex="-1"></a>ids_to_sample2b <span class="ot">&lt;-</span> </span>
-<span id="cb19-41"><a href="#cb19-41" aria-hidden="true" tabindex="-1"></a>  ids_to_sample2b[ids_to_sample2b<span class="sc">$</span>sample_indicator <span class="sc">==</span> <span class="dv">1</span>,<span class="st">&quot;id&quot;</span>]</span>
-<span id="cb19-42"><a href="#cb19-42" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(ids_to_sample2b)</span>
-<span id="cb19-43"><a href="#cb19-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 250</span></span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>phase2b_design <span class="ot">&lt;-</span> <span class="fu">allocate_wave</span>(<span class="at">data =</span> phase2b, </span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>                             <span class="at">strata =</span> <span class="st">&quot;new_strata&quot;</span>,</span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a>                             <span class="at">y =</span> <span class="st">&quot;mat_weight_true&quot;</span>,</span>
+<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a>                             <span class="at">already_sampled =</span> <span class="st">&quot;already_sampled&quot;</span>,</span>
+<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a>                             <span class="at">nsample =</span> <span class="dv">250</span>)</span>
+<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a>phase2b_design</span>
+<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a><span class="co">#&gt;                                                     strata npop nsample_actual</span></span>
+<span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a><span class="co">#&gt; 1                              Black.MWC_est_(15.06,38.46]  628             49</span></span>
+<span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a><span class="co">#&gt; 2                               Black.MWC_est_(9.75,15.06] 1154             40</span></span>
+<span id="cb19-10"><a href="#cb19-10" tabindex="-1"></a><span class="co">#&gt; 3                              Black.MWC_est_[-30.21,9.75]  745             55</span></span>
+<span id="cb19-11"><a href="#cb19-11" tabindex="-1"></a><span class="co">#&gt; 4                              Other.MWC_est_(15.06,30.94]  325             13</span></span>
+<span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a><span class="co">#&gt; 5                               Other.MWC_est_(9.75,15.06]  929             35</span></span>
+<span id="cb19-13"><a href="#cb19-13" tabindex="-1"></a><span class="co">#&gt; 6                               Other.MWC_est_[-5.39,9.75]  456             32</span></span>
+<span id="cb19-14"><a href="#cb19-14" tabindex="-1"></a><span class="co">#&gt; 7                              White.MWC_est_(15.06,51.69] 1631             88</span></span>
+<span id="cb19-15"><a href="#cb19-15" tabindex="-1"></a><span class="co">#&gt; 8  White.MWC_est_(9.75,15.06].mat_weight_est_(11.44,12.99] 1028             29</span></span>
+<span id="cb19-16"><a href="#cb19-16" tabindex="-1"></a><span class="co">#&gt; 9  White.MWC_est_(9.75,15.06].mat_weight_est_(12.99,15.05] 1028             39</span></span>
+<span id="cb19-17"><a href="#cb19-17" tabindex="-1"></a><span class="co">#&gt; 10  White.MWC_est_(9.75,15.06].mat_weight_est_[9.75,11.44] 1028             28</span></span>
+<span id="cb19-18"><a href="#cb19-18" tabindex="-1"></a><span class="co">#&gt; 11                             White.MWC_est_[-25.68,9.75] 1383             92</span></span>
+<span id="cb19-19"><a href="#cb19-19" tabindex="-1"></a><span class="co">#&gt;    nsample_prior n_to_sample</span></span>
+<span id="cb19-20"><a href="#cb19-20" tabindex="-1"></a><span class="co">#&gt; 1             15          34</span></span>
+<span id="cb19-21"><a href="#cb19-21" tabindex="-1"></a><span class="co">#&gt; 2             28          12</span></span>
+<span id="cb19-22"><a href="#cb19-22" tabindex="-1"></a><span class="co">#&gt; 3             18          37</span></span>
+<span id="cb19-23"><a href="#cb19-23" tabindex="-1"></a><span class="co">#&gt; 4              8           5</span></span>
+<span id="cb19-24"><a href="#cb19-24" tabindex="-1"></a><span class="co">#&gt; 5             22          13</span></span>
+<span id="cb19-25"><a href="#cb19-25" tabindex="-1"></a><span class="co">#&gt; 6             11          21</span></span>
+<span id="cb19-26"><a href="#cb19-26" tabindex="-1"></a><span class="co">#&gt; 7             40          48</span></span>
+<span id="cb19-27"><a href="#cb19-27" tabindex="-1"></a><span class="co">#&gt; 8             29           0</span></span>
+<span id="cb19-28"><a href="#cb19-28" tabindex="-1"></a><span class="co">#&gt; 9             21          18</span></span>
+<span id="cb19-29"><a href="#cb19-29" tabindex="-1"></a><span class="co">#&gt; 10            25           3</span></span>
+<span id="cb19-30"><a href="#cb19-30" tabindex="-1"></a><span class="co">#&gt; 11            33          59</span></span>
+<span id="cb19-31"><a href="#cb19-31" tabindex="-1"></a></span>
+<span id="cb19-32"><a href="#cb19-32" tabindex="-1"></a><span class="co"># Extract IDs to sample</span></span>
+<span id="cb19-33"><a href="#cb19-33" tabindex="-1"></a>ids_to_sample2b <span class="ot">&lt;-</span> <span class="fu">sample_strata</span>(<span class="at">data =</span> phase2b, </span>
+<span id="cb19-34"><a href="#cb19-34" tabindex="-1"></a>                                 <span class="at">strata =</span> <span class="st">&quot;new_strata&quot;</span>, </span>
+<span id="cb19-35"><a href="#cb19-35" tabindex="-1"></a>                                 <span class="at">id =</span> <span class="st">&quot;id&quot;</span>, </span>
+<span id="cb19-36"><a href="#cb19-36" tabindex="-1"></a>                                 <span class="at">already_sampled =</span> <span class="st">&quot;already_sampled&quot;</span>, </span>
+<span id="cb19-37"><a href="#cb19-37" tabindex="-1"></a>                                 <span class="at">design_data =</span> phase2b_design,</span>
+<span id="cb19-38"><a href="#cb19-38" tabindex="-1"></a>                                 <span class="at">design_strata =</span> <span class="st">&quot;strata&quot;</span>, </span>
+<span id="cb19-39"><a href="#cb19-39" tabindex="-1"></a>                                 <span class="at">n_allocated =</span> <span class="st">&quot;n_to_sample&quot;</span>)</span>
+<span id="cb19-40"><a href="#cb19-40" tabindex="-1"></a>ids_to_sample2b <span class="ot">&lt;-</span> </span>
+<span id="cb19-41"><a href="#cb19-41" tabindex="-1"></a>  ids_to_sample2b[ids_to_sample2b<span class="sc">$</span>sample_indicator <span class="sc">==</span> <span class="dv">1</span>,<span class="st">&quot;id&quot;</span>]</span>
+<span id="cb19-42"><a href="#cb19-42" tabindex="-1"></a><span class="fu">length</span>(ids_to_sample2b)</span>
+<span id="cb19-43"><a href="#cb19-43" tabindex="-1"></a><span class="co">#&gt; [1] 250</span></span></code></pre></div>
 <p>We can now get the validated maternal weight changes for these 250
 subjects.</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Take samples from true data</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>phase2b_samples <span class="ot">&lt;-</span> MatWgt_Sim[MatWgt_Sim<span class="sc">$</span>id <span class="sc">%in%</span> ids_to_sample2b,</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>                              <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>,<span class="st">&quot;mat_weight_true&quot;</span>)]</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge extracted samples with our data.</span></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Note we use dplyr&#39;s coalesce here to merge sampled mat_weight_true with </span></span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="co"># the mat_weight_true solumn already present in phase2b, but manner of </span></span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="co"># merging of samples may vary from project to project.</span></span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="co"># For simpler merges, see &#39;Multiwave Object&#39; vignette.</span></span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>phase2b <span class="ot">&lt;-</span> <span class="fu">merge</span>(phase2b, phase2b_samples, <span class="at">by =</span> <span class="st">&quot;id&quot;</span>, </span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>                 <span class="at">no.dups =</span> <span class="cn">TRUE</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>phase2b<span class="sc">$</span>mat_weight_true <span class="ot">&lt;-</span> </span>
-<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">coalesce</span>(phase2b<span class="sc">$</span>mat_weight_true.x,</span>
-<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>                  phase2b<span class="sc">$</span>mat_weight_true.y)</span>
-<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>phase2b <span class="ot">&lt;-</span> <span class="fu">subset</span>(phase2b, <span class="at">select =</span> <span class="sc">-</span><span class="fu">c</span>(mat_weight_true.x,</span>
-<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>                                       mat_weight_true.y))</span>
-<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">is.na</span>(phase2b<span class="sc">$</span>mat_weight_true)) <span class="co"># All are NA besides already sampled.</span></span>
-<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; FALSE  TRUE </span></span>
-<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   500  9835</span></span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="co"># Take samples from true data</span></span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a>phase2b_samples <span class="ot">&lt;-</span> MatWgt_Sim[MatWgt_Sim<span class="sc">$</span>id <span class="sc">%in%</span> ids_to_sample2b,</span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a>                              <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>,<span class="st">&quot;mat_weight_true&quot;</span>)]</span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a><span class="co"># Merge extracted samples with our data.</span></span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a><span class="co"># Note we use dplyr&#39;s coalesce here to merge sampled mat_weight_true with </span></span>
+<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a><span class="co"># the mat_weight_true solumn already present in phase2b, but manner of </span></span>
+<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a><span class="co"># merging of samples may vary from project to project.</span></span>
+<span id="cb20-9"><a href="#cb20-9" tabindex="-1"></a><span class="co"># For simpler merges, see &#39;Multiwave Object&#39; vignette.</span></span>
+<span id="cb20-10"><a href="#cb20-10" tabindex="-1"></a></span>
+<span id="cb20-11"><a href="#cb20-11" tabindex="-1"></a>phase2b <span class="ot">&lt;-</span> <span class="fu">merge</span>(phase2b, phase2b_samples, <span class="at">by =</span> <span class="st">&quot;id&quot;</span>, </span>
+<span id="cb20-12"><a href="#cb20-12" tabindex="-1"></a>                 <span class="at">no.dups =</span> <span class="cn">TRUE</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb20-13"><a href="#cb20-13" tabindex="-1"></a></span>
+<span id="cb20-14"><a href="#cb20-14" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb20-15"><a href="#cb20-15" tabindex="-1"></a></span>
+<span id="cb20-16"><a href="#cb20-16" tabindex="-1"></a>phase2b<span class="sc">$</span>mat_weight_true <span class="ot">&lt;-</span> </span>
+<span id="cb20-17"><a href="#cb20-17" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">coalesce</span>(phase2b<span class="sc">$</span>mat_weight_true.x,</span>
+<span id="cb20-18"><a href="#cb20-18" tabindex="-1"></a>                  phase2b<span class="sc">$</span>mat_weight_true.y)</span>
+<span id="cb20-19"><a href="#cb20-19" tabindex="-1"></a>phase2b <span class="ot">&lt;-</span> <span class="fu">subset</span>(phase2b, <span class="at">select =</span> <span class="sc">-</span><span class="fu">c</span>(mat_weight_true.x,</span>
+<span id="cb20-20"><a href="#cb20-20" tabindex="-1"></a>                                       mat_weight_true.y))</span>
+<span id="cb20-21"><a href="#cb20-21" tabindex="-1"></a></span>
+<span id="cb20-22"><a href="#cb20-22" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">is.na</span>(phase2b<span class="sc">$</span>mat_weight_true)) <span class="co"># All are NA besides already sampled.</span></span>
+<span id="cb20-23"><a href="#cb20-23" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb20-24"><a href="#cb20-24" tabindex="-1"></a><span class="co">#&gt; FALSE  TRUE </span></span>
+<span id="cb20-25"><a href="#cb20-25" tabindex="-1"></a><span class="co">#&gt;   500  9835</span></span></code></pre></div>
 <p>With these results in, we can move onto our final wave.</p>
 </div>
 <div id="phase-iic" class="section level4">
@@ -1019,70 +1019,70 @@ assign these final 250 samples in phase-IIc.</p>
 stratum based on estimates of the variance using our previous samples.
 We then determine which ids to sample using
 <code>sample_strata()</code>.</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>phase2c <span class="ot">&lt;-</span> phase2b</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Add indicator for units that were already sampled</span></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>phase2c<span class="sc">$</span>already_sampled <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(phase2b<span class="sc">$</span>id <span class="sc">%in%</span> <span class="fu">c</span>(ids_to_sample2a,</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>                                                    ids_to_sample2b), </span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>                                  <span class="dv">1</span>, <span class="dv">0</span>)</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Make Design</span></span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>phase2c_design <span class="ot">&lt;-</span> <span class="fu">allocate_wave</span>(<span class="at">data =</span> phase2c, <span class="at">strata =</span> <span class="st">&quot;new_strata&quot;</span>,</span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>                             <span class="at">y =</span> <span class="st">&quot;mat_weight_true&quot;</span>,</span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>                             <span class="at">already_sampled =</span> <span class="st">&quot;already_sampled&quot;</span>, </span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>                             <span class="at">nsample =</span> <span class="dv">250</span>,</span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>                             <span class="at">detailed =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>phase2c_design</span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                     strata npop nsample_optimal</span></span>
-<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1                              Black.MWC_est_(15.06,38.46]  628              60</span></span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2                               Black.MWC_est_(9.75,15.06] 1154              56</span></span>
-<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3                              Black.MWC_est_[-30.21,9.75]  745              99</span></span>
-<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4                              Other.MWC_est_(15.06,30.94]  325              18</span></span>
-<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5                               Other.MWC_est_(9.75,15.06]  929              50</span></span>
-<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6                               Other.MWC_est_[-5.39,9.75]  456              35</span></span>
-<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7                              White.MWC_est_(15.06,51.69] 1631             176</span></span>
-<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 8  White.MWC_est_(9.75,15.06].mat_weight_est_(11.44,12.99] 1028              38</span></span>
-<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 9  White.MWC_est_(9.75,15.06].mat_weight_est_(12.99,15.05] 1028              48</span></span>
-<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10  White.MWC_est_(9.75,15.06].mat_weight_est_[9.75,11.44] 1028              37</span></span>
-<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 11                             White.MWC_est_[-25.68,9.75] 1383             133</span></span>
-<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    nsample_actual nsample_prior n_to_sample   sd</span></span>
-<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1              60            49          11 3.07</span></span>
-<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2              56            40          16 1.56</span></span>
-<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3              99            55          44 4.29</span></span>
-<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4              18            13           5 1.83</span></span>
-<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5              50            35          15 1.74</span></span>
-<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6              35            32           3 2.47</span></span>
-<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7             176            88          88 3.50</span></span>
-<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 8              38            29           9 1.20</span></span>
-<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 9              48            39           9 1.50</span></span>
-<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10             37            28           9 1.16</span></span>
-<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 11            133            92          41 3.12</span></span>
-<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Find IDs to sample</span></span>
-<span id="cb21-41"><a href="#cb21-41" aria-hidden="true" tabindex="-1"></a>ids_to_sample2c <span class="ot">&lt;-</span> <span class="fu">sample_strata</span>(<span class="at">data =</span> phase2c, </span>
-<span id="cb21-42"><a href="#cb21-42" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">strata =</span> <span class="st">&quot;new_strata&quot;</span>, </span>
-<span id="cb21-43"><a href="#cb21-43" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">id =</span> <span class="st">&quot;id&quot;</span>, </span>
-<span id="cb21-44"><a href="#cb21-44" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">already_sampled =</span> <span class="st">&quot;already_sampled&quot;</span>, </span>
-<span id="cb21-45"><a href="#cb21-45" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">design_data =</span> phase2c_design,</span>
-<span id="cb21-46"><a href="#cb21-46" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">design_strata =</span> <span class="st">&quot;strata&quot;</span>, </span>
-<span id="cb21-47"><a href="#cb21-47" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">n_allocated =</span> <span class="st">&quot;n_to_sample&quot;</span>)</span>
-<span id="cb21-48"><a href="#cb21-48" aria-hidden="true" tabindex="-1"></a>ids_to_sample2c <span class="ot">&lt;-</span> </span>
-<span id="cb21-49"><a href="#cb21-49" aria-hidden="true" tabindex="-1"></a>  ids_to_sample2c[ids_to_sample2c<span class="sc">$</span>sample_indicator <span class="sc">==</span> <span class="dv">1</span>,<span class="st">&quot;id&quot;</span>]</span>
-<span id="cb21-50"><a href="#cb21-50" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(ids_to_sample2c)</span>
-<span id="cb21-51"><a href="#cb21-51" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 250</span></span>
-<span id="cb21-52"><a href="#cb21-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-53"><a href="#cb21-53" aria-hidden="true" tabindex="-1"></a><span class="co"># Sample</span></span>
-<span id="cb21-54"><a href="#cb21-54" aria-hidden="true" tabindex="-1"></a>phase2c_samples <span class="ot">&lt;-</span> MatWgt_Sim[MatWgt_Sim<span class="sc">$</span>id <span class="sc">%in%</span> ids_to_sample2c,</span>
-<span id="cb21-55"><a href="#cb21-55" aria-hidden="true" tabindex="-1"></a>                              <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>,<span class="st">&quot;mat_weight_true&quot;</span>)]</span>
-<span id="cb21-56"><a href="#cb21-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-57"><a href="#cb21-57" aria-hidden="true" tabindex="-1"></a><span class="co"># Add samples to phase2c dataset</span></span>
-<span id="cb21-58"><a href="#cb21-58" aria-hidden="true" tabindex="-1"></a>phase2c <span class="ot">&lt;-</span> <span class="fu">merge</span>(phase2c, phase2c_samples, <span class="at">by =</span> <span class="st">&quot;id&quot;</span>, </span>
-<span id="cb21-59"><a href="#cb21-59" aria-hidden="true" tabindex="-1"></a>                 <span class="at">no.dups =</span> <span class="cn">TRUE</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb21-60"><a href="#cb21-60" aria-hidden="true" tabindex="-1"></a>phase2c<span class="sc">$</span>mat_weight_true <span class="ot">&lt;-</span> </span>
-<span id="cb21-61"><a href="#cb21-61" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">coalesce</span>(phase2c<span class="sc">$</span>mat_weight_true.x,</span>
-<span id="cb21-62"><a href="#cb21-62" aria-hidden="true" tabindex="-1"></a>                  phase2c<span class="sc">$</span>mat_weight_true.y)</span>
-<span id="cb21-63"><a href="#cb21-63" aria-hidden="true" tabindex="-1"></a>phase2c <span class="ot">&lt;-</span> <span class="fu">subset</span>(phase2c, <span class="at">select =</span> <span class="sc">-</span><span class="fu">c</span>(mat_weight_true.x,</span>
-<span id="cb21-64"><a href="#cb21-64" aria-hidden="true" tabindex="-1"></a>                                       mat_weight_true.y))</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>phase2c <span class="ot">&lt;-</span> phase2b</span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a><span class="co"># Add indicator for units that were already sampled</span></span>
+<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a>phase2c<span class="sc">$</span>already_sampled <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(phase2b<span class="sc">$</span>id <span class="sc">%in%</span> <span class="fu">c</span>(ids_to_sample2a,</span>
+<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a>                                                    ids_to_sample2b), </span>
+<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a>                                  <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a></span>
+<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a><span class="co"># Make Design</span></span>
+<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a>phase2c_design <span class="ot">&lt;-</span> <span class="fu">allocate_wave</span>(<span class="at">data =</span> phase2c, <span class="at">strata =</span> <span class="st">&quot;new_strata&quot;</span>,</span>
+<span id="cb21-10"><a href="#cb21-10" tabindex="-1"></a>                             <span class="at">y =</span> <span class="st">&quot;mat_weight_true&quot;</span>,</span>
+<span id="cb21-11"><a href="#cb21-11" tabindex="-1"></a>                             <span class="at">already_sampled =</span> <span class="st">&quot;already_sampled&quot;</span>, </span>
+<span id="cb21-12"><a href="#cb21-12" tabindex="-1"></a>                             <span class="at">nsample =</span> <span class="dv">250</span>,</span>
+<span id="cb21-13"><a href="#cb21-13" tabindex="-1"></a>                             <span class="at">detailed =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb21-14"><a href="#cb21-14" tabindex="-1"></a>phase2c_design</span>
+<span id="cb21-15"><a href="#cb21-15" tabindex="-1"></a><span class="co">#&gt;                                                     strata npop nsample_optimal</span></span>
+<span id="cb21-16"><a href="#cb21-16" tabindex="-1"></a><span class="co">#&gt; 1                              Black.MWC_est_(15.06,38.46]  628              60</span></span>
+<span id="cb21-17"><a href="#cb21-17" tabindex="-1"></a><span class="co">#&gt; 2                               Black.MWC_est_(9.75,15.06] 1154              56</span></span>
+<span id="cb21-18"><a href="#cb21-18" tabindex="-1"></a><span class="co">#&gt; 3                              Black.MWC_est_[-30.21,9.75]  745              99</span></span>
+<span id="cb21-19"><a href="#cb21-19" tabindex="-1"></a><span class="co">#&gt; 4                              Other.MWC_est_(15.06,30.94]  325              18</span></span>
+<span id="cb21-20"><a href="#cb21-20" tabindex="-1"></a><span class="co">#&gt; 5                               Other.MWC_est_(9.75,15.06]  929              50</span></span>
+<span id="cb21-21"><a href="#cb21-21" tabindex="-1"></a><span class="co">#&gt; 6                               Other.MWC_est_[-5.39,9.75]  456              35</span></span>
+<span id="cb21-22"><a href="#cb21-22" tabindex="-1"></a><span class="co">#&gt; 7                              White.MWC_est_(15.06,51.69] 1631             176</span></span>
+<span id="cb21-23"><a href="#cb21-23" tabindex="-1"></a><span class="co">#&gt; 8  White.MWC_est_(9.75,15.06].mat_weight_est_(11.44,12.99] 1028              38</span></span>
+<span id="cb21-24"><a href="#cb21-24" tabindex="-1"></a><span class="co">#&gt; 9  White.MWC_est_(9.75,15.06].mat_weight_est_(12.99,15.05] 1028              48</span></span>
+<span id="cb21-25"><a href="#cb21-25" tabindex="-1"></a><span class="co">#&gt; 10  White.MWC_est_(9.75,15.06].mat_weight_est_[9.75,11.44] 1028              37</span></span>
+<span id="cb21-26"><a href="#cb21-26" tabindex="-1"></a><span class="co">#&gt; 11                             White.MWC_est_[-25.68,9.75] 1383             133</span></span>
+<span id="cb21-27"><a href="#cb21-27" tabindex="-1"></a><span class="co">#&gt;    nsample_actual nsample_prior n_to_sample   sd</span></span>
+<span id="cb21-28"><a href="#cb21-28" tabindex="-1"></a><span class="co">#&gt; 1              60            49          11 3.07</span></span>
+<span id="cb21-29"><a href="#cb21-29" tabindex="-1"></a><span class="co">#&gt; 2              56            40          16 1.56</span></span>
+<span id="cb21-30"><a href="#cb21-30" tabindex="-1"></a><span class="co">#&gt; 3              99            55          44 4.29</span></span>
+<span id="cb21-31"><a href="#cb21-31" tabindex="-1"></a><span class="co">#&gt; 4              18            13           5 1.83</span></span>
+<span id="cb21-32"><a href="#cb21-32" tabindex="-1"></a><span class="co">#&gt; 5              50            35          15 1.74</span></span>
+<span id="cb21-33"><a href="#cb21-33" tabindex="-1"></a><span class="co">#&gt; 6              35            32           3 2.47</span></span>
+<span id="cb21-34"><a href="#cb21-34" tabindex="-1"></a><span class="co">#&gt; 7             176            88          88 3.50</span></span>
+<span id="cb21-35"><a href="#cb21-35" tabindex="-1"></a><span class="co">#&gt; 8              38            29           9 1.20</span></span>
+<span id="cb21-36"><a href="#cb21-36" tabindex="-1"></a><span class="co">#&gt; 9              48            39           9 1.50</span></span>
+<span id="cb21-37"><a href="#cb21-37" tabindex="-1"></a><span class="co">#&gt; 10             37            28           9 1.16</span></span>
+<span id="cb21-38"><a href="#cb21-38" tabindex="-1"></a><span class="co">#&gt; 11            133            92          41 3.12</span></span>
+<span id="cb21-39"><a href="#cb21-39" tabindex="-1"></a></span>
+<span id="cb21-40"><a href="#cb21-40" tabindex="-1"></a><span class="co"># Find IDs to sample</span></span>
+<span id="cb21-41"><a href="#cb21-41" tabindex="-1"></a>ids_to_sample2c <span class="ot">&lt;-</span> <span class="fu">sample_strata</span>(<span class="at">data =</span> phase2c, </span>
+<span id="cb21-42"><a href="#cb21-42" tabindex="-1"></a>                                 <span class="at">strata =</span> <span class="st">&quot;new_strata&quot;</span>, </span>
+<span id="cb21-43"><a href="#cb21-43" tabindex="-1"></a>                                 <span class="at">id =</span> <span class="st">&quot;id&quot;</span>, </span>
+<span id="cb21-44"><a href="#cb21-44" tabindex="-1"></a>                                 <span class="at">already_sampled =</span> <span class="st">&quot;already_sampled&quot;</span>, </span>
+<span id="cb21-45"><a href="#cb21-45" tabindex="-1"></a>                                 <span class="at">design_data =</span> phase2c_design,</span>
+<span id="cb21-46"><a href="#cb21-46" tabindex="-1"></a>                                 <span class="at">design_strata =</span> <span class="st">&quot;strata&quot;</span>, </span>
+<span id="cb21-47"><a href="#cb21-47" tabindex="-1"></a>                                 <span class="at">n_allocated =</span> <span class="st">&quot;n_to_sample&quot;</span>)</span>
+<span id="cb21-48"><a href="#cb21-48" tabindex="-1"></a>ids_to_sample2c <span class="ot">&lt;-</span> </span>
+<span id="cb21-49"><a href="#cb21-49" tabindex="-1"></a>  ids_to_sample2c[ids_to_sample2c<span class="sc">$</span>sample_indicator <span class="sc">==</span> <span class="dv">1</span>,<span class="st">&quot;id&quot;</span>]</span>
+<span id="cb21-50"><a href="#cb21-50" tabindex="-1"></a><span class="fu">length</span>(ids_to_sample2c)</span>
+<span id="cb21-51"><a href="#cb21-51" tabindex="-1"></a><span class="co">#&gt; [1] 250</span></span>
+<span id="cb21-52"><a href="#cb21-52" tabindex="-1"></a></span>
+<span id="cb21-53"><a href="#cb21-53" tabindex="-1"></a><span class="co"># Sample</span></span>
+<span id="cb21-54"><a href="#cb21-54" tabindex="-1"></a>phase2c_samples <span class="ot">&lt;-</span> MatWgt_Sim[MatWgt_Sim<span class="sc">$</span>id <span class="sc">%in%</span> ids_to_sample2c,</span>
+<span id="cb21-55"><a href="#cb21-55" tabindex="-1"></a>                              <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>,<span class="st">&quot;mat_weight_true&quot;</span>)]</span>
+<span id="cb21-56"><a href="#cb21-56" tabindex="-1"></a></span>
+<span id="cb21-57"><a href="#cb21-57" tabindex="-1"></a><span class="co"># Add samples to phase2c dataset</span></span>
+<span id="cb21-58"><a href="#cb21-58" tabindex="-1"></a>phase2c <span class="ot">&lt;-</span> <span class="fu">merge</span>(phase2c, phase2c_samples, <span class="at">by =</span> <span class="st">&quot;id&quot;</span>, </span>
+<span id="cb21-59"><a href="#cb21-59" tabindex="-1"></a>                 <span class="at">no.dups =</span> <span class="cn">TRUE</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb21-60"><a href="#cb21-60" tabindex="-1"></a>phase2c<span class="sc">$</span>mat_weight_true <span class="ot">&lt;-</span> </span>
+<span id="cb21-61"><a href="#cb21-61" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">coalesce</span>(phase2c<span class="sc">$</span>mat_weight_true.x,</span>
+<span id="cb21-62"><a href="#cb21-62" tabindex="-1"></a>                  phase2c<span class="sc">$</span>mat_weight_true.y)</span>
+<span id="cb21-63"><a href="#cb21-63" tabindex="-1"></a>phase2c <span class="ot">&lt;-</span> <span class="fu">subset</span>(phase2c, <span class="at">select =</span> <span class="sc">-</span><span class="fu">c</span>(mat_weight_true.x,</span>
+<span id="cb21-64"><a href="#cb21-64" tabindex="-1"></a>                                       mat_weight_true.y))</span></code></pre></div>
 <p>We have now validated 750 samples!</p>
 <p>As this example shows, there are quite a few moving parts to keep
 track of in the multi-wave sampling workflow. When performing a
