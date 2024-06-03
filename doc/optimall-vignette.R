@@ -63,7 +63,7 @@ ids_to_sample <- iris$id[iris$sample_indicator == 1]
 head(ids_to_sample)
 length(ids_to_sample)
 
-## ---- fig.align='center', echo=FALSE, include = FALSE, eval=FALSE-------------
+## ----fig.align='center', echo=FALSE, include = FALSE, eval=FALSE--------------
 #  DiagrammeR::grViz("digraph {
 #    graph [layout = dot, rankdir = TB]
 #  
@@ -227,7 +227,7 @@ ids_to_sample2b <-
   ids_to_sample2b[ids_to_sample2b$sample_indicator == 1,"id"]
 length(ids_to_sample2b)
 
-## ---- include=TRUE------------------------------------------------------------
+## ----include=TRUE-------------------------------------------------------------
 # Take samples from true data
 phase2b_samples <- MatWgt_Sim[MatWgt_Sim$id %in% ids_to_sample2b,
                               c("id","mat_weight_true")]
