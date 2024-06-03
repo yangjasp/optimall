@@ -9,7 +9,7 @@ data <- data.frame(
     rep("b", times = 15),
     rep("c", times = 12)
   ),
-  "y" = c(rnorm(30, sd = 1), rnorm(12, sd = 2)),
+  "y" = c(rnorm(30, sd = 1), rnorm(12, sd = 1.3)),
   "key" = rbinom(42, 1, 0.2)
 )
 data$key[c(1, 16, 31)] <- 1 # To make sure no group gets zero in already_sampled
