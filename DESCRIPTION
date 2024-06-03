@@ -1,7 +1,7 @@
 Type: Package
 Package: optimall
 Title: Allocate Samples Among Strata
-Version: 1.1.0
+Version: 1.1.1
 Authors@R: c(
 	person(given = "Jasper",
                family = "Yang",

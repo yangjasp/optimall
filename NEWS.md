@@ -1,3 +1,13 @@
+# optimall 1.1.1
+
+## Enhancements
+
+- Added a new vignette describing estimation in studies using multi-wave sampling using `survey`.
+
+## Bug fixes
+
+- Revised tests to pass on OpenBLAS.
+
 # optimall 1.1.0
 
 ## Enhancements
