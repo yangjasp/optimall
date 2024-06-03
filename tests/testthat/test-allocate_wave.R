@@ -9,7 +9,7 @@ data <- data.frame(
     rep("b", times = 15),
     rep("c", times = 12)
   ),
-  "y" = c(rnorm(30, sd = 1), rnorm(12, sd = 1.3)),
+  "y" = c(rnorm(30, sd = 1), rnorm(12, sd = 1.5)),
   "key" = rbinom(42, 1, 0.2)
 )
 data$key[c(1, 16, 31)] <- 1 # To make sure no group gets zero in already_sampled
@@ -17,18 +17,18 @@ data$key[c(1, 16, 31)] <- 1 # To make sure no group gets zero in already_sampled
 test_that("the output of allocate_wave is as expected", {
   output <- allocate_wave(
     data = data, strata = "strata",
-    already_sampled = "key", y = "y", nsample = 20
+    already_sampled = "key", y = "y", nsample = 15
   )
   expect_equal(
     output$nsample_actual,
     optimum_allocation(
       data = data, strata = "strata",
       y = "y",
-      nsample = sum(data$key) + 20
+      nsample = sum(data$key) + 15
     )$stratum_size
   )
   # Only works if no oversampling in already_sampled
-  expect_equal(sum(output$n_to_sample), 20)
+  expect_equal(sum(output$n_to_sample), 15)
   expect_equal(
     sum(output$n_to_sample) + sum(output$nsample_prior),
     sum(output$nsample_actual)
@@ -38,19 +38,19 @@ test_that("the output of allocate_wave is as expected", {
 test_that("the output is as expected with allocation_method = Neyman", {
   output <- allocate_wave(
     data = data, strata = "strata",
-    already_sampled = "key", y = "y", nsample = 20, allocation_method = "Neyman"
+    already_sampled = "key", y = "y", nsample = 15, allocation_method = "Neyman"
   )
   expect_equal(
     output$nsample_actual,
     optimum_allocation(
       data = data, strata = "strata",
       y = "y", method = "Neyman",
-      nsample = sum(data$key) + 20
+      nsample = sum(data$key) + 15
     )$stratum_size
   )
   # Only works if no oversampling in already_sampled
-  expect_lt(sum(output$n_to_sample), 22)
-  expect_gt(sum(output$n_to_sample), 18)
+  expect_lt(sum(output$n_to_sample), 17)
+  expect_gt(sum(output$n_to_sample), 13)
   expect_equal(
     sum(output$n_to_sample) + sum(output$nsample_prior),
     sum(output$nsample_actual)
