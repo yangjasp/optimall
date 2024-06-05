@@ -12,3 +12,6 @@
 ^optimall.Rproj
 ^cran-comments.md
 ^inst/simulations
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
