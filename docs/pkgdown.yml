@@ -1,0 +1,13 @@
+pandoc: 3.1.1
+pkgdown: 2.0.7
+pkgdown_sha: ~
+articles:
+  Multiwave-Estimation: Multiwave-Estimation.html
+  Multiwave-Object: Multiwave-Object.html
+  optimall-vignette: optimall-vignette.html
+  using-optimall_shiny: using-optimall_shiny.html
+last_built: 2024-06-05T18:16Z
+urls:
+  reference: https://yangjasp.github.io/optimall/reference
+  article: https://yangjasp.github.io/optimall/articles
+
