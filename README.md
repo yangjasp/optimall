@@ -7,17 +7,17 @@
 streamline the process of optimum sample allocation, specifically under
 an adaptive, multi-wave approach. Its main functions allow users to:
 
-  - Define, split, and merge strata based on values or quantiles of
-    other variables.
+- Define, split, and merge strata based on values or quantiles of other
+  variables.
 
-  - Calculate the optimum number of samples to allocate to each stratum
-    in a given study in order to minimize the variance of an estimate of
-    interest.
+- Calculate the optimum number of samples to allocate to each stratum in
+  a given study in order to minimize the variance of an estimate of
+  interest.
 
-  - Select specific ids to sample based on a stratified sampling design.
+- Select specific ids to sample based on a stratified sampling design.
 
-  - Optimally allocate a fixed number of samples to an ancillary
-    sampling wave based on results from a prior wave.
+- Optimally allocate a fixed number of samples to an ancillary sampling
+  wave based on results from a prior wave.
 
 When used together, these functions can automate most of the sampling
 workflow.
@@ -59,11 +59,11 @@ users to adjust inputs to the `split_strata` function and view the
 results in real time. Once the parameters are satisfactory, the user can
 confirm the split and move on to further ones if desired. The app prints
 the code required to replicate the splits in `optimall`, so making the
-changes inside of R becomes as easy as a copy and paste\!
+changes inside of R becomes as easy as a copy and paste!
 
 <b>Screenshot:</b>
 
-![Alt text](inst/shiny-app/optimall_shiny/Screenshots/Screenshot4.png)
+<!-- ![Alt text](inst/shiny-app/optimall_shiny/Screenshots/Screenshot4.png) -->
 
 We can then use `optimum_allocation` to calculate the optimum allocation
 a fixed number of samples to our strata in order to minimize the

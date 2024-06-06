@@ -38,15 +38,6 @@
 <li class="nav-item">
   <a class="nav-link" href="reference/index.html">Reference</a>
 </li>
-<li class="nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="articles/Multiwave-Estimation.html">Estimation in Two-phase, Multi-wave sampling</a>
-    <a class="dropdown-item" href="articles/Multiwave-Object.html">Multiwave Object</a>
-    <a class="dropdown-item" href="articles/optimall-vignette.html">Using Optimall</a>
-    <a class="dropdown-item" href="articles/using-optimall_shiny.html">Splitting Strata with Optimall Shiny</a>
-  </div>
-</li>
 <li class="nav-item">
   <a class="nav-link" href="news/index.html">Changelog</a>
 </li>
@@ -102,9 +93,7 @@
 <span>                     type <span class="op">=</span> <span class="st">"value"</span>, split_at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>If the strata or values to split at are not obvious, it may be useful to try a few different splits and observe the effects that each has on sample allocation. <code>optimall</code> makes this process quick and easy with a Shiny app that can be launched with <code>optimall_shiny</code>. This app allows users to adjust inputs to the <code>split_strata</code> function and view the results in real time. Once the parameters are satisfactory, the user can confirm the split and move on to further ones if desired. The app prints the code required to replicate the splits in <code>optimall</code>, so making the changes inside of R becomes as easy as a copy and paste!</p>
 <p><b>Screenshot:</b></p>
-<div class="float">
-<img src="inst/shiny-app/optimall_shiny/Screenshots/Screenshot4.png" alt="Alt text"><div class="figcaption">Alt text</div>
-</div>
+<!-- ![Alt text](inst/shiny-app/optimall_shiny/Screenshots/Screenshot4.png) -->
 <p>We can then use <code>optimum_allocation</code> to calculate the optimum allocation a fixed number of samples to our strata in order to minimize the variance of a variable of interest.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/optimum_allocation.html">optimum_allocation</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">data</span>, strata <span class="op">=</span> <span class="st">"new_strata"</span>, </span>
