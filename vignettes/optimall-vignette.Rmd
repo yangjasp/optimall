@@ -21,8 +21,6 @@ library(survey)
 library(datasets)
 library(dplyr)
 
-set.seed(10)
-
 data(MatWgt_Sim, package = "optimall")
 ```
 
