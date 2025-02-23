@@ -154,23 +154,26 @@ optimum_allocation <- function(data, strata,
           n = dplyr::n(),
           sd = stats::sd(y, na.rm = TRUE),
           n_sd = stats::sd(y, na.rm = TRUE) * dplyr::n()
-        ) %>%
-        dplyr::mutate(
-          stratum_fraction = round(n_sd / sum(n_sd),
-            digits = ndigits
-          ),
-          sd = round(sd, digits = ndigits),
-          n_sd = round(n_sd, digits = ndigits)
         )
       output_df <- (as.data.frame(output_df))
       names(output_df)[names(output_df) == "n"] <- "npop"
       if (is.null(nsample)) {
-        output_df <- dplyr::arrange(output_df, strata)
+        output_df <- dplyr::arrange(output_df, strata) %>%
+          dplyr::mutate(
+            stratum_fraction = round(n_sd / sum(n_sd),
+                                     digits = ndigits
+            ),
+            sd = round(sd, digits = ndigits),
+            n_sd = round(n_sd, digits = ndigits)
+          )
         return(output_df)
       }
       else {
         output_df <- output_df %>%
           dplyr::mutate(
+            stratum_fraction = round(n_sd / sum(n_sd),
+                                     digits = ndigits
+            ),
             stratum_size = round(nsample * n_sd / sum(n_sd),
               digits = 0
             ),
@@ -360,20 +363,19 @@ optimum_allocation <- function(data, strata,
     if (method == "Neyman") {
       output_df <- output_df %>%
         dplyr::mutate(
-          n_sd = N_h * sd_h
-        ) %>%
-        dplyr::mutate(
-          stratum_fraction = round(n_sd / sum(n_sd),
-            digits = ndigits
-          ),
-          sd = round(sd_h, digits = ndigits),
-          n = N_h,
-          n_sd = round(n_sd, digits = ndigits)
+          n_sd = N_h * sd_h,
+          n = N_h
         )
       output_df <- (as.data.frame(output_df))
       names(output_df)[names(output_df) == "n"] <- "npop"
       if (is.null(nsample)) {
-        output_df <- dplyr::arrange(output_df, strata)
+        output_df <- dplyr::arrange(output_df, strata) %>%
+          dplyr::mutate(
+            stratum_fraction = round(n_sd / sum(n_sd),
+              digits = ndigits
+            ),
+            sd = round(sd_h, digits = ndigits),
+            n_sd = round(n_sd, digits = ndigits))
         output_df <- dplyr::select(
           output_df,
           strata, npop, sd, n_sd,
@@ -387,10 +389,15 @@ optimum_allocation <- function(data, strata,
             stratum_size = round(nsample * n_sd / sum(n_sd),
               digits = 0
             ),
-            sd = round(sd, digits = ndigits),
+            sd = round(sd_h, digits = ndigits),
             n_sd = round(n_sd, digits = ndigits)
           )
         output_df <- dplyr::arrange(output_df, strata)
+        output_df <- dplyr::select(
+          output_df,
+          strata, npop, sd, n_sd,
+          stratum_fraction, stratum_size
+        )
         return(output_df)
       }
     }
