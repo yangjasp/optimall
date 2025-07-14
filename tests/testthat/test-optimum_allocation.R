@@ -359,3 +359,132 @@ test_that("multiple strings in  the 'strata' argument lead to the
     c("a.0", "b.0", "c.0", "a.1", "b.1", "c.1")
   )
 })
+
+####
+#### Tests for A-optimal allocation
+
+data <- data.frame(
+  "strata" = c(
+    rep("a", times = 15),
+    rep("b", times = 15),
+    rep("c", times = 12)
+  ),
+  "y1" = c(rnorm(30, sd = 1), rnorm(12, sd = 2)),
+  "y2" = c(rnorm(30, sd = 3), rnorm(12, sd = 5)),
+  "key" = rbinom(42, 1, 0.2)
+)
+weights <- c(0.3,0.7)
+
+test_that("A-optimal allocation works as intended when 'y' is supplied", {
+  nsd_vec <- c(
+    length(data[data$strata == "a", "y1"]) *
+      sqrt(weights[1]*var(data[data$strata == "a", "y1"]) +
+         weights[2]*var(data[data$strata == "a", "y2"])),
+    length(data[data$strata == "b", "y1"]) *
+      sqrt(weights[1]*var(data[data$strata == "b", "y1"]) +
+         weights[2]*var(data[data$strata == "b", "y2"])),
+    length(data[data$strata == "c", "y1"]) *
+      sqrt(weights[1]*var(data[data$strata == "c", "y1"]) +
+         weights[2]*var(data[data$strata == "c", "y2"]))
+  )
+
+  expect_equal(
+    optimum_allocation(
+      data = data, strata = "strata",
+      y = c("y1","y2"), weights = weights, method = "Neyman"
+    )$sd_y1,
+    round(c(sd(data[data$strata == "a", "y1"]),
+            sd(data[data$strata == "b", "y1"]),
+            sd(data[data$strata == "c", "y1"])), digits = 2)
+  )
+  expect_equal(
+    optimum_allocation(
+      data = data, strata = "strata",
+      y = c("y1","y2"), weights = weights, method = "Neyman"
+    )$n_sd,
+    round(nsd_vec, digits = 2)
+  )
+  expect_equal(
+    optimum_allocation(
+      data = data, strata = "strata",
+      y = c("y1","y2"), weights = weights,
+      method = "Neyman"
+    )$stratum_fraction,
+    round(nsd_vec / sum(nsd_vec), digits = 2)
+  )
+  expect_equal(
+    optimum_allocation(
+      data = data, strata = "strata", weights = weights,
+      y = c("y1","y2"),  nsample = 10,
+      method = "WrightI"
+    )$stratum_size,
+    optimum_allocation(
+      data = data, strata = "strata",
+      y = c("y1","y2"), nsample = 10, weights = weights,
+      method = "WrightII"
+    )$stratum_size)
+  expect_error(
+    optimum_allocation(
+      data = data, strata = "strata",
+      y = c("y1","y2"), nsample = 10, weights = 0.5,
+      method = "WrightII"),
+    "Must provide a vector of 'weights"
+  )
+  expect_error(optimum_allocation(
+    data = data, strata = "strata",
+    y = c("y1","y2"),
+    method = "Neyman"
+  ), "Must provide a vector of 'weights'")
+  expect_error(optimum_allocation(
+    data = data, strata = "strata",
+    y = c("y1","y2"), weights = c(0.5, 0.6),
+    method = "Neyman"
+  ), "Must provide a vector of 'weights'")
+     })
+
+
+test_that("A-optimal allocation works as intended when 'sd_h' is supplied", {
+  short_data <- data %>%
+    dplyr::group_by(strata) %>%
+    dplyr::summarise(
+      size = dplyr::n(),
+      sd1 = sd(y1, na.rm = TRUE),
+      sd2 = sd(y2, na.rm = TRUE)
+    ) %>%
+    dplyr::mutate(
+      sd_sum = sqrt(weights[1] * sd1^2 + weights[2] * sd2^2),
+      tot = size * sd_sum,
+      frac = tot / sum(tot)
+    )
+
+  res <- optimum_allocation(
+    data = short_data,
+    strata = c("strata"),
+    N_h = "size", sd_h = c("sd1", "sd2"), weights = weights,
+    nsample = 30
+  )
+  res_old <- optimum_allocation(
+    data = data, strata = "strata", weights = weights,
+    y = c("y1","y2"),  nsample = 30
+  )
+  expect_equal(
+    res$n_sd, res_old$n_sd
+  )
+  expect_equal(
+    res$stratum_size, res_old$stratum_size
+  )
+
+  expect_equal(
+    res$sd1, res_old$sd_y1
+  )
+
+  expect_error(
+    optimum_allocation(
+      data = short_data,
+      strata = c("strata"),
+      N_h = "size", sd_h = c("sd1", "sd2"), weights = 0.5,
+      nsample = 30
+    ),
+    "Must provide a vector of 'weights'"
+  )
+})

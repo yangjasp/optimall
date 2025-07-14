@@ -12,6 +12,7 @@ allocate_wave(
   nsample,
   allocation_method = c("WrightII", "WrightI", "Neyman"),
   method = c("iterative", "simple"),
+  weights = NULL,
   detailed = FALSE
 )
 }
@@ -57,6 +58,11 @@ negative value in n_to_sample. When this occurs, the function
 will print a warning, and it is recommended that the user
 re-runs the allocation with the 'iterative' method.
 }}
+
+\item{weights}{A numeric vector of length matching the length of \code{y}
+that is only applicable if these lengths are > 1. In this case,
+the values must sum to 1 and correspond to the weights of each variables
+of interest in A-optimal allocation.}
 
 \item{detailed}{A logical value indicating whether the output
 dataframe should include details about each stratum including

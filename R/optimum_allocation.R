@@ -25,11 +25,14 @@
 #' continuous variable for which the variance should be minimized.
 #' Defaults to \code{NULL} and should be left as \code{NULL} when \code{data}
 #' holds stratum standard deviations and sample sizes instead of individual
-#' sampling units.
+#' sampling units. If a character vector of length > 1 is supplied, then
+#' function performs A-optimal allocation to minimize the sum of variances.
 #' @param sd_h a character string specifying the name of the
 #' column holding the within-stratum standard deviations for each stratum.
 #' Defaults to \code{NULL} and should be left as \code{NULL} when \code{data}
-#' holds individual sampling units.
+#' holds individual sampling units. If a character vector of length > 1 is
+#' supplied, the function performs A-optimal allocation to minimize the sum
+#' of variances.
 #' @param N_h a character string specifying the name of the
 #' column holding the population stratum sizes for each stratum.
 #' Defaults to \code{NULL} and should be left as \code{NULL} when \code{data}
@@ -54,14 +57,21 @@
 #' fraction times \code{nsample} rounded to the nearest integer,
 #' which may no longer be optimall.
 #' }
+#' @param weights A numeric vector of length matching the length of \code{y} or
+#' \code{sd_h} that is only applicable if these lengths are > 1. In this case,
+#' the values must sum to 1 and correspond to the weights of each variables
+#' of interest in A-optimal allocation.
 #' @param ndigits a numeric value specifying the number of digits
 #' to which the standard deviation and stratum fraction should be rounded.
 #' Defaults to 2.
 #' @param allow.na logical input specifying whether y should
 #' be allowed to have NA values. Defaults to \code{FALSE}.
+#' @details If a character vector of length > 1 is supplied for \code{y} or
+#' \code{sd_h}, then function performs A-optimal allocation to minimize the
+#' sum of variances.
 #' @examples
 #' optimum_allocation(
-#'   data = iris, strata = "Species", y = "Sepal.Length",
+#'   data = iris, strata = "Species", y = "Sepal.Width",
 #'   nsample = 40, method = "WrightII"
 #' )
 #'
@@ -75,6 +85,28 @@
 #' optimum_allocation(
 #'   data = iris_summary, strata = "strata",
 #'   sd_h = "sd", N_h = "size",
+#'   nsample = 40, method = "WrightII"
+#' )
+#'
+#' # A-optimal allocation to minimize the sum of variances if a vector is
+#' # supplied for y or sd_h
+#' optimum_allocation(
+#'   data = iris, strata = "Species", y = c("Sepal.Width", "Sepal.Length"),
+#'   weights = c(0.5,0.5),
+#'   nsample = 40, method = "WrightII"
+#' )
+#'
+#' iris_summary2 <- data.frame(
+#'   strata = unique(iris$Species),
+#'   size = c(50, 50, 50),
+#'   sd1 = c(0.3791, 0.3138, 0.3225),
+#'   sd2 = c(0.3525, 0.5162, 0.6359)
+#' )
+#'
+#' optimum_allocation(
+#'   data = iris_summary2, strata = "strata",
+#'   sd_h = c("sd1", "sd2"), weights = c(0.5,0.5),
+#'   N_h = "size",
 #'   nsample = 40, method = "WrightII"
 #' )
 #' @export
@@ -94,6 +126,7 @@ optimum_allocation <- function(data, strata,
                                nsample = NULL,
                                ndigits = 2,
                                method = c("WrightII", "WrightI", "Neyman"),
+                               weights = NULL,
                                allow.na = FALSE) {
   n_sd <- sd <- n <- npop <- stratum_fraction <- NULL
   # bind local vars as necessary
@@ -116,6 +149,7 @@ optimum_allocation <- function(data, strata,
     provided, then 'N_h' must be as well. Use ?optimum_allocation for help")
   }
 
+  if(length(y) == 1 & !is.null(y) | length(sd_h) == 1){
   # Start if y is given and sd is NULL
   if (is.null(sd_h)) {
     if (!is.null(N_h)) {
@@ -553,5 +587,139 @@ optimum_allocation <- function(data, strata,
       }
     }
     # End if sd is given and y is NULL
+  }} # This ends case where y or sd_h is length one. Typical Neyman allocation
+
+  ####
+  #### Begin case where y or sd_h is length > 1
+  if(length(y) > 1 | length(sd_h) > 1) {
+
+    # Check for weights
+    if(is.null(weights) | sum(weights) != 1){
+      stop("Must provide a vector of 'weights' which sum to 1
+      if 'y' or 'sd_h' is a vector of length > 1.")
+    }
+
+    ## First, if y is supplied
+    if (!is.null(y)) {
+      if (!is.null(N_h)) {
+        stop("If 'y' is given then 'sd_h' and 'N_h' should be NULL.")
+      }
+      if (all(y %in% names(data)) == FALSE) {
+        stop("'y' must be a character string or vector of strings matching
+             column names of data.")
+      }
+      if (!all(sapply(data[, y, drop = FALSE], is.numeric))) {
+        stop("All columns specified in 'y' must be numeric.")
+      }
+      if(length(weights) != length(y)) {
+        stop("If 'y' is a vector, then 'weights' must be a vector of the same
+             length.")
+      }
+      method <- match.arg(method)
+      P <- length(y)
+      N_h <- table(data[,strata]) # before removing NAs
+      data <- data[!is.na(data[,y[1]]),]
+      var_list <- list()
+      a_var_list <- list()
+      for (i in seq_along(y)){
+        variances <- tapply(data[,y[i]], data[,strata], stats::var)
+        var_list[[i]] <- variances
+        a_var_list[[i]] <- weights[i]*variances
+      }
+      sums <- rowSums(t(dplyr::bind_rows(a_var_list))) # Gives sum per stratum
+      df <- data.frame("strata" = names(N_h), "N_h" = as.vector(N_h),
+                       "sqrt_a_var_sum" = sqrt(sums))
+
+      # Now run Neyman on this df
+      output <- optimum_allocation(df, strata = "strata", sd_h = "sqrt_a_var_sum",
+                                   N_h = "N_h", nsample = nsample,
+                                   method = method)
+
+      # Add sd for each var of interest to output df
+      output <- output[, names(output)[names(output) != "sd"]]
+
+      sd_list <- lapply(var_list, function(x) round(sqrt(x), ndigits))
+      sd_df <- as.data.frame(sd_list)
+      sd_df$stratum <- rownames(sd_df)
+      sd_df <- sd_df[, c("stratum", setdiff(names(sd_df), "stratum"))]
+      names(sd_df) <- c("strata", paste0("sd_", y))
+
+      output <- dplyr::left_join(
+        sd_df,
+        output,
+        by = "strata"
+      )
+
+      # arrange appropriately
+      non_sd_cols <- setdiff(names(output), names(sd_df)[names(sd_df) != "strata"])
+      new_order <- c(non_sd_cols[1:2], names(sd_df)[names(sd_df) != "strata"],
+                     non_sd_cols[-(1:2)])
+      output <- output[, new_order]
+      return(output)
+    }
+
+    # Else, if sd_h is given and y is null
+    else {
+      if (any(sd_h %in% names(data) == FALSE)) {
+        stop("'sd_h' must be character strings or vector of strings
+             matching column names of data.")
+      }
+      if (length(N_h) > 1 | N_h %in% names(data) == FALSE) {
+        stop("'N_h' must be a character string
+             matching a column name of data.")
+      }
+      if (!all(sapply(data[, sd_h, drop = FALSE], is.numeric))) {
+        stop("All columns specified in 'sd_h' must be numeric.")
+      }
+      if (is.numeric(as.vector(data[, N_h])) == FALSE) {
+        stop("N_h' must be numeric.")
+      }
+      if(length(weights) != length(sd_h)) {
+        stop("If 'sd_h' is a vector, then it and 'weights'
+        must all be vectors of the same length.")
+      }
+      if (any(table(data[,strata]) > 1)) {
+        stop("If using 'sd_h' and 'N_h' instead of 'y',
+      data must only contain one row per stratum.")
+      }
+      P <- length(sd_h)
+      method <- match.arg(method)
+      df <- data[, c(strata, N_h, sd_h)]
+      strata <- interaction(df[,strata])
+      df <- cbind(strata, df[,c(N_h, sd_h)])
+      # Only columns of interest
+      if (any(table(df$strata) > 1)) {
+        stop("If using 'sd_h' and 'N_h' instead of 'y',
+      data must only contain one row per stratum.")
+      }
+      if (sum(is.na(df)) >= 1) {
+        stop("Data cannot contain NAs.")
+      }
+      # Now multiply weights by variances.
+      weighted_vars <- sweep(df[, sd_h]^2, 2, weights, FUN = "*")
+      sums <- rowSums(weighted_vars)
+      df <- data.frame("strata" = df$strata, "N_h" = as.vector(data[,N_h]),
+                       "sqrt_a_var_sum" = sqrt(sums))
+
+      # Now run Neyman on this df
+      output <- optimum_allocation(df, strata = "strata", sd_h = "sqrt_a_var_sum",
+                                   N_h = "N_h", nsample = nsample,
+                                   method = method)
+
+      # Add sd for each var of interest
+      output <- output[, names(output)[names(output) != "sd"]]
+      output <- dplyr::left_join(
+        cbind("strata" = df$strata, data[, sd_h]),
+        output,
+        by = "strata"
+      )
+
+      # arrange appropriately
+      non_sd_cols <- setdiff(names(output), sd_h)
+      new_order <- c(non_sd_cols[1:2], sd_h, non_sd_cols[-(1:2)])
+      output <- output[, new_order]
+      output[,sd_h] <- round(output[,sd_h], ndigits)
+      return(output)
+    }
   }
 }

@@ -3,7 +3,6 @@
 #' @return Prints a summary of the specified multiwave object in the console.
 #' @aliases summary,Multiwave-method
 #' @export
-
 setMethod("summary", "Multiwave", function(object) {
   n_waves <- vector()
   for (i in (seq_along(object@phases))) {

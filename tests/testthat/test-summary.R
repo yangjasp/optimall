@@ -33,3 +33,4 @@ test_that("summary works with design and samples", {
   expect_output(summary(MySurvey), "3 obs. of 3 vars: a, b")
   expect_output(summary(MySurvey), "list of length 2")
 })
+

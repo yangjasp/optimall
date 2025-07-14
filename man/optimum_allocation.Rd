@@ -13,6 +13,7 @@ optimum_allocation(
   nsample = NULL,
   ndigits = 2,
   method = c("WrightII", "WrightI", "Neyman"),
+  weights = NULL,
   allow.na = FALSE
 )
 }
@@ -40,12 +41,15 @@ is taken to define one stratum.}
 continuous variable for which the variance should be minimized.
 Defaults to \code{NULL} and should be left as \code{NULL} when \code{data}
 holds stratum standard deviations and sample sizes instead of individual
-sampling units.}
+sampling units. If a character vector of length > 1 is supplied, then
+function performs A-optimal allocation to minimize the sum of variances.}
 
 \item{sd_h}{a character string specifying the name of the
 column holding the within-stratum standard deviations for each stratum.
 Defaults to \code{NULL} and should be left as \code{NULL} when \code{data}
-holds individual sampling units.}
+holds individual sampling units. If a character vector of length > 1 is
+supplied, the function performs A-optimal allocation to minimize the sum
+of variances.}
 
 \item{N_h}{a character string specifying the name of the
 column holding the population stratum sizes for each stratum.
@@ -78,6 +82,11 @@ fraction times \code{nsample} rounded to the nearest integer,
 which may no longer be optimall.
 }}
 
+\item{weights}{A numeric vector of length matching the length of \code{y} or
+\code{sd_h} that is only applicable if these lengths are > 1. In this case,
+the values must sum to 1 and correspond to the weights of each variables
+of interest in A-optimal allocation.}
+
 \item{allow.na}{logical input specifying whether y should
 be allowed to have NA values. Defaults to \code{FALSE}.}
 }
@@ -91,9 +100,14 @@ each stratum in a stratified random sample, which
 minimizes the variance of the sample mean according to Neyman
 Allocation or Exact Optimum Sample Allocation (Wright 2014).
 }
+\details{
+If a character vector of length > 1 is supplied for \code{y} or
+\code{sd_h}, then function performs A-optimal allocation to minimize the
+sum of variances.
+}
 \examples{
 optimum_allocation(
-  data = iris, strata = "Species", y = "Sepal.Length",
+  data = iris, strata = "Species", y = "Sepal.Width",
   nsample = 40, method = "WrightII"
 )
 
@@ -107,6 +121,28 @@ iris_summary <- data.frame(
 optimum_allocation(
   data = iris_summary, strata = "strata",
   sd_h = "sd", N_h = "size",
+  nsample = 40, method = "WrightII"
+)
+
+# A-optimal allocation to minimize the sum of variances if a vector is
+# supplied for y or sd_h
+optimum_allocation(
+  data = iris, strata = "Species", y = c("Sepal.Width", "Sepal.Length"),
+  weights = c(0.5,0.5),
+  nsample = 40, method = "WrightII"
+)
+
+iris_summary2 <- data.frame(
+  strata = unique(iris$Species),
+  size = c(50, 50, 50),
+  sd1 = c(0.3791, 0.3138, 0.3225),
+  sd2 = c(0.3525, 0.5162, 0.6359)
+)
+
+optimum_allocation(
+  data = iris_summary2, strata = "strata",
+  sd_h = c("sd1", "sd2"), weights = c(0.5,0.5),
+  N_h = "size",
   nsample = 40, method = "WrightII"
 )
 }
