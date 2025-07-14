@@ -617,6 +617,9 @@ optimum_allocation <- function(data, strata,
       }
       method <- match.arg(method)
       P <- length(y)
+      if(is.factor(data[,strata])){
+        data[,strata] <- droplevels(data[,strata]) # Ignore empty levels
+      }
       N_h <- table(data[,strata]) # before removing NAs
       data <- data[!is.na(data[,y[1]]),]
       var_list <- list()

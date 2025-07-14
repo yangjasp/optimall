@@ -261,3 +261,37 @@ test_that("the output of allocate_wave is as expected", {
     sum(output$nsample_actual)
   )
 })
+
+#####
+##### Tests for multiple y columns with oversampling
+set.seed(1)
+data <- data.frame(
+  "strata" = c(
+    rep("a", times = 15),
+    rep("b", times = 15),
+    rep("c", times = 12)
+  ),
+  "y1" = c(rnorm(30, sd = 1), rnorm(12, sd = 1.5)),
+  "y2" = c(rnorm(30, sd = 1.5), rnorm(12, sd = 2.3)),
+  "key" = rbinom(42, 1, 0.2)
+)
+data$key[c(1, 2, 3,4,5,6,7, 8, 9,
+           16, 31)] <- 1 # To make sure no group gets zero in already_sampled
+
+
+test_that("the output of allocate_wave is as expected", {
+  output <- allocate_wave(
+    data = data, strata = "strata",
+    already_sampled = "key", y = c("y1","y2"),
+    weights = c(0.5,0.5),
+    nsample = 5, detailed = TRUE
+  )
+  expect_equal(
+    output$nsample_optimal,
+    optimum_allocation(
+      data = data, strata = "strata",
+      y = c("y1","y2"), weights = c(0.5,0.5),
+      nsample = sum(data$key) + 5
+    )$stratum_size
+  )
+})
