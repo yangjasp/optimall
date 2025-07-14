@@ -1,3 +1,9 @@
+# optimall 1.2.0
+
+## Enhancements
+
+- Added A-optimality functionality to optimum_allocation() and allocate_wave().
+
 # optimall 1.1.1
 
 ## Enhancements
