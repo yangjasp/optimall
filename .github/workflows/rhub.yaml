@@ -56,6 +56,8 @@ jobs:
         with:
           token: ${{ secrets.RHUB_TOKEN }}
           job-config: ${{ matrix.config.job-config }}
+      - run: |
+          brew install libtool
       - uses: r-hub/actions/setup-deps@v1
         with:
           token: ${{ secrets.RHUB_TOKEN }}
@@ -93,12 +95,3 @@ jobs:
         with:
           job-config: ${{ matrix.config.job-config }}
           token: ${{ secrets.RHUB_TOKEN }}
-      - uses: r-hub/actions/setup-deps@v1
-        with:
-          job-config: ${{ matrix.config.job-config }}
-          token: ${{ secrets.RHUB_TOKEN }}
-          extra-args: '--no-install-source'
-      - name: Pre-install httpuv binary on macOS
-        if: matrix.config.os == 'macos-latest'
-        run: |
-          Rscript -e 'install.packages("httpuv", type = "binary")'
