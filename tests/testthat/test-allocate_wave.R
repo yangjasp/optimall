@@ -38,10 +38,11 @@ test_that("the output of allocate_wave is as expected", {
 test_that("the output is as expected with allocation_method = Neyman", {
   output <- allocate_wave(
     data = data, strata = "strata",
-    already_sampled = "key", y = "y", nsample = 15, allocation_method = "Neyman"
+    already_sampled = "key", y = "y", nsample = 15, allocation_method = "Neyman",
+    detailed = TRUE
   )
   expect_equal(
-    output$nsample_actual,
+    output$nsample_optimal,
     optimum_allocation(
       data = data, strata = "strata",
       y = "y", method = "Neyman",
