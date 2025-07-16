@@ -56,9 +56,6 @@ jobs:
         with:
           token: ${{ secrets.RHUB_TOKEN }}
           job-config: ${{ matrix.config.job-config }}
-      - run: |
-          brew install libtool autoconf automake m4 perl
-          ln -s /opt/homebrew/bin/glibtoolize /opt/homebrew/bin/libtoolize || true
       - uses: r-hub/actions/setup-deps@v1
         with:
           token: ${{ secrets.RHUB_TOKEN }}
@@ -84,6 +81,9 @@ jobs:
         with:
           job-config: ${{ matrix.config.job-config }}
           token: ${{ secrets.RHUB_TOKEN }}
+      - run: |
+          brew install libtool autoconf automake m4 perl
+          ln -s /opt/homebrew/bin/glibtoolize /opt/homebrew/bin/libtoolize || true
       - uses: r-hub/actions/platform-info@v1
         with:
           token: ${{ secrets.RHUB_TOKEN }}
