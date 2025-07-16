@@ -98,3 +98,7 @@ jobs:
           job-config: ${{ matrix.config.job-config }}
           token: ${{ secrets.RHUB_TOKEN }}
           extra-args: '--no-install-source'
+      - name: Pre-install httpuv binary on macOS
+        if: matrix.config.os == 'macos-latest'
+        run: |
+          Rscript -e 'install.packages("httpuv", type = "binary")'
