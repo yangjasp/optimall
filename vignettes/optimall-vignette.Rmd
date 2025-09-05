@@ -39,7 +39,7 @@ When a study population is composed of heterogeneous subpopulations, stratified 
 
 * Optimally allocate a fixed number of samples to a sampling wave based on results from a prior wave. 
 
-When used together, these functions can automate most of the sampling workflow. This vignette will outline these package features one by one (moving from simple to more complex), introduce the theoretical framework behind the functions, and finally demonstrate how they can be used collectively to perform multi-wave sampling in R. The final section then details how to use `optimall_shiny()` to efficiently make decisions about splitting strata.
+When used together, these functions can automate most of the sampling workflow. This vignette will outline these package features one by one (moving from simple to more complex), introduce the theoretical framework behind the functions, and finally demonstrate how they can be used collectively to perform multi-wave sampling in R. The final section then details how to use `optimall_shiny()` to efficiently make decisions about splitting strata. For a more detailed description of `optimall`, see the article published in the Journal of Statistical Software <doi:10.18637/jss.v114.i10>.
 
 ## Defining and Refining Strata
 

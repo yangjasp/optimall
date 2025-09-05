@@ -1,0 +1,20 @@
+bibentry(bibtype = "Article",
+  title        = "Optimum Allocation for Adaptive Multi-Wave Sampling in {R}: The {R} Package {optimall}",
+  author       = c(person(given = c("Jasper", "B."),
+                          family = "Yang",
+                          email = "jbyang@uw.edu"),
+                   person(given = "Thomas",
+                          family = "Lumley"),
+                   person(given = c("Bryan", "E."),
+                          family = "Shepherd"),
+                   person(given = c("Pamela", "A."),
+                          family = "Shaw")),
+  journal      = "Journal of Statistical Software",
+  year         = "2025",
+  volume       = "114",
+  number       = "10",
+  pages        = "1--31",
+  doi          = "10.18637/jss.v114.i10",
+  header       = "To cite optimall in publications use:"
+)
+

@@ -1,3 +1,7 @@
+# optimall 1.3.0
+
+- New version that refers to JSS manuscript <doi:10.18637/jss.v114.i10>.
+
 # optimall 1.2.0
 
 ## Enhancements

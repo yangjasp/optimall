@@ -406,4 +406,4 @@ Now the design for Wave 2 is specified. We can continue with similar steps for f
 
 ## Conclusion
 
-Through these examples, we see the many benefits that the creation of a Multiwave object offers in `optimall`. 
+Through these examples, we see the many benefits that the creation of a Multiwave object offers in `optimall`. More information can be found in the paper on `optimall` published in the Journal of Statistical Software <doi:10.18637/jss.v114.i10>.

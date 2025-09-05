@@ -1,6 +1,6 @@
 # Update
 
-This is an update version 1.2.0 (see NEWS.md)
+This is an update version 1.3.0 (see NEWS.md). The DOI in the CITATION is for a new JSS publication that will be registered after publication on CRAN.
 
 # Test environments
 * local: macOS, R-release 
