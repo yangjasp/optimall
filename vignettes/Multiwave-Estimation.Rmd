@@ -39,14 +39,14 @@ Broadly, there are two classes of survey estimators: design-based and model-base
 $$
 \hat{T}_{IPW} = \sum_{i =1}^N R_i\frac{y_i}{\pi_i},
 $$
-where individuals in the poulation of size $N$ are indexed by $i = 1, ..., N$, $R_i$ is an indicator for the inclusion of individual $i$ in the sample, $\pi_i$ is the sampling probability for person $i$, and $y_i$ is the observed value. Under simple stratified sampling, $\pi_i = \frac{n_k}{N_k}$ for individuals in the same stratum, $k=  1, ..., K$, where $n_k$ denotes the sample size in stratum $k$ and $N_k$ denotes the population size of stratum $h$. In this case, the IPW estimator becomes
+where individuals in the population of size $N$ are indexed by $i = 1, ..., N$, $R_i$ is an indicator for the inclusion of individual $i$ in the sample, $\pi_i$ is the sampling probability for person $i$, and $y_i$ is the observed value. Under simple stratified sampling, $\pi_i = \frac{n_k}{N_k}$ for individuals in the same stratum, $k=  1, ..., K$, where $n_k$ denotes the sample size in stratum $k$ and $N_k$ denotes the population size of stratum $h$. In this case, the IPW estimator becomes
 
 $$
 \hat{T}_{IPW} = \sum_{k=1}^K\sum_{i \in I_k}R_i\frac{N_k}{n_k}y_i,
 $$
 where $I_k$ is the set of indices for individuals in stratum $k$. This estimator is unbiased for the population total, but its variance may be large if sampling fractions are small in any strata. The Neyman and Wright allocations which can be implemented in `optimall` are optimal for this estimator.
 
-Efficient alternatives to IPW estimators exist when prior information on the entire population is available. A popular design-based estimator in the presence of known auxiliary variables is the generalized raking estimator, which improves on IPW by adjusting weights to ensure that the estimated totals of auxiliary variables match the known phase 1 totals (Breslow et al. 2009). Let $x_i$ be an auxilary variable which was observed for the whole phase 1 cohort and is correlated with the variable of interest $y_i$. Generalized raking adjusts each individual inverse-probability weight by a factor of $g_i$. Under simple stratified sampling, we have $w^*_i = \frac{g_i}{\pi_i} = g_i\frac{N_k}{n_k}$ and the estimator is 
+Efficient alternatives to IPW estimators exist when prior information on the entire population is available. A popular design-based estimator in the presence of known auxiliary variables is the generalized raking estimator, which improves on IPW by adjusting weights to ensure that the estimated totals of auxiliary variables match the known phase 1 totals (Breslow et al. 2009). Let $x_i$ be an auxiliary variable which was observed for the whole phase 1 cohort and is correlated with the variable of interest $y_i$. Generalized raking adjusts each individual inverse-probability weight by a factor of $g_i$. Under simple stratified sampling, we have $w^*_i = \frac{g_i}{\pi_i} = g_i\frac{N_k}{n_k}$ and the estimator is 
 
 $$
 \hat{T}_{GR} = \sum_{k=1}^K\sum_{i \in I_k}R_iw^*_iy_i = \sum_{k=1}^K\sum_{i \in I_k}R_ig_i\frac{N_k}{n_k}y_i ,
@@ -161,7 +161,7 @@ $$
 and so the weight $\frac{1}{\pi_i}$ would be $\frac{N_k}{n_{1k}+n_{2k}+ n_{3k}}$ exactly the post-stratification weight. 
 --> 
 
-#### 2. Wave-specific conditional probabilties
+#### 2. Wave-specific conditional probabilities
 
 Consider the unbiased two-phase estimator for the population total in (\ref{eq:eq1}), which, when stratified random sampling is used in Phase 2, can be written:
 
