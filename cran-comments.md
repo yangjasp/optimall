@@ -1,6 +1,6 @@
 # Update
 
-This is an update version 1.3.0 (see NEWS.md). The DOI in the CITATION is for a new JSS publication that will be registered after publication on CRAN.
+This is an update version 1.3.0 (see NEWS.md). 
 
 # Test environments
 * local: macOS, R-release 
@@ -8,4 +8,7 @@ This is an update version 1.3.0 (see NEWS.md). The DOI in the CITATION is for a 
 * win-builder
 
 # R CMD check results
-* There were no ERRORs, WARNINGs, or NOTEs.
+* There was one NOTE: Found the following (possibly) invalid DOIs: DOI: 10.18637/jss.v114.i10.
+From: DESCRIPTION, inst/CITATION.
+
+The DOI in the CITATION is for a new JSS publication that will be registered after publication on CRAN.
