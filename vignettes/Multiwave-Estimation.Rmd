@@ -521,8 +521,8 @@ svydesign_phase2 <- svydesign(data = phase2_data,
                               strata = ~strata_int,
                               probs = ~denom)
 
-estimate_approx <- svytotal(~Petal.Length, svydesign_phase2)/nrow(phase1_data)/3
-estimate_approx[1]
+estimate_approx <- svytotal(~Petal.Length, svydesign_phase2)
+estimate_approx[1]/nrow(phase1_data)/3
 variance_approx <- sqrt(phase1_variance_est + (SE(estimate_approx)/nrow(phase1_data)/3)^2)
 variance_approx
 ```
