@@ -1,3 +1,7 @@
+# optimall 1.3.1
+
+- Small fix in vignettes to maintain compatability with `survey` package version 4.5
+
 # optimall 1.3.0
 
 - New version that refers to JSS manuscript <doi:10.18637/jss.v114.i10>.
