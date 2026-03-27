@@ -1,6 +1,7 @@
 # optimall 1.4.0
 
 - Added Wright algorithm III functionality to optimum_allocation() and allocate_wave().
+- Efficiency improvements for all Wright algorithms, significantly decreasing run time.
 
 # optimall 1.3.1
 
