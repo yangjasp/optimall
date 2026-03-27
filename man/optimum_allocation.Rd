@@ -108,10 +108,10 @@ should correspond to strata names, and if it is unnamed, the order of values
 should correspond to the order of strata in \code{data}. If
 \code{method = "WrightIII"} and \code{lower} is not specified,
 then it is assumed that the lower bound for each stratum is 0.
-Defaults to \code{NULL}.}
+Defaults to \code{NULL}, which sets lower at 1 for each stratum.}
 
 \item{upper}{Upper bound version of \code{lower}. If
-\code{method = "WrightIII"} and \code{lower} is not specified,
+\code{method = "WrightIII"} and \code{upper} is not specified,
 then it is assumed that the upper bound for each stratum is the stratum size.
 Defaults to \code{NULL}.}
 }
