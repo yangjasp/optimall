@@ -12,9 +12,11 @@ optimum_allocation(
   N_h = NULL,
   nsample = NULL,
   ndigits = 2,
-  method = c("WrightII", "WrightI", "Neyman"),
+  method = c("WrightII", "WrightI", "WrightIII", "Neyman"),
   weights = NULL,
-  allow.na = FALSE
+  allow.na = FALSE,
+  lower = NULL,
+  upper = NULL
 )
 }
 \arguments{
@@ -73,6 +75,11 @@ samples are allocated to each stratum.
 the optimum sample allocation. It only requires that at least
 one sample is allocated to each stratum, and can therefore
 lead to a biased variance estimate.
+\item \code{"WrightIII"} uses Wright's Algorithm III to determine
+the optimum sample allocation. It allows lower and/or upper bounds on the
+stratum sample sizes to be specified with the \code{lower} and \code{upper}
+arguments. If only one of \code{lower} or \code{upper} is specified,
+then the other is assumed to be 0 or the stratum population size, respectively.
 \item \code{"Neyman"} uses the standard method of Neyman
 Allocation to determine the optimum sample allocation. When
 \code{nsample = NULL}, the optimal sampling fraction is calculated
@@ -89,6 +96,24 @@ of interest in A-optimal allocation.}
 
 \item{allow.na}{logical input specifying whether y should
 be allowed to have NA values. Defaults to \code{FALSE}.}
+
+\item{lower}{A numeric vector of length equal to the number of strata
+specifying the lower bound on stratum sizes for use with the
+\code{"WrightIII"} algorithm. If rows of \code{data} correspond to sampling
+units rather than strata, then this should either be a named vector
+with names corresponding to strata names or be an unnamed vector with the
+same value for all strata. If rows of \code{data} correspond to strata,
+then it can be a named or unnamed vector, where if it is named, the names
+should correspond to strata names, and if it is unnamed, the order of values
+should correspond to the order of strata in \code{data}. If
+\code{method = "WrightIII"} and \code{lower} is not specified,
+then it is assumed that the lower bound for each stratum is 0.
+Defaults to \code{NULL}.}
+
+\item{upper}{Upper bound version of \code{lower}. If
+\code{method = "WrightIII"} and \code{lower} is not specified,
+then it is assumed that the upper bound for each stratum is the stratum size.
+Defaults to \code{NULL}.}
 }
 \value{
 Returns a data frame with the number of samples allocated to each

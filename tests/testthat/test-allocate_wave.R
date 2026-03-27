@@ -296,3 +296,276 @@ test_that("the output of allocate_wave is as expected", {
     )$stratum_size
   )
 })
+
+# Test WrightIII
+test_that("allocate_wave passes WrightIII named bounds through in simple no-oversampling case", {
+  set.seed(1)
+
+  data <- data.frame(
+    strata = rep(c("A", "B", "C"), each = 10),
+    y = c(
+      rnorm(10, 0, 1),
+      rnorm(10, 0, 2),
+      rnorm(10, 0, 3)
+    ),
+    already_sampled = c(
+      rep(1, 2), rep(0, 8),
+      rep(1, 2), rep(0, 8),
+      rep(1, 2), rep(0, 8)
+    )
+  )
+
+  lower <- c(C = 2, A = 2, B = 2)
+  upper <- c(B = 8, C = 9, A = 7)
+
+  out <- allocate_wave(
+    data = data,
+    strata = "strata",
+    y = "y",
+    already_sampled = "already_sampled",
+    nsample = 6,
+    allocation_method = "WrightIII",
+    lower = lower,
+    upper = upper,
+    method = "simple",
+    detailed = TRUE
+  )
+
+  sizes <- setNames(out$nsample_actual, as.character(out$strata))
+
+  expect_equal(sum(out$n_to_sample), 6)
+  expect_true(all(sizes[names(lower)] >= lower))
+  expect_true(all(sizes[names(upper)] <= upper))
+})
+
+test_that("allocate_wave WrightIII works with unnamed constant bounds", {
+  set.seed(2)
+
+  data <- data.frame(
+    strata = rep(c("A", "B", "C"), each = 10),
+    y = rnorm(30),
+    already_sampled = c(
+      rep(1, 1), rep(0, 9),
+      rep(1, 1), rep(0, 9),
+      rep(1, 1), rep(0, 9)
+    )
+  )
+
+  out <- allocate_wave(
+    data = data,
+    strata = "strata",
+    y = "y",
+    already_sampled = "already_sampled",
+    nsample = 6,
+    allocation_method = "WrightIII",
+    lower = c(1, 1, 1),
+    upper = c(10, 10, 10),
+    method = "simple"
+  )
+
+  expect_equal(sum(out$n_to_sample), 6)
+  expect_true(all(out$nsample_actual >= 1))
+  expect_true(all(out$nsample_actual <= 10))
+})
+
+test_that("allocate_wave WrightIII errors when both lower and upper are missing", {
+  set.seed(3)
+
+  data <- data.frame(
+    strata = rep(c("A", "B", "C"), each = 10),
+    y = rnorm(30),
+    already_sampled = c(
+      rep(1, 1), rep(0, 9),
+      rep(1, 1), rep(0, 9),
+      rep(1, 1), rep(0, 9)
+    )
+  )
+
+  expect_error(
+    allocate_wave(
+      data = data,
+      strata = "strata",
+      y = "y",
+      already_sampled = "already_sampled",
+      nsample = 6,
+      allocation_method = "WrightIII",
+      method = "simple"
+    ),
+    "requires.*lower.*upper"
+  )
+})
+
+test_that("allocate_wave WrightIII subsets named bounds correctly in simple oversampling case", {
+  data <- data.frame(
+    strata = c(
+      rep("A", 10),
+      rep("B", 10),
+      rep("C", 10)
+    ),
+    y = c(
+      rep(1, 10),      # low variance
+      1:10,            # moderate variance
+      c(1, 5, 1, 5, 1, 5, 1, 5, 1, 5)  # moderate/high
+    ),
+    already_sampled = c(
+      rep(1, 8), rep(0, 2),   # A heavily pre-sampled
+      rep(1, 1), rep(0, 9),
+      rep(1, 1), rep(0, 9)
+    )
+  )
+
+  lower <- c(A = 1, B = 1, C = 1)
+  upper <- c(A = 10, B = 10, C = 10)
+
+  out <- allocate_wave(
+    data = data,
+    strata = "strata",
+    y = "y",
+    already_sampled = "already_sampled",
+    nsample = 4,
+    allocation_method = "WrightIII",
+    lower = lower,
+    upper = upper,
+    method = "simple"
+  )
+
+  expect_equal(sum(out$n_to_sample), 4)
+  expect_true(all(out$n_to_sample >= 0))
+})
+
+test_that("allocate_wave WrightIII subsets named bounds correctly in iterative oversampling case", {
+  data <- data.frame(
+    strata = c(
+      rep("A", 10),
+      rep("B", 10),
+      rep("C", 10),
+      rep("D", 10)
+    ),
+    y = c(
+      rep(1, 10),
+      1:10,
+      c(1, 5, 1, 5, 1, 5, 1, 5, 1, 5),
+      c(2, 8, 2, 8, 2, 8, 2, 8, 2, 8)
+    ),
+    already_sampled = c(
+      rep(1, 8), rep(0, 2),   # likely oversampled relative to optimum
+      rep(1, 1), rep(0, 9),
+      rep(1, 1), rep(0, 9),
+      rep(1, 1), rep(0, 9)
+    )
+  )
+
+  lower <- c(A = 1, B = 1, C = 1, D = 1)
+  upper <- c(A = 10, B = 10, C = 10, D = 10)
+
+  out <- allocate_wave(
+    data = data,
+    strata = "strata",
+    y = "y",
+    already_sampled = "already_sampled",
+    nsample = 4,
+    allocation_method = "WrightIII",
+    lower = lower,
+    upper = upper,
+    method = "iterative"
+  )
+
+  expect_equal(sum(out$n_to_sample), 4)
+  expect_true(all(out$n_to_sample >= 0))
+})
+
+test_that("allocate_wave WrightIII with named bounds is invariant to name order", {
+  set.seed(4)
+
+  data <- data.frame(
+    strata = rep(c("A", "B", "C"), each = 12),
+    y = c(
+      rnorm(12, 0, 1),
+      rnorm(12, 0, 2),
+      rnorm(12, 0, 3)
+    ),
+    already_sampled = c(
+      rep(1, 2), rep(0, 10),
+      rep(1, 2), rep(0, 10),
+      rep(1, 2), rep(0, 10)
+    )
+  )
+
+  lower1 <- c(A = 2, B = 2, C = 2)
+  upper1 <- c(A = 9, B = 10, C = 11)
+
+  lower2 <- c(C = 2, A = 2, B = 2)
+  upper2 <- c(B = 10, C = 11, A = 9)
+
+  out1 <- allocate_wave(
+    data = data,
+    strata = "strata",
+    y = "y",
+    already_sampled = "already_sampled",
+    nsample = 6,
+    allocation_method = "WrightIII",
+    lower = lower1,
+    upper = upper1,
+    method = "simple"
+  )
+
+  out2 <- allocate_wave(
+    data = data,
+    strata = "strata",
+    y = "y",
+    already_sampled = "already_sampled",
+    nsample = 6,
+    allocation_method = "WrightIII",
+    lower = lower2,
+    upper = upper2,
+    method = "simple"
+  )
+
+  expect_equal(
+    out1$n_to_sample[match(out2$strata, out1$strata)],
+    out2$n_to_sample
+  )
+})
+
+test_that("allocate_wave WrightIII supports multiple y variables", {
+  set.seed(5)
+
+  data <- data.frame(
+    strata = rep(c("A", "B", "C"), each = 10),
+    y1 = c(
+      rnorm(10, 0, 1),
+      rnorm(10, 0, 2),
+      rnorm(10, 0, 3)
+    ),
+    y2 = c(
+      rnorm(10, 0, 2),
+      rnorm(10, 0, 1),
+      rnorm(10, 0, 2.5)
+    ),
+    already_sampled = c(
+      rep(1, 2), rep(0, 8),
+      rep(1, 2), rep(0, 8),
+      rep(1, 2), rep(0, 8)
+    )
+  )
+
+  lower <- c(A = 2, B = 2, C = 2)
+  upper <- c(A = 10, B = 10, C = 10)
+
+  out <- allocate_wave(
+    data = data,
+    strata = "strata",
+    y = c("y1", "y2"),
+    already_sampled = "already_sampled",
+    nsample = 6,
+    allocation_method = "WrightIII",
+    weights = c(0.5, 0.5),
+    lower = lower,
+    upper = upper,
+    method = "simple"
+  )
+
+  expect_equal(sum(out$n_to_sample), 6)
+  expect_true(all(out$n_to_sample >= 0))
+})
+

@@ -63,6 +63,12 @@
 #' that is only applicable if these lengths are > 1. In this case,
 #' the values must sum to 1 and correspond to the weights of each variables
 #' of interest in A-optimal allocation.
+#' @param lower An optional vector lower bounding the number of samples
+#' allocated to each stratum under the \code{'WrightIII'} algorithm.
+#' See \code{optimum_allocation()} for details.
+#' @param upper An optional vector upper bounding the number of samples
+#' allocated to each stratum under the \code{'WrightIII'} algorithm.
+#' See \code{optimum_allocation()} for details.
 #' @examples
 #' # Create dataframe with a column specifying strata, a variable of interest
 #' # and an indicator for whether each unit was already sampled
@@ -109,10 +115,12 @@ allocate_wave <- function(data,
                           y, already_sampled,
                           nsample,
                           allocation_method = c("WrightII", "WrightI",
-                                                "Neyman"),
+                                                "WrightIII", "Neyman"),
                           method = c("iterative","simple"),
                           weights = NULL,
-                          detailed = FALSE) {
+                          detailed = FALSE,
+                          lower = NULL,
+                          upper = NULL) {
   key <- stratum_size <- wave1_size <- npop <- difference <-
     nsample_prior <- n_to_sample <- nsample_actual <-
     nsample_optimal <- sd <- NULL # bind global vars as necessary
@@ -170,7 +178,9 @@ allocate_wave <- function(data,
     nsample = nsample + nsampled,
     method = allocation_method,
     weights = weights,
-    allow.na = TRUE
+    allow.na = TRUE,
+    lower = lower,
+    upper = upper
   )
   # Optimal for total sample size
 
@@ -244,6 +254,25 @@ allocate_wave <- function(data,
     open_groups <- dplyr::filter(comp_df, difference > 0)$group
     open_df <- wave1_df %>%
       dplyr::filter(group %in% open_groups)
+    if (!is.null(lower)) {
+      if (!is.null(names(lower))) {
+        lower_open <- lower[open_groups]
+      } else {
+        lower_open <- lower[match(open_groups, unique(output1$group))]
+      }
+    } else {
+      lower_open <- NULL
+    }
+
+    if (!is.null(upper)) {
+      if (!is.null(names(upper))) {
+        upper_open <- upper[open_groups]
+      } else {
+        upper_open <- upper[match(open_groups, unique(output1$group))]
+      }
+    } else {
+      upper_open <- NULL
+    }
     open_output <- optimall::optimum_allocation(
       data = open_df,
       strata = "group",
@@ -251,7 +280,9 @@ allocate_wave <- function(data,
       nsample = nsample + nsampled - nsampled_in_closed_groups,
       method = allocation_method,
       weights = weights,
-      allow.na = TRUE
+      allow.na = TRUE,
+      lower = lower_open,
+      upper = upper_open
     )
     names(open_output)[1] <- "group"
     open_output <- dplyr::inner_join(open_output, wave1_summary, by = "group")
@@ -368,12 +399,32 @@ allocate_wave <- function(data,
       open_df <- wave1_df %>%
         dplyr::filter(group %in% open_groups_names)
 
+      if (!is.null(lower)) {
+        if (!is.null(names(lower))) {
+          lower_open <- lower[open_groups_names]
+        } else {
+          lower_open <- lower[match(open_groups_names, unique(output1$group))]
+        }
+      } else {
+        lower_open <- NULL
+      }
+
+      if (!is.null(upper)) {
+        if (!is.null(names(upper))) {
+          upper_open <- upper[open_groups_names]
+        } else {
+          upper_open <- upper[match(open_groups_names, unique(output1$group))]
+        }
+      } else {
+        upper_open <- NULL
+      }
+
       # Run optimal allocation on this filtered df of open groups
       outputn <- optimall::optimum_allocation(
         data = open_df, strata = "group", y = raw_y,
         nsample = nsample + nsampled - nsampled_in_closed_groups,
         method = allocation_method, weights = weights,
-        allow.na = TRUE
+        allow.na = TRUE, lower = lower_open, upper = upper_open
       )
 
       # Re-join with (cleaned) input data to  get new differences

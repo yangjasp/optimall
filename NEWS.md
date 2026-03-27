@@ -1,3 +1,7 @@
+# optimall 1.4.0
+
+- Added Wright algorithm III functionality to optimum_allocation() and allocate_wave().
+
 # optimall 1.3.1
 
 - Small fix in vignettes to maintain compatability with `survey` package version 4.5

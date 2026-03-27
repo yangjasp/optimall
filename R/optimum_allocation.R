@@ -49,6 +49,11 @@
 #' the optimum sample allocation. It only requires that at least
 #' one sample is allocated to each stratum, and can therefore
 #' lead to a biased variance estimate.
+#' \item \code{"WrightIII"} uses Wright's Algorithm III to determine
+#' the optimum sample allocation. It allows lower and/or upper bounds on the
+#' stratum sample sizes to be specified with the \code{lower} and \code{upper}
+#' arguments. If only one of \code{lower} or \code{upper} is specified,
+#' then the other is assumed to be 0 or the stratum population size, respectively.
 #' \item \code{"Neyman"} uses the standard method of Neyman
 #' Allocation to determine the optimum sample allocation. When
 #' \code{nsample = NULL}, the optimal sampling fraction is calculated
@@ -66,6 +71,22 @@
 #' Defaults to 2.
 #' @param allow.na logical input specifying whether y should
 #' be allowed to have NA values. Defaults to \code{FALSE}.
+#' @param lower A numeric vector of length equal to the number of strata
+#' specifying the lower bound on stratum sizes for use with the
+#' \code{"WrightIII"} algorithm. If rows of \code{data} correspond to sampling
+#' units rather than strata, then this should either be a named vector
+#' with names corresponding to strata names or be an unnamed vector with the
+#' same value for all strata. If rows of \code{data} correspond to strata,
+#' then it can be a named or unnamed vector, where if it is named, the names
+#' should correspond to strata names, and if it is unnamed, the order of values
+#' should correspond to the order of strata in \code{data}. If
+#' \code{method = "WrightIII"} and \code{lower} is not specified,
+#' then it is assumed that the lower bound for each stratum is 0.
+#' Defaults to \code{NULL}.
+#' @param upper Upper bound version of \code{lower}. If
+#' \code{method = "WrightIII"} and \code{lower} is not specified,
+#' then it is assumed that the upper bound for each stratum is the stratum size.
+#' Defaults to \code{NULL}.
 #' @details If a character vector of length > 1 is supplied for \code{y} or
 #' \code{sd_h}, then function performs A-optimal allocation to minimize the
 #' sum of variances.
@@ -125,9 +146,11 @@ optimum_allocation <- function(data, strata,
                                N_h = NULL,
                                nsample = NULL,
                                ndigits = 2,
-                               method = c("WrightII", "WrightI", "Neyman"),
+                               method = c("WrightII", "WrightI", "WrightIII", "Neyman"),
                                weights = NULL,
-                               allow.na = FALSE) {
+                               allow.na = FALSE,
+                               lower = NULL,
+                               upper = NULL) {
   n_sd <- sd <- n <- npop <- stratum_fraction <- NULL
   # bind local vars as necessary
   if (is.matrix(data) | tibble::is_tibble(data)) {
@@ -218,7 +241,7 @@ optimum_allocation <- function(data, strata,
         return(output_df)
       }
     }
-    else if (method == "WrightI") {
+    else {
       if (is.null(nsample)) {
         stop("This method requires a fixed nsample. Try method =
              'Neyman' for exact sampling fractions.")
@@ -226,9 +249,7 @@ optimum_allocation <- function(data, strata,
       else {
         n_strata <- length(unique(strata))
         n_minus_H <- nsample - n_strata
-        if (n_minus_H <= 0) {
-          stop("'nsample' is too small for this method.")
-        }
+        n_minus_2H <- nsample - 2 * n_strata
         output_df <- output_df %>%
           dplyr::group_by(strata) %>%
           dplyr::summarize(
@@ -239,36 +260,71 @@ optimum_allocation <- function(data, strata,
         if (nsample > sum(output_df$n)) {
           stop("'nsample' is larger than population size")
         }
-        priority_array <- list()
-        for (i in 1:n_strata) {
-          priority_array[[i]] <- c(
-            rep(output_df[i, "n_sd"],
-              times = min(output_df[i, "n"] - 1, n_minus_H)
-            ),
-            rep(NULL,
-              times = ifelse(n_minus_H > (output_df[i, "n"] - 1),
-                n_minus_H - (output_df[i, "n"] - 1),
-                0
-              )
-            )
-          )
-          # All rows are same length, but zeroes so that n_sample
-          # won't be larger than n_strata
-          names(priority_array)[[i]] <- paste0("n_sd", as.character(i))
+        if(method == "WrightI"){
+          if (n_minus_H <= 0) {
+            stop("'nsample' is too small for this method.")
+          }
+          lower <- rep(1L, nrow(output_df))
+          upper <- output_df$n
         }
-        suppressMessages(Wright_output <- dplyr::bind_rows(priority_array))
-        Wright_output[is.na(Wright_output)] <- 0
-        mult_vec <- vector()
-        for (i in 1:(n_minus_H + 1)) {
-          mult_vec[i] <- 1 / (sqrt(i * (i + 1)))
+        if(method == "WrightII"){
+          if (n_minus_2H <= 0) {
+            stop("'nsample' is too small for this method.")
+          }
+          lower <- rep(2L, nrow(output_df))
+          upper <- output_df$n
         }
-        for (i in seq_len(ncol(Wright_output))) {
-          Wright_output[, i] <- Wright_output[, i] * mult_vec[i]
+        if(method == "WrightIII"){
+          if(is.null(lower) & is.null(upper)){
+            stop("This method requires lower and/or upper to be specified.")
+          }
+          n_strata <- nrow(output_df)
+          if (!is.null(lower)) {
+            if (length(lower) != n_strata) {
+              stop("'lower' must have length equal to the number of strata.")
+            }
+
+            if (!is.null(names(lower))) {
+              if (!all(as.character(output_df$strata) %in% names(lower))) {
+                stop("If 'lower' is named, its names must match strata names.")
+              }
+              lower <- lower[as.character(output_df$strata)]
+            } else {
+              if (length(unique(lower)) != 1) {
+                stop("If 'lower' is unnamed, it must take the same value for all strata.")
+              }
+            }
+          } else {
+            lower <- rep(0L, n_strata)
+          }
+          if (!is.null(upper)) {
+            if (length(upper) != n_strata) {
+              stop("'upper' must have length equal to the number of strata.")
+            }
+
+            if (!is.null(names(upper))) {
+              if (!all(as.character(output_df$strata) %in% names(upper))) {
+                stop("If 'upper' is named, its names must match strata names.")
+              }
+              upper <- upper[as.character(output_df$strata)]
+            } else {
+              if (length(unique(upper)) != 1) {
+                stop("If 'upper' is unnamed, it must take the same value for all strata.")
+              }
+            }
+          } else {
+            upper <- output_df$n
+          }
+          lower <- as.integer(lower)
+          upper <- as.integer(upper)
         }
-        cutoff <- (sort(unlist(Wright_output, use.names = FALSE),
-          decreasing = TRUE
-        ))[n_minus_H]
-        stratum_size <- rowSums(Wright_output >= cutoff) + 1
+        stratum_size <- allocate_wright(
+          n_sd = output_df$n_sd,
+          N_h = output_df$n,
+          nsample = nsample,
+          lower = lower,
+          upper = upper
+        )
         final_output <- cbind(
           output_df[, c("strata", "n", "sd", "n_sd")], stratum_size
         )
@@ -284,80 +340,6 @@ optimum_allocation <- function(data, strata,
           "strata", "n", "sd", "n_sd", "stratum_fraction",
           "stratum_size"
         )]
-        names(final_output)[names(final_output) == "n"] <- "npop"
-        final_output <- dplyr::arrange(final_output, strata)
-        return(final_output)
-      }
-    }
-    else if (method == "WrightII") {
-      if (is.null(nsample)) {
-        stop("This method requires a fixed nsample. Try method =
-            'Neyman' for exact sampling fractions.")
-      }
-      else {
-        n_strata <- length(unique(strata))
-        n_minus_2H <- nsample - 2 * n_strata
-        if (n_minus_2H <= 0) {
-          stop("'nsample' is too small for this method.")
-        }
-        output_df <- output_df %>%
-          dplyr::group_by(strata) %>%
-          dplyr::summarize(
-            n = dplyr::n(),
-            sd = stats::sd(y, na.rm = TRUE),
-            n_sd = stats::sd(y, na.rm = TRUE) * dplyr::n()
-          )
-        if (nsample > sum(output_df$n)) {
-          stop("'nsample' is larger than population size")
-        }
-        priority_array <- list()
-        for (i in 1:n_strata) {
-          priority_array[[i]] <- c(
-            rep(output_df[i, "n_sd"],
-              times = min(output_df[i, "n"] - 2, n_minus_2H)
-            ),
-            rep(output_df[i, "n_sd"] * 0,
-              times = ifelse(n_minus_2H > (output_df[i, "n"] - 2),
-                n_minus_2H - (output_df[i, "n"] - 2),
-                0
-              )
-            )
-          )
-          # All rows are same length, but zeroes so that n_sample
-          # won't be larger than n_strata. Zero instead of NULL so
-          # entries in list aren't empty when n=2.
-          names(priority_array)[[i]] <- paste0("n_sd", as.character(i))
-        }
-        suppressMessages(Wright_output <- dplyr::bind_rows(priority_array))
-        Wright_output[is.na(Wright_output)] <- 0
-        mult_vec <- vector()
-        for (i in 2:(n_minus_2H + 1)) {
-          mult_vec[i - 1] <- 1 / (sqrt(i * (i + 1)))
-        }
-        for (i in seq_len(ncol(Wright_output))) {
-          Wright_output[, i] <- Wright_output[, i] * mult_vec[i]
-        }
-        cutoff <- (sort(unlist(Wright_output, use.names = FALSE),
-          decreasing = TRUE
-        ))[n_minus_2H]
-        stratum_size <- rowSums(Wright_output >= cutoff) + 2
-        final_output <- cbind(
-          output_df[, c("strata", "n", "sd", "n_sd")], stratum_size
-        )
-        final_output <- final_output %>%
-          dplyr::mutate(
-            stratum_fraction = round(stratum_size / nsample,
-              digits = ndigits
-            ),
-            sd = round(sd, digits = ndigits),
-            n_sd = round(n_sd, digits = ndigits)
-          )
-        final_output <- final_output[
-          c(
-            "strata", "n", "sd", "n_sd", "stratum_fraction",
-            "stratum_size"
-          )
-        ]
         names(final_output)[names(final_output) == "n"] <- "npop"
         final_output <- dplyr::arrange(final_output, strata)
         return(final_output)
@@ -435,7 +417,8 @@ optimum_allocation <- function(data, strata,
         return(output_df)
       }
     }
-    else if (method == "WrightI") {
+    # End Neyman
+    else {
       if (is.null(nsample)) {
         stop("This method requires a fixed nsample. Try method =
            'Neyman' for exact sampling fractions.")
@@ -443,6 +426,7 @@ optimum_allocation <- function(data, strata,
       else {
         n_strata <- length(unique(strata))
         n_minus_H <- nsample - n_strata
+        n_minus_2H <- nsample - 2 * n_strata
         if (n_minus_H <= 0) {
           stop("'nsample' is too small for this method.")
         }
@@ -459,36 +443,63 @@ optimum_allocation <- function(data, strata,
         if (nsample > sum(output_df$n)) {
           stop("'nsample' is larger than population size")
         }
-        priority_array <- list()
-        for (i in 1:n_strata) {
-          priority_array[[i]] <- c(
-            rep(output_df[i, "n_sd"],
-              times = min(output_df[i, "n"] - 1, n_minus_H)
-            ),
-            rep(NULL,
-              times = ifelse(n_minus_H > (output_df[i, "n"] - 1),
-                n_minus_H - (output_df[i, "n"] - 1),
-                0
-              )
-            )
-          )
-          # All rows are same length, but zeroes so that n_sample
-          # won't be larger than n_strata
-          names(priority_array)[[i]] <- paste0("n_sd", as.character(i))
+        if(method == "WrightI"){
+          if (n_minus_H <= 0) {
+            stop("'nsample' is too small for this method.")
+          }
+          lower <- rep(1L, nrow(output_df))
+          upper <- output_df$n
         }
-        suppressMessages(Wright_output <- dplyr::bind_rows(priority_array))
-        Wright_output[is.na(Wright_output)] <- 0
-        mult_vec <- vector()
-        for (i in 1:(n_minus_H + 1)) {
-          mult_vec[i] <- 1 / (sqrt(i * (i + 1)))
+        if(method == "WrightII"){
+          if (n_minus_2H <= 0) {
+            stop("'nsample' is too small for this method.")
+          }
+          lower <- rep(2L, nrow(output_df))
+          upper <- output_df$n
         }
-        for (i in seq_len(ncol(Wright_output))) {
-          Wright_output[, i] <- Wright_output[, i] * mult_vec[i]
+        if(method == "WrightIII"){
+          if(is.null(lower) & is.null(upper)){
+            stop("This method requires lower and/or upper to be specified.")
+          }
+          n_strata <- nrow(output_df)
+          if (!is.null(lower)) {
+            if (length(lower) != n_strata) {
+              stop("'lower' must have length equal to the number of strata.")
+            }
+
+            if (!is.null(names(lower))) {
+              if (!all(as.character(output_df$strata) %in% names(lower))) {
+                stop("If 'lower' is named, its names must match strata names.")
+              }
+              lower <- lower[as.character(output_df$strata)]
+            }
+          } else {
+            lower <- rep(0L, n_strata)
+          }
+          if (!is.null(upper)) {
+            if (length(upper) != n_strata) {
+              stop("'upper' must have length equal to the number of strata.")
+            }
+
+            if (!is.null(names(upper))) {
+              if (!all(as.character(output_df$strata) %in% names(upper))) {
+                stop("If 'upper' is named, its names must match strata names.")
+              }
+              upper <- upper[as.character(output_df$strata)]
+            }
+          } else {
+            upper <- output_df$n
+          }
+          lower <- as.integer(lower)
+          upper <- as.integer(upper)
         }
-        cutoff <- (sort(unlist(Wright_output, use.names = FALSE),
-          decreasing = TRUE
-        ))[n_minus_H]
-        stratum_size <- rowSums(Wright_output >= cutoff) + 1
+        stratum_size <- allocate_wright(
+          n_sd = output_df$n_sd,
+          N_h = output_df$n,
+          nsample = nsample,
+          lower = lower,
+          upper = upper
+        )
         final_output <- cbind(
           output_df[, c("strata", "n", "sd", "n_sd")], stratum_size
         )
@@ -504,83 +515,6 @@ optimum_allocation <- function(data, strata,
           "strata", "n", "sd", "n_sd", "stratum_fraction",
           "stratum_size"
         )]
-        names(final_output)[names(final_output) == "n"] <- "npop"
-        final_output <- dplyr::arrange(final_output, strata)
-        return(final_output)
-      }
-    }
-    else if (method == "WrightII") {
-      if (is.null(nsample)) {
-        stop("This method requires a fixed nsample. Try method =
-           'Neyman' for exact sampling fractions.")
-      }
-      else {
-        n_strata <- length(unique(strata))
-        n_minus_2H <- nsample - 2 * n_strata
-        if (n_minus_2H <= 0) {
-          stop("'nsample' is too small for this method.")
-        }
-        output_df <- output_df %>%
-          dplyr::mutate(
-            n = N_h,
-            sd = sd_h,
-            n_sd = n * sd
-          )
-        output_df <- tibble::as_tibble(dplyr::select(
-          output_df,
-          strata, n, sd, n_sd
-        ))
-        if (nsample > sum(output_df$n)) {
-          stop("'nsample' is larger than population size")
-        }
-        priority_array <- list()
-        for (i in 1:n_strata) {
-          priority_array[[i]] <- c(
-            rep(output_df[i, "n_sd"],
-              times = min(output_df[i, "n"] - 2, n_minus_2H)
-            ),
-            rep(output_df[i, "n_sd"] * 0,
-              times = ifelse(n_minus_2H > (output_df[i, "n"] - 2),
-                n_minus_2H - (output_df[i, "n"] - 2),
-                0
-              )
-            )
-          )
-          # All rows are same length, but zeroes so that n_sample
-          # won't be larger than n_strata. Zero instead of NULL so
-          # entries in list aren't empty when n=2.
-          names(priority_array)[[i]] <- paste0("n_sd", as.character(i))
-        }
-        suppressMessages(Wright_output <- dplyr::bind_rows(priority_array))
-        Wright_output[is.na(Wright_output)] <- 0
-        mult_vec <- vector()
-        for (i in 2:(n_minus_2H + 1)) {
-          mult_vec[i - 1] <- 1 / (sqrt(i * (i + 1)))
-        }
-        for (i in seq_len(ncol(Wright_output))) {
-          Wright_output[, i] <- Wright_output[, i] * mult_vec[i]
-        }
-        cutoff <- (sort(unlist(Wright_output, use.names = FALSE),
-          decreasing = TRUE
-        ))[n_minus_2H]
-        stratum_size <- rowSums(Wright_output >= cutoff) + 2
-        final_output <- cbind(
-          output_df[, c("strata", "n", "sd", "n_sd")], stratum_size
-        )
-        final_output <- final_output %>%
-          dplyr::mutate(
-            stratum_fraction = round(stratum_size / nsample,
-              digits = ndigits
-            ),
-            sd = round(sd, digits = ndigits),
-            n_sd = round(n_sd, digits = ndigits)
-          )
-        final_output <- final_output[
-          c(
-            "strata", "n", "sd", "n_sd", "stratum_fraction",
-            "stratum_size"
-          )
-        ]
         names(final_output)[names(final_output) == "n"] <- "npop"
         final_output <- dplyr::arrange(final_output, strata)
         return(final_output)
@@ -633,10 +567,11 @@ optimum_allocation <- function(data, strata,
       df <- data.frame("strata" = names(N_h), "N_h" = as.vector(N_h),
                        "sqrt_a_var_sum" = sqrt(sums))
 
-      # Now run Neyman on this df
+      # Now run optimum_allocation on this df
       output <- optimum_allocation(df, strata = "strata", sd_h = "sqrt_a_var_sum",
                                    N_h = "N_h", nsample = nsample,
-                                   method = method)
+                                   method = method, lower = lower,
+                                   upper = upper)
 
       # Add sd for each var of interest to output df
       output <- output[, names(output)[names(output) != "sd"]]
@@ -707,7 +642,8 @@ optimum_allocation <- function(data, strata,
       # Now run Neyman on this df
       output <- optimum_allocation(df, strata = "strata", sd_h = "sqrt_a_var_sum",
                                    N_h = "N_h", nsample = nsample,
-                                   method = method)
+                                   method = method, lower = lower,
+                                   upper = upper)
 
       # Add sd for each var of interest
       output <- output[, names(output)[names(output) != "sd"]]
@@ -726,3 +662,78 @@ optimum_allocation <- function(data, strata,
     }
   }
 }
+
+#' Internal helper for exact Wright allocation
+#'
+#' Computes exact optimum allocation under Wright-style greedy allocation
+#' with arbitrary lower and upper bounds.
+#'
+#' @param n_sd Numeric vector of stratum-specific values `N_h * S_h`.
+#' @param N_h Integer vector of population stratum sizes.
+#' @param nsample Integer total sample size.
+#' @param lower Integer vector of lower bounds for stratum sample sizes.
+#' @param upper Integer vector of upper bounds for stratum sample sizes.
+#'
+#' @return Integer vector of stratum sample sizes.
+#'
+#' @keywords internal
+allocate_wright <- function(n_sd, N_h, nsample, lower, upper) {
+  H <- length(n_sd)
+
+  if (length(N_h) != H || length(lower) != H || length(upper) != H) {
+    stop("'n_sd', 'N_h', 'lower', and 'upper' must all have the same length.")
+  }
+
+  if (anyNA(n_sd) || anyNA(N_h) || anyNA(lower) || anyNA(upper) || is.na(nsample)) {
+    stop("Inputs to 'allocate_wright' cannot contain NA values.")
+  }
+
+  if (any(lower < 1)) {
+    stop("All lower bounds must be >= 1.")
+  }
+
+  if (any(upper > N_h)) {
+    stop("All upper bounds must be <= population stratum sizes.")
+  }
+
+  if (any(lower > upper)) {
+    stop("Each lower bound must be <= its corresponding upper bound.")
+  }
+
+  if (nsample < sum(lower) || nsample > sum(upper)) {
+    stop("'nsample' is infeasible given the lower and upper bounds.")
+  }
+
+  alloc <- as.integer(lower)
+  extra_to_allocate <- as.integer(nsample - sum(lower))
+
+  if (extra_to_allocate == 0L) {
+    return(alloc)
+  }
+
+  next_priority <- function(m, n_sd_h, upper_h) {
+    if (m >= upper_h) return(-Inf)
+    n_sd_h / sqrt(m * (m + 1))
+  }
+
+  priorities <- vapply(
+    seq_len(H),
+    function(h) next_priority(alloc[h], n_sd[h], upper[h]),
+    numeric(1)
+  )
+
+  for (k in seq_len(extra_to_allocate)) {
+    h_star <- which.max(priorities)
+
+    if (!is.finite(priorities[h_star])) {
+      stop("No feasible further allocation exists, but 'nsample' has not been reached.")
+    }
+
+    alloc[h_star] <- alloc[h_star] + 1L
+    priorities[h_star] <- next_priority(alloc[h_star], n_sd[h_star], upper[h_star])
+  }
+
+  alloc
+}
+
+

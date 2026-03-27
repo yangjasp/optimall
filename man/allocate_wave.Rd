@@ -10,10 +10,12 @@ allocate_wave(
   y,
   already_sampled,
   nsample,
-  allocation_method = c("WrightII", "WrightI", "Neyman"),
+  allocation_method = c("WrightII", "WrightI", "WrightIII", "Neyman"),
   method = c("iterative", "simple"),
   weights = NULL,
-  detailed = FALSE
+  detailed = FALSE,
+  lower = NULL,
+  upper = NULL
 )
 }
 \arguments{
@@ -72,6 +74,14 @@ and stratum standard deviations. Defaults to FALSE, unless called within
 \code{apply_multiwave()}.
 These details are all available from
 \code{optimum_allocation()}.}
+
+\item{lower}{An optional vector lower bounding the number of samples
+allocated to each stratum under the \code{'WrightIII'} algorithm.
+See \code{optimum_allocation()} for details.}
+
+\item{upper}{An optional vector upper bounding the number of samples
+allocated to each stratum under the \code{'WrightIII'} algorithm.
+See \code{optimum_allocation()} for details.}
 }
 \value{
 Returns a dataframe with one row for each stratum and
