@@ -81,9 +81,6 @@ jobs:
         with:
           job-config: ${{ matrix.config.job-config }}
           token: ${{ secrets.RHUB_TOKEN }}
-      - if: runner.os == 'macOS'
-        run: |
-          brew install libtool autoconf automake
       - uses: r-hub/actions/platform-info@v1
         with:
           token: ${{ secrets.RHUB_TOKEN }}
