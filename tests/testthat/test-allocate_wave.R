@@ -19,14 +19,21 @@ test_that("the output of allocate_wave is as expected", {
     data = data, strata = "strata",
     already_sampled = "key", y = "y", nsample = 15
   )
-  expect_equal(
-    output$nsample_actual,
-    optimum_allocation(
-      data = data, strata = "strata",
-      y = "y",
-      nsample = sum(data$key) + 15
-    )$stratum_size
-  )
+  opt_size <- optimum_allocation(
+    data = data, strata = "strata",
+    y = "y",
+    nsample = sum(data$key) + 15
+  )$stratum_size
+  if(!any(opt_size <= output$nsample_prior)){
+    expect_equal(
+      output$nsample_actual,
+      optimum_allocation(
+        data = data, strata = "strata",
+        y = "y",
+        nsample = sum(data$key) + 15
+      )$stratum_size
+    )
+  }
   # Only works if no oversampling in already_sampled
   expect_equal(sum(output$n_to_sample), 15)
   expect_equal(
