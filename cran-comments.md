@@ -1,6 +1,6 @@
 # Update
 
-This is an update version 1.3.1 (see NEWS.md). 
+This is an update version 1.4.0 (see NEWS.md). 
 
 # Test environments
 * local: macOS, R-release 
