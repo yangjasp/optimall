@@ -1,0 +1,26 @@
+MatWgt_Sim              Example Dataset: Maternal Weights
+Multiwave-class         Multiwave Class for Multi-Wave Sampling
+                        Organization
+Phase-class             Phase Class for Multi-Wave Sampling
+                        Organization
+Wave-class              Wave Class for Multi-Wave Sampling Organization
+allocate_wave           Adaptive Multi-Wave Sampling
+apply_multiwave         Apply a basic optimall function to a Multiwave
+                        Object
+get_mw                  Access Slots of a Multiwave Object
+merge_samples           Merge Sampled Data based on IDs
+merge_strata            Merge Strata
+multiwave               Initialize a Multiwave Object
+multiwave_diagram       Print Summary Diagram of Multiwave Object
+optimall_shiny          Run the shiny application
+optimum_allocation      Optimum Allocation
+sample_strata           Select Sampling Units based on Stratified
+                        Random Sampling
+set_mw<-                Write Slots of a Multiwave Object
+shiny_server            Server logic for Interactive Shiny for
+                        Optimall.
+shiny_ui                UI for Shiny App for Splitting Strata with
+                        Optimum Allocation
+split_strata            Split Strata
+summary,Multiwave-method
+                        Method for summary for class Multiwave

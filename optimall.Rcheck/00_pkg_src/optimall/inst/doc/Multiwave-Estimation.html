@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Estimation in Two-phase, Multi-wave sampling</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Estimation in Two-phase, Multi-wave
+sampling</h1>
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Two-phase, multi-wave sampling is an appealing strategy for the
+design of validation studies where a large set of data is available for
+a whole cohort, but some variables of interest can only be observed on a
+subset of the cohort. A classic example is when inexpensive error-prone
+data is available on everyone (phase I), but the error-free or gold
+standard data is only available on a subset (phase II) (McIsaac and Cook
+2015, Chen and Lumley 2020, Shepherd et al. 2023).</p>
+<p>One of <code>optimall</code>’s primary objectives is to facilitate
+the implementation of two-phase, multi-wave sampling designs in
+<code>R</code>, focusing particularly on the optimum allocation of
+samples, stratification, and storage of relevant information during the
+design stage. The <code>optimall</code> workflow is designed to blend
+smoothly with packages specific to the estimation stage, such as the
+comprehensive <code>survey</code> package, so <code>optimall</code>
+itself does not offer functions for estimation.</p>
+<p>Nevertheless, estimation is the ultimate goal of a survey. This
+vignette describes how estimation with the <code>survey</code> package
+can be conducted from a survey designed with <code>optimall</code>. It
+begins with a brief summary of the theoretical considerations for
+multi-phase and multi-wave sampling. It then presents two estimators
+that can be used in these settings and demonstrates how they can be
+calculated using <code>optimall</code> and <code>survey</code>. The
+final section presents the results of simulations comparing these
+estimators. In most cases, post-stratified weights lead to the most
+efficient estimators.</p>
+</div>
+<div id="theoretical-background" class="section level2">
+<h2>Theoretical background</h2>
+<div id="design-based-estimation-ipw-and-generalized-raking-in-a-single-phase-wave" class="section level4">
+<h4>Design-based estimation: IPW and Generalized Raking in a Single
+Phase, Wave</h4>
+<p>Broadly, there are two classes of survey estimators: design-based and
+model-based. This vignette focuses on design-based estimators, which are
+typically constructed by assigning weights to sample observations based
+on probabilistic properties of the sampling design. A simple example of
+a design-based estimator for a single phase design is the
+Horwitz-Thompson inverse probability weighted (IPW) estimator for a
+population total <span class="math inline">\(Y_t\)</span>,</p>
+<p><span class="math display">\[
+\hat{T}_{IPW} = \sum_{i =1}^N R_i\frac{y_i}{\pi_i},
+\]</span> where individuals in the population of size <span class="math inline">\(N\)</span> are indexed by <span class="math inline">\(i = 1, ..., N\)</span>, <span class="math inline">\(R_i\)</span> is an indicator for the inclusion of
+individual <span class="math inline">\(i\)</span> in the sample, <span class="math inline">\(\pi_i\)</span> is the sampling probability for
+person <span class="math inline">\(i\)</span>, and <span class="math inline">\(y_i\)</span> is the observed value. Under simple
+stratified sampling, <span class="math inline">\(\pi_i =
+\frac{n_k}{N_k}\)</span> for individuals in the same stratum, <span class="math inline">\(k= 1, ..., K\)</span>, where <span class="math inline">\(n_k\)</span> denotes the sample size in stratum
+<span class="math inline">\(k\)</span> and <span class="math inline">\(N_k\)</span> denotes the population size of
+stratum <span class="math inline">\(h\)</span>. In this case, the IPW
+estimator becomes</p>
+<p><span class="math display">\[
+\hat{T}_{IPW} = \sum_{k=1}^K\sum_{i \in I_k}R_i\frac{N_k}{n_k}y_i,
+\]</span> where <span class="math inline">\(I_k\)</span> is the set of
+indices for individuals in stratum <span class="math inline">\(k\)</span>. This estimator is unbiased for the
+population total, but its variance may be large if sampling fractions
+are small in any strata. The Neyman and Wright allocations which can be
+implemented in <code>optimall</code> are optimal for this estimator.</p>
+<p>Efficient alternatives to IPW estimators exist when prior information
+on the entire population is available. A popular design-based estimator
+in the presence of known auxiliary variables is the generalized raking
+estimator, which improves on IPW by adjusting weights to ensure that the
+estimated totals of auxiliary variables match the known phase 1 totals
+(Breslow et al. 2009). Let <span class="math inline">\(x_i\)</span> be
+an auxiliary variable which was observed for the whole phase 1 cohort
+and is correlated with the variable of interest <span class="math inline">\(y_i\)</span>. Generalized raking adjusts each
+individual inverse-probability weight by a factor of <span class="math inline">\(g_i\)</span>. Under simple stratified sampling, we
+have <span class="math inline">\(w^*_i = \frac{g_i}{\pi_i} =
+g_i\frac{N_k}{n_k}\)</span> and the estimator is</p>
+<p><span class="math display">\[
+\hat{T}_{GR} = \sum_{k=1}^K\sum_{i \in I_k}R_iw^*_iy_i =
+\sum_{k=1}^K\sum_{i \in I_k}R_ig_i\frac{N_k}{n_k}y_i ,
+\]</span> where the <span class="math inline">\(g_i\)</span> are chosen
+such that</p>
+<p><span class="math display">\[
+\sum_{k=1}^K\sum_{i \in I_k}R_ig_i\frac{N_k}{n_k}x_i = \sum_{i=1}^N x_i
+\]</span></p>
+<p>Many <span class="math inline">\(g_i\)</span> values may satisfy this
+condition, so the new weights are chosen to be as close as possible to
+the IPW weights based on minimization of a pre-specified distance metric
+<span class="math inline">\(\sum_{i=1}^NR_id(g_i\frac{1}{\pi_i},
+\frac{1}{\pi_i})\)</span>.</p>
+<p>When the auxiliary variable is correlated with the variable of
+interest, generalized raking is more efficient than traditional IPW
+estimators. Neyman and Wright allocations are nearly optimal for
+generalized raking (Chen and Lumley 2022).</p>
+</div>
+<div id="special-considerations-for-two-phase-sampling" class="section level4">
+<h4>Special considerations for Two-phase sampling</h4>
+<p>Two-phase sampling involves collecting a large sample of relatively
+inexpensive variables in phase 1 and then collecting expensive variables
+on a subset of the phase 1 samples in phase 2. Rather than treating the
+phase 1 cohort as the population and phase 2 as a single sample from it,
+the typical two-phase approach considers phase 1 itself to be a sample
+from an even larger super-population of interest. A key feature of
+two-phase sampling is that the information collected in phase 1 is used
+to inform a more efficient phase 2 sampling design. For example,
+standard deviation estimates required for Neyman allocation of phase 2
+can be approximated by phase 1 (Neyman 1938). A side effect of this gain
+in efficiency is that the marginal inclusion probabilities, <span class="math inline">\(\pi_i\)</span>, for elements sampled in phase 2
+are unknown because their calculation requires consideration of the
+phase 2 sampling designs that would arise under every possible phase 1.
+Specifically, the exact inclusion probability <span class="math inline">\(\pi_i\)</span> in a two-phase design is</p>
+<p><span class="math display">\[
+\pi_i = \sum_{s_a}R_{ai} P(s_a)\pi_{i|s_a}
+\]</span></p>
+<p>where <span class="math inline">\(s_a\)</span> is a phase 1 sample,
+<span class="math inline">\(P(s_a)\)</span> is the probability of a
+given <span class="math inline">\(s_a\)</span> being realized, and <span class="math inline">\(R_{ai}\)</span> is an indicator for the inclusion
+of element <span class="math inline">\(i\)</span> in a given phase 1
+sample</p>
+<p>Because <span class="math inline">\(\pi_i|{s_a}\)</span> depends on
+the results of <span class="math inline">\(s_a\)</span>, <span class="math inline">\(\pi_i|{s_a}\)</span> is only known for the
+realized <span class="math inline">\(s_a\)</span>. This limitation make
+standard IPW techniques infeasible in the two phase setting, so other
+approaches are required to construct unbiased estimators and approximate
+their variances. Chapter 9 of Särndal et al. (1992) details the special
+considerations required to construct such estimators. Here, we briefly
+describe their most important results for the case where stratified
+random sampling is used in phase 2 based on strata defined from phase 1
+variables.</p>
+<p>Consider strata <span class="math inline">\(k = 1,...,K\)</span>. Let
+<span class="math inline">\(N\)</span> be the population size, <span class="math inline">\(n_a\)</span> be the phase 1 sample size, and <span class="math inline">\(n\)</span> be the phase 2 sample size. Denote
+<span class="math inline">\(n_{ak}\)</span> and <span class="math inline">\(n_k\)</span> for the phase 1 and phase 2 sample
+sizes respectively in stratum <span class="math inline">\(k\)</span>. An
+unbiased design-based estimator for the population total of <span class="math inline">\(T = \sum_{i=1}^N y_i\)</span> is</p>
+<p><span class="math display">\[\begin{equation}
+\tag{1} \label{eq:eq1}
+\hat{T}_{TP} = \sum_{i \in I_{s_a}}\frac{1}{\pi_{ai}\pi_{i|s_a}}y_i,
+\end{equation}\]</span></p>
+<p>where <span class="math inline">\(\pi_{ai}\)</span> is the phase 1
+sampling probability for element <span class="math inline">\(i\)</span>,
+<span class="math inline">\(\pi_{i|s_1}\)</span> is the phase 2 sampling
+probability given the realized phase 1 sample, denoted <span class="math inline">\(s_a\)</span>, and <span class="math inline">\(I_{s_a}\)</span> is the set of indices for
+individuals sampled in <span class="math inline">\(s_a\)</span>. The
+idea of this estimator is to estimate the IPW estimator that would have
+been produced if <span class="math inline">\(y_i\)</span> was observed
+for the entire phase 1 sample <span class="math inline">\(s_a\)</span>.
+In this sense, <span class="math inline">\(\hat{T}_{TP}\)</span> is an
+estimator of an estimator. Accordingly, the variance is not
+straightforward, but Särndal et al. show that it can be written as</p>
+<p><span class="math display">\[\begin{equation}
+\tag{2} \label{eq:eq2}
+V(\hat{T}_{TP}) = \sum_{i=1}^N\sum_{j=1}^N \text{Cov}(R_{ai},
+R_{aj})\frac{y_i}{\pi_{a_i}} \frac{y_j}{\pi_{aj}} +
+\mathbb{E}\left[\sum_{i \in I_{s_a}}\sum_{j \in I_{s_a}} \text{Cov}(R_i,
+R_j|S_a) \frac{y_i}{\pi_{ai}\pi_{i|s_a}}\frac{y_j}{\pi_{aj}\pi_{j|s_a}}
+\right],
+\end{equation}\]</span></p>
+<p>where <span class="math inline">\(R_{ai}\)</span> and <span class="math inline">\(R_{aj}\)</span> are the phase 1 sample inclusion
+indicators for elements <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, and <span class="math inline">\(R_{i}\)</span> and <span class="math inline">\(R_{j}\)</span> are phase 2 sample inclusion
+indicators. The expectation in the second term is with respect to the
+phase 1 design. This variance is estimated unbiasedly by</p>
+<p><span class="math display">\[\begin{equation}
+\tag{3} \label{eq:eq3}
+\hat{V}(\hat{T}_{TP}) = \sum_{i \in I_{s_a}}\sum_{j \in I_{s_a}}
+R_{i}R_{j} \frac{\text{Cov}(R_{ai},
+R_{aj})}{\pi_{aij}\pi_{ij|s_a}}\frac{y_i}{\pi_{a_i}}
+\frac{y_j}{\pi_{aj}} + \sum_{i \in I_{s_a}}\sum_{j \in I_{s_a}}
+R_{i}R_{j} \frac{\text{Cov}(R_i, R_j|S_a)}{\pi_{ij|s_a}}
+\frac{y_i}{\pi_{ai}\pi_{i|s_a}}\frac{y_j}{\pi_{aj}\pi_{j|s_a}}.
+\end{equation}\]</span></p>
+<p>If phase 1 is a simple random sample and phase 2 is a stratified
+random sample, then we have <span class="math display">\[
+\hat{T}_{TP} = \sum_{k=1}^K\sum_{i \in
+I_{k}}R_i\frac{N}{n_a}\frac{n_{ak}}{n_{k}}y_i =
+\frac{N}{n_a}\sum_{k=1}^K\frac{n_{ak}}{n_{k}}\sum_{i \in I_k}R_iy_i,
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+V(\hat{T}_{TP}) = N^2\frac{1 -
+\frac{n_a}{N}}{n_a}\text{Var}_\text{pop}(y) +
+\mathbb{E}\left[N^2\sum_{k=1}^K
+(\frac{n_{ak}}{n_a})^2\frac{1-\frac{n_k}{n_{ak}}}{n_k}\text{Var}_{s_{ak}}(y)
+\right],
+\]</span> where <span class="math inline">\(\text{Var}_\text{pop}(y)\)</span> is the variance
+of <span class="math inline">\(y\)</span> in the population and <span class="math inline">\(\text{Var}_{s_{ak}}(y)\)</span> is the variance in
+stratum <span class="math inline">\(k\)</span> of the phase 1 sample.
+This variance is estimated unbiasedly by</p>
+<p><span class="math display">\[\begin{equation}
+\tag{4} \label{eq:eq4}
+\hat{V}(\hat{T}_{TP}) = N(N-1)\sum_{k=1}^K\left(\frac{n_{ak}-1}{n_a-1} -
+\frac{n_k - 1}{N-1}\right)\frac{n_{ak}S^2_{y,s_k}}{n_a n_k} + \\
+\frac{N(N-n_a)}{n_a-1}\sum_{k=1}^K
+\frac{n_{ak}}{n_a}\left(\frac{1}{n_k}\sum_{i=1}^{n_k}R_iy_i -
+\frac{1}{N}\sum_{k=1}^K\sum_{i \in
+I_k}R_i\frac{N}{n_a}\frac{n_{ak}}{n_{k}}y_i\right)^2,
+\end{equation}\]</span> where <span class="math inline">\(S^2_{y,s_k}\)</span> is the phase 2 sample
+variance of <span class="math inline">\(y\)</span> in stratum <span class="math inline">\(k\)</span>. The <code>twophase()</code> function
+in the <code>survey</code> package uses (<span class="math inline">\(\ref{eq:eq3}\)</span>) to calculate the variance
+for method <code>&quot;full&quot;</code> and (<span class="math inline">\(\ref{eq:eq4}\)</span>) for method
+<code>&quot;approx&quot;</code> or <code>&quot;simple&quot;</code>.</p>
+</div>
+<div id="two-phase-multi-wave-sampling" class="section level4">
+<h4>Two-phase, multi-wave sampling</h4>
+<p>The efficiency gains from collecting auxilary information in phase 1
+can be improved even further by breaking phase 2 into waves and updating
+the sampling design after each wave. Consider collecting <span class="math inline">\(n\)</span> samples across <span class="math inline">\(T\)</span> waves, where the sample size in the
+<span class="math inline">\(t\)</span>-th wave (<span class="math inline">\(t = 1, ...,T\)</span>) is denoted <span class="math inline">\(n_t\)</span>. This approach presents a similar
+challenge to the multi-phase setting, as the results of wave <span class="math inline">\(t\)</span> influence the allocation, and therefore
+the sampling probabilities, for waves <span class="math inline">\(t^*
+&gt; t\)</span>.</p>
+<p>Broadly, a two-phase, multi-wave sampling design consists of the
+following steps:</p>
+<ol style="list-style-type: decimal">
+<li>Phase 1: Draw a <span class="math inline">\(n_a\)</span> samples
+from the population in Phase 1 according to a SRS (or other)
+design.</li>
+<li>Construct strata (indexed with <span class="math inline">\(h = 1,
+..., H\)</span>) based on information gathered in Phase 1.</li>
+<li>Phase 2, Wave 1: Allocate samples to strata according to optimum
+allocation determined using estimates of optimality parameters from
+phase 1 data.</li>
+<li>Phase 2, Wave 2: Allocate samples to strata according to optimum
+allocation determined using estimates of optimality parameters from
+phase 2, wave 1 data.<br />
+⋮<br />
+Phase 2, Wave T: Allocate samples to strata according to optimum
+allocation determined using estimates of optimality parameters from data
+collected in prior waves of phase 2.</li>
+</ol>
+</div>
+</div>
+<div id="estimation-approaches-after-two-phase-multi-wave-sampling" class="section level2">
+<h2>Estimation approaches after two-phase, multi-wave sampling</h2>
+<p>Here, we present three potential estimators for a population total
+under two-phase, multi-wave sampling.</p>
+<div id="post-stratification" class="section level4">
+<h4>1. Post-stratification</h4>
+<p>The examples contained in the <code>optimall</code> package vignettes
+use post-stratification weights to conduct estimation. As discussed by
+Holt and Smith (1979), Valliant (1993) and Lumley, Shaw, and Dai (2011),
+post-stratification is a robust and efficient estimation method that
+assigns weights to sample elements based on strata constructed after the
+sample has been collected rather than relying on pre-specified sampling
+probabilities as traditional IPW estimators do. This approach is useful
+in the multi-wave sampling setting because it does not require
+computation of exact, or even wave-conditional, inclusion probabilities
+(nor does variance estimation involve their pairwise inclusion
+probabilities). Instead, the post-stratification approach assigns the
+same weight to every member of stratum <span class="math inline">\(k\)</span>, <span class="math inline">\(\frac{N_k}{n_k} = \frac{N_k}{\sum_{t=1}^T
+n_{tk}}\)</span>, where <span class="math inline">\(n_{tk}\)</span> is
+the number of samples selected from stratum <span class="math inline">\(k\)</span> at wave <span class="math inline">\(t\)</span>. This weight is the inverse of the
+final sampling fractions, and it reflects what the exact IPW weights
+would be if the final allocation was obtained in a single wave. The
+final estimator is simple to calculate and takes the form</p>
+<p><span class="math display">\[
+\hat{T}_{POST} = \sum_{k=1}^K\sum_{i \in I_k}R_i\frac{N_k}{n_k}y_i,
+\]</span></p>
+<p>Conveniently, post-stratification can be viewed as a simple case of
+generalized raking. Thus, Neyman and Wright allocations are still
+approximately optimal (Chen and Lumley 2022).</p>
+<!-- Consider a survey with three waves. If sampling at each wave were independent and stratified, the probability of individual $i$ being included in the sample would be
+
+$$
+\begin{align*}
+P(i \in I_s) &= P(i \in I_1 \cup i \in I_2 \cup i \in I_3)\\
+ &=
+P(i \in I_{1}) + P(i \notin I_{1})\cdot P(i \in I_2) + P(i \notin I_1 \cap i \notin I_2) \cdot P(i \in I_3),
+\end{align*}
+$$ 
+
+where $I_S$ is the set of indices for the entire phase 2 sample and $I_t$ is the set of indices sampled at wave $t$. Let $n_{tk}$ be the number of samples selected from stratum $k$ at wave $t$. Then we have
+
+$$
+\begin{align*}
+P(i \in I_{s}) &= P(i \in I_k) \quad \text{(for }i\text{ in stratum }k{)} \\
+&= \frac{n_{1k}}{N_{k}} + \left(1 - \frac{n_{1k}}{N_k}\right)\cdot \frac{n_{2k}}{N_k-n_{1k}} + \left(1 - \left(1 - \frac{n_{1k}}{N_k}\right)\cdot \frac{n_{2k}}{N_k-n_{1k}}\right)\cdot \frac{n_{3k}}{N_k-n_{1k} - n_{2k}}\\
+&= \frac{n_{1k}}{N_{k}} +\frac{n_{2k}}{N_k} + \frac{n_{3k}}{N_k} = \frac{n_{1k}+n_{2k}+ n_{3k}}{N_k},\\
+\end{align*}
+$$
+and so the weight $\frac{1}{\pi_i}$ would be $\frac{N_k}{n_{1k}+n_{2k}+ n_{3k}}$ exactly the post-stratification weight. 
+-->
+</div>
+<div id="wave-specific-conditional-probabilities" class="section level4">
+<h4>2. Wave-specific conditional probabilities</h4>
+<p>Consider the unbiased two-phase estimator for the population total in
+(<span class="math inline">\(\ref{eq:eq1}\)</span>), which, when
+stratified random sampling is used in Phase 2, can be written:</p>
+<p><span class="math display">\[\begin{equation}
+\tag{5} \label{eq:eq5}
+\hat{T}_{TP} = \sum_{i \in I_{s_a}}\frac{1}{\pi_{ai}\pi_{i|s_a}}y_i  =
+\sum_{k=1}^K \sum_{i \in I_{k, s_a}} \frac{1}{\pi_{ai}\pi_{k|s_a}}y_i,
+\end{equation}\]</span></p>
+<p>where <span class="math inline">\(\pi_{k|s_a}\)</span> is the phase 2
+sampling probability for observations in stratum <span class="math inline">\(k\)</span> conditional on the observed Phase 1,
+and <span class="math inline">\(I_{k, s_a}\)</span> is the set of
+indices for individuals sampled in <span class="math inline">\(s_a\)</span> in stratum <span class="math inline">\(k\)</span>. While <span class="math inline">\(\pi_{ai}\)</span> can be determined by the Phase 1
+design, <span class="math inline">\(\pi_{\cdot|s_a}\)</span> becomes
+more complex when Phase 2 is conducted over multiple waves, as the
+result from each wave affects the sampling probabilities for subsequent
+waves. A natural extension of (<span class="math inline">\(\ref{eq:eq5}\)</span>) is to continue conditioning
+the probabilities at each wave. Now, however, an element can only be
+sampled in a given wave if it was not sampled in any prior waves. For a
+two-phase, multi-wave sample with <span class="math inline">\(T\)</span>
+waves of stratified random sampling in phase 2, this would yield</p>
+<p><span class="math display">\[\begin{equation}
+\tag{6} \label{eq:eq6}
+\hat{T}_{TP} = \sum_{k=1}^K\frac{1}{T_k}\sum_{t^* = 1}^{T}\sum_{i \in
+I_{k,s_a, t^*}}\frac{1}{\pi_{ai}(1-\pi_{k1|s_a})(1-\pi_{k2|s_a,
+s_{b_1}}) \cdots (1-\pi_{k(t^*-1)|s_a, s_{b1},...,
+s_{b(t^*-2)}})\pi_{kt^*|s_a, s_{b_1}, ..., s_{b_{t^*-1}}}}y_i,
+\end{equation}\]</span></p>
+<p>where <span class="math inline">\(I_{k, s_a,t^*}\)</span> is now the
+set of sample indices for elements in stratum <span class="math inline">\(k\)</span> that were sampled in <span class="math inline">\(s_a\)</span> and in wave <span class="math inline">\(t^*\)</span> of Phase 2. <span class="math inline">\(\pi_{kt|s_a, s_{b_1}, ..., s_{b_{t-1}}}\)</span>
+is the probability that a member of stratum <span class="math inline">\(k\)</span> is sampled in phase 2, wave t,
+conditional on the observed waves <span class="math inline">\(b_1\)</span> through <span class="math inline">\(b_{t-1}\)</span>. <span class="math inline">\(T_k\)</span> is the number of waves in which
+stratum <span class="math inline">\(k\)</span> had a non-zero sampling
+probability, and is assumed to be <span class="math inline">\(&gt;0\)</span>. For simplicity, now denote for the
+denominator of (Equation <span class="math inline">\(\ref{eq:eq6}\)</span>) <span class="math inline">\(\tilde{\pi_i} :=
+\pi_{ai}(1-\pi_{k1|s_a})(1-\pi_{k2|s_a, s_{b_1}}) \cdots
+(1-\pi_{k(t^*-1)|s_a, s_{b1},..., s_{b(t^*-2)}})\pi_{kt^*|s_a, s_{b_1},
+..., s_{b_{t^*-1}}}\)</span></p>
+<p>While this estimator is unbiased for the true population total, it
+has a larger variance than the post-stratified estimator. Further,
+estimating standard errors is even more complicated than in the
+traditional two-phase case (<span class="math inline">\(\ref{eq:eq2}\)</span>) because each wave
+contributes to the variance. A variance estimator for <span class="math inline">\(\hat{T}_{TP}\)</span> under stratified random
+sampling without replacement in Phase 2 follows the form of (Equation
+<span class="math inline">\(\ref{eq:eq3}\)</span>) with (assuming for
+simplicity that <span class="math inline">\(T_k = T\)</span> <span class="math inline">\(\forall\)</span> <span class="math inline">\(k\)</span>):</p>
+<p><span class="math display">\[\begin{equation}
+\tag{7} \label{eq:eq7}
+\hat{V}\left(\hat{T}_{TP}\right)= \underbrace{\sum_{i \in
+I_{s_a}}\sum_{j \in I_{s_a}}  \frac{\text{Cov}(R_{ai},
+R_{aj})}{\pi_{aij}\pi_{ij|s_a}}\frac{y_i}{\pi_{ai}}
+\frac{y_j}{\pi_{aj}}}_{\text{Phase 1 contribution, same as (Eq. 3)}} \\
++
+\frac{1}{T^2}\sum_{k=1}^K \sum_{t^*=1}^T\sum_{i, j \in{k,s_a,
+t^*}}\left(1 - \frac{\tilde{\pi_i}\tilde{\pi_j}}{\frac{n_{kt^*}}{n_{ak}
+- \sum_{t&#39;&#39;&lt;t^*}n_{kt&#39;&#39;}}\prod_{t&#39; &lt;
+t^*}(1-\frac{n_{kt&#39;}}{n_{ak} -
+\sum_{t&#39;&#39;&lt;t&#39;}n_{kt&#39;&#39;}})(1-\frac{n_{kt&#39;}}{n_{ak}
+-
+\sum_{t&#39;&#39;&lt;t&#39;}n_{kt&#39;&#39;}-1})}\right)\frac{y_i}{\tilde{\pi_i}}\frac{y_j}{\tilde{\pi_j}}
+\end{equation}\]</span></p>
+<p>The following section demonstrates how to compute this estimator in
+<code>R</code>using <code>optimall</code> and <code>survey</code>. In
+the simulations at the end of this vignette, we demonstrate its
+performance against post-stratification.</p>
+</div>
+</div>
+<div id="how-to-implement-each-strategy-with-optimall-and-survey" class="section level2">
+<h2>How to implement each strategy with <code>optimall</code> and
+<code>survey</code></h2>
+<p>In this section we demonstrate how to estimate a population mean
+using the three estimators defined in the previous section with
+<code>optimall</code> and <code>survey</code>. For this example, we
+simulate a phase 1 dataset with n = 1,000 observations modelled after
+the <code>iris</code> dataset (see appendix). The dataset contains
+information on three species, which we use as strata, assuming phase 1
+is drawn as a simple random sample from a superpopulation. Sepal Length
+and Species are available at phase 1, and Petal Length is the variable
+of interest available at phase 2. We conduct phase 2 sampling over three
+waves using <code>optimall</code>, collecting Petal Length for 50
+samples at each wave. The final dataset looks like:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">head</span>(survey_data)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co">#&gt;    id Species Sepal.Length Petal.Length sampled_phase2 sampled_wave2.1</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt; 22 22  setosa     2.278977    0.6026001              1               1</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co">#&gt; 50 50  setosa     4.088162    1.1976046              1               0</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#&gt; 67 67  setosa     4.841755    1.5282054              1               0</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt; 71 71  setosa     5.739395    1.7258338              1               1</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt; 73 73  setosa     3.669596    0.9204304              1               0</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt; 77 77  setosa     5.194793    1.4941155              1               1</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt;    sampled_wave2.2 sampled_wave2.3 sampling_prob wave</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt; 22               0               0    0.07485030    1</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt; 50               0               1    0.05501618    3</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt; 67               0               1    0.05501618    3</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#&gt; 71               0               0    0.07485030    1</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt; 73               0               1    0.05501618    3</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt; 77               0               0    0.07485030    1</span></span></code></pre></div>
+<p>The code to conduct multi-wave sampling and generate this data frame
+using <code>optimall</code> is provided in the appendix.</p>
+<div id="post-stratification-1" class="section level4">
+<h4>1. Post-stratification</h4>
+<p>Post-stratification is straightforward to implement with the
+<code>twophase</code> function in <code>survey</code>. We start by
+initializing the two-phase design.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>pst_design <span class="ot">&lt;-</span> <span class="fu">twophase</span>(<span class="at">id =</span> <span class="fu">list</span>(<span class="sc">~</span>id, <span class="sc">~</span>id), <span class="at">strata =</span> <span class="fu">list</span>(<span class="cn">NULL</span>, <span class="sc">~</span>Species),</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>                       <span class="at">subset =</span> <span class="sc">~</span><span class="fu">as.logical</span>(sampled_phase2),</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>                       <span class="at">data =</span> survey_data, <span class="at">method =</span> <span class="st">&quot;simple&quot;</span>)</span></code></pre></div>
+<p>Note that here we use <code>method = &quot;simple</code> because phase 1
+was a simple random sample and phase 2 was a stratified random sample.
+Because we specified Species as the phase 2 stratification variable, we
+can calculate the post-stratified estimate directly using
+<code>svymean()</code> in the Survey package.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>pst_est <span class="ot">&lt;-</span> <span class="fu">svymean</span>(<span class="sc">~</span>Petal.Length, <span class="at">design =</span> pst_design)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>pst_est</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt;                mean     SE</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; Petal.Length 3.7233 0.0708</span></span></code></pre></div>
+<p>Note that another option would be to use the <code>calibrate()</code>
+function to perform post-stratification using Species as the
+stratification variable. See the “Two phase” vignette in the
+<code>survey</code> package for more information.</p>
+<div id="post-stratification-with-raking" class="section level5">
+<h5>Post-stratification with raking</h5>
+<p>To obtain an even more efficient estimator, we can rake on both the
+Sepal.Length and stratification variable. This is also straightforward
+to implement with the <code>survey</code> package.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>pst_design_rake <span class="ot">&lt;-</span> <span class="fu">calibrate</span>(pst_design, <span class="sc">~</span>Sepal.Length <span class="sc">+</span> Species,</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>                             <span class="at">phase =</span> <span class="dv">2</span>, <span class="at">calfun =</span> <span class="st">&quot;raking&quot;</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>pst_est_rake <span class="ot">&lt;-</span> <span class="fu">svymean</span>(<span class="sc">~</span>Petal.Length, <span class="at">design =</span> pst_design_rake)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>pst_est_rake</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt;               mean     SE</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt; Petal.Length 3.764 0.0635</span></span></code></pre></div>
+</div>
+</div>
+<div id="wave-specific-conditional-probabilities-1" class="section level4">
+<h4>2. Wave-specific conditional probabilities</h4>
+<p>The wave-specific conditional probabilities approach is more
+complicated because it requires computation of the denominator of (<span class="math inline">\(\ref{eq:eq6}\)</span>), and variance estimation
+involves pairwise element inclusion probabilities of (<span class="math inline">\(\ref{eq:eq7}\)</span>). Still, it is possible to
+obtain estimates and asymptotic standard errors through this approach
+with <code>optimall</code> and <code>Survey</code>.</p>
+<!--
+  As of `survey` package version 4.4-2, the `twophase()` function accepts a matrix of pairwise sampling probabilities through the `pps` argument. (\ref{eq:eq3}) requires these pairwise sampling probabilities, and `twophase()` cannot calculate them on its own because they depend on both the stratum that an element belongs to and the wave in which it was sampled. Elements sampled in different waves or belonging to different strata have independent sampling probabilities, so their pairwise probability is simply the product of their individual inclusion probabilities, but elements from the same stratum and sampled in the same wave have correlated sampling probabilities. 
+-->
+<p>We can compute the denominator of (<span class="math inline">\(\ref{eq:eq6}\)</span>) with:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="do">## Find denominator from eq. 6 for each wave, species</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>denom_data <span class="ot">&lt;-</span> survey_data <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Species, wave, sampling_prob) <span class="sc">%&gt;%</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">distinct</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(wave)) <span class="sc">%&gt;%</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="fu">arrange</span>(Species, wave) <span class="sc">%&gt;%</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="fu">group_by</span>(Species) <span class="sc">%&gt;%</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">denom =</span> <span class="fu">ifelse</span>(wave <span class="sc">==</span> <span class="dv">1</span>, sampling_prob, </span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>                               sampling_prob <span class="sc">*</span> <span class="fu">cumprod</span>(<span class="dv">1</span> <span class="sc">-</span> <span class="fu">lag</span>(sampling_prob, <span class="at">default =</span> <span class="dv">0</span>))))<span class="sc">%&gt;%</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="do">## Merge back with original dataframe, attaching the denominator to each obs.</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>survey_data <span class="ot">&lt;-</span> survey_data <span class="sc">%&gt;%</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(dplyr<span class="sc">::</span><span class="fu">select</span>(denom_data, Species, wave, denom), </span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>                   <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;Species&quot;</span>,<span class="st">&quot;wave&quot;</span>))</span></code></pre></div>
+<p>We can then compute the estimate for the sample mean with
+<code>twophase()</code> as long every stratum was sampled in every
+wave:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>cp_design <span class="ot">&lt;-</span> <span class="fu">twophase</span>(<span class="at">id =</span> <span class="fu">list</span>(<span class="sc">~</span>id, <span class="sc">~</span>id), <span class="at">strata =</span> <span class="fu">list</span>(<span class="cn">NULL</span>, <span class="sc">~</span>Species),</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>                      <span class="at">subset =</span> <span class="sc">~</span><span class="fu">as.logical</span>(sampled_phase2),</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>                      <span class="at">data =</span> survey_data, <span class="at">probs =</span> <span class="fu">list</span>(<span class="cn">NULL</span>, <span class="sc">~</span>denom))</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>cp_est <span class="ot">&lt;-</span> <span class="fu">svymean</span>(<span class="sc">~</span>Petal.Length, <span class="at">design =</span> cp_design)</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>cp_est[<span class="dv">1</span>]</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt; Petal.Length </span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt;     3.999145</span></span></code></pre></div>
+<p>If some strata were not sampled in any wave, we can still compute the
+estimator for the mean (Equation <span class="math inline">\(\ref{eq:eq6}\)</span>) by hand:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>phase2_data <span class="ot">&lt;-</span> survey_data[survey_data<span class="sc">$</span>sampled_phase2 <span class="sc">==</span> <span class="dv">1</span>,]</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co"># Weight observations by denominator from equation 6</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>phase2_data<span class="sc">$</span>weighted_obs <span class="ot">&lt;-</span> phase2_data<span class="sc">$</span>Petal.Length<span class="sc">/</span>phase2_data<span class="sc">$</span>denom</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co"># Determine number of waves each stratum was sampled in  </span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>sampled_waves <span class="ot">&lt;-</span> denom_data[denom_data<span class="sc">$</span>sampling_prob <span class="sc">&gt;</span> <span class="dv">0</span>,]</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>n_waves_sampled <span class="ot">&lt;-</span> <span class="fu">table</span>(sampled_waves<span class="sc">$</span>Species)</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co"># Compute estimate for total in equation 6</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>total_est <span class="ot">&lt;-</span> (<span class="fu">sum</span>(phase2_data[phase2_data<span class="sc">$</span>Species <span class="sc">==</span> <span class="st">&quot;setosa&quot;</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>                              <span class="st">&quot;weighted_obs&quot;</span>])<span class="sc">/</span> n_waves_sampled[<span class="st">&quot;setosa&quot;</span>] <span class="sc">+</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>                <span class="fu">sum</span>(phase2_data[phase2_data<span class="sc">$</span>Species <span class="sc">==</span> <span class="st">&quot;virginica&quot;</span>,</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>                                <span class="st">&quot;weighted_obs&quot;</span>])<span class="sc">/</span>n_waves_sampled[<span class="st">&quot;virginica&quot;</span>]<span class="sc">+</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>                <span class="fu">sum</span>(phase2_data[phase2_data<span class="sc">$</span>Species <span class="sc">==</span> <span class="st">&quot;versicolor&quot;</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>                                <span class="st">&quot;weighted_obs&quot;</span>])<span class="sc">/</span>n_waves_sampled[<span class="st">&quot;versicolor&quot;</span>])</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="fu">names</span>(total_est) <span class="ot">&lt;-</span> <span class="st">&quot;Petal.Length&quot;</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="co"># Finally, compute the mean</span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>cp_est <span class="ot">&lt;-</span> total_est<span class="sc">/</span><span class="fu">nrow</span>(survey_data) </span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>cp_est <span class="co"># this matches svymean() output above if all strata sampled in all waves</span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a><span class="co">#&gt; Petal.Length </span></span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a><span class="co">#&gt;     3.709761</span></span></code></pre></div>
+<p>Finally, we can estimate standard error by directly evaluating
+Equation (<span class="math inline">\(\ref{eq:eq7}\)</span>).</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="do">### Combine design dataframes for waves 1-3. </span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>design_all_waves <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(<span class="fu">cbind</span>(<span class="at">phase2_wave =</span> <span class="dv">1</span>, </span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>                                           <span class="fu">get_mw</span>(Survey, <span class="dv">2</span>, <span class="dv">1</span>, <span class="st">&quot;design&quot;</span>)),</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>                                     <span class="fu">cbind</span>(<span class="at">phase2_wave =</span> <span class="dv">2</span>, </span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>                                           <span class="fu">get_mw</span>(Survey, <span class="dv">2</span>, <span class="dv">2</span>, <span class="st">&quot;design&quot;</span>)),</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>                                     <span class="fu">cbind</span>(<span class="at">phase2_wave =</span> <span class="dv">3</span>, </span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>                                           <span class="fu">get_mw</span>(Survey, <span class="dv">2</span>, <span class="dv">3</span>, <span class="st">&quot;design&quot;</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">n_to_sample =</span> dplyr<span class="sc">::</span><span class="fu">coalesce</span>(n_to_sample, stratum_size),</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>                <span class="at">nsample_prior =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(nsample_prior), </span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>                                       <span class="dv">0</span> , nsample_prior))</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="do">###</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="do">### Now add three columns to design: prob of two obs being sampled in a given</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="do">### wave, prob of neither being sampled in given wave, or prob of only (specific) </span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="do">### one being sampled in given wave</span></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>design_all_waves <span class="ot">&lt;-</span> design_all_waves <span class="sc">|&gt;</span></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">both_pp =</span> n_to_sample<span class="sc">/</span>(npop <span class="sc">-</span> nsample_prior)<span class="sc">*</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>                  (n_to_sample<span class="dv">-1</span>)<span class="sc">/</span>(npop <span class="sc">-</span> nsample_prior <span class="sc">-</span> <span class="dv">1</span>), <span class="co">#n/N*(n-1)/(N-1)</span></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a>                <span class="at">onlyone_pp =</span> n_to_sample<span class="sc">/</span>(npop <span class="sc">-</span> nsample_prior)<span class="sc">*</span></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a>                  (npop<span class="sc">-</span> nsample_prior<span class="sc">-</span> n_to_sample)<span class="sc">/</span>(npop <span class="sc">-</span> nsample_prior <span class="sc">-</span> <span class="dv">1</span>),</span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a>                <span class="at">neither_pp =</span> </span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a>                  (npop<span class="sc">-</span> nsample_prior<span class="sc">-</span> n_to_sample)<span class="sc">/</span>(npop <span class="sc">-</span> nsample_prior)<span class="sc">*</span></span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a>                  (npop<span class="sc">-</span> nsample_prior<span class="sc">-</span> n_to_sample<span class="dv">-1</span>)<span class="sc">/</span>(npop <span class="sc">-</span> nsample_prior <span class="sc">-</span> <span class="dv">1</span>),</span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a>                <span class="at">single_prob =</span> n_to_sample<span class="sc">/</span>(npop <span class="sc">-</span> nsample_prior)) </span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a></span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a><span class="do">### One row for each stratum</span></span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a>design_all_waves_wide <span class="ot">&lt;-</span> design_all_waves <span class="sc">%&gt;%</span></span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(phase2_wave, strata, both_pp, onlyone_pp, neither_pp, single_prob) <span class="sc">%&gt;%</span></span>
+<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(<span class="at">names_from =</span> phase2_wave, <span class="at">values_from =</span> <span class="fu">c</span>(both_pp, onlyone_pp,</span>
+<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a>                                                               neither_pp, single_prob))</span>
+<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a></span>
+<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a><span class="do">### Compute pairwise probability of inclusion and variance contribution</span></span>
+<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a><span class="do">### for each pair of Phase 2 samples</span></span>
+<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a>phase2_ids <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(survey_data, sampled_phase2 <span class="sc">==</span> <span class="dv">1</span>)<span class="sc">$</span>id</span>
+<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a>pairwise_df <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="st">&quot;id1&quot;</span> <span class="ot">=</span> phase2_ids, <span class="st">&quot;id2&quot;</span> <span class="ot">=</span> phase2_ids) <span class="sc">%&gt;%</span></span>
+<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(dplyr<span class="sc">::</span><span class="fu">select</span>(survey_data, id, <span class="st">&quot;Species1&quot;</span> <span class="ot">=</span> Species,</span>
+<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a>                                 <span class="st">&quot;wave1&quot;</span> <span class="ot">=</span> wave,</span>
+<span id="cb8-38"><a href="#cb8-38" tabindex="-1"></a>                                 <span class="st">&quot;denom1&quot;</span> <span class="ot">=</span> denom,</span>
+<span id="cb8-39"><a href="#cb8-39" tabindex="-1"></a>                                 <span class="st">&quot;Petal.Length1&quot;</span> <span class="ot">=</span> Petal.Length),</span>
+<span id="cb8-40"><a href="#cb8-40" tabindex="-1"></a>                   <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;id1&quot;</span> <span class="ot">=</span> <span class="st">&quot;id&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb8-41"><a href="#cb8-41" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(dplyr<span class="sc">::</span><span class="fu">select</span>(survey_data, id, <span class="st">&quot;Species2&quot;</span> <span class="ot">=</span> Species,</span>
+<span id="cb8-42"><a href="#cb8-42" tabindex="-1"></a>                                 <span class="st">&quot;wave2&quot;</span> <span class="ot">=</span> wave,</span>
+<span id="cb8-43"><a href="#cb8-43" tabindex="-1"></a>                                 <span class="st">&quot;denom2&quot;</span> <span class="ot">=</span> denom,</span>
+<span id="cb8-44"><a href="#cb8-44" tabindex="-1"></a>                                 <span class="st">&quot;Petal.Length2&quot;</span> <span class="ot">=</span> Petal.Length),</span>
+<span id="cb8-45"><a href="#cb8-45" tabindex="-1"></a>                   <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;id2&quot;</span> <span class="ot">=</span> <span class="st">&quot;id&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb8-46"><a href="#cb8-46" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(design_all_waves_wide, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;Species1&quot;</span> <span class="ot">=</span> <span class="st">&quot;strata&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb8-47"><a href="#cb8-47" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">pairwise_prob =</span></span>
+<span id="cb8-48"><a href="#cb8-48" tabindex="-1"></a>                  <span class="fu">case_when</span>(id1 <span class="sc">==</span> id2 <span class="sc">~</span> denom1,</span>
+<span id="cb8-49"><a href="#cb8-49" tabindex="-1"></a>                            Species1 <span class="sc">!=</span> Species2 <span class="sc">~</span> denom1<span class="sc">*</span>denom2,</span>
+<span id="cb8-50"><a href="#cb8-50" tabindex="-1"></a>                            wave1 <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> wave2 <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> both_pp_1,</span>
+<span id="cb8-51"><a href="#cb8-51" tabindex="-1"></a>                            wave1 <span class="sc">==</span> <span class="dv">2</span> <span class="sc">&amp;</span> wave2 <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> neither_pp_1<span class="sc">*</span>both_pp_2,</span>
+<span id="cb8-52"><a href="#cb8-52" tabindex="-1"></a>                            wave1 <span class="sc">==</span> <span class="dv">3</span> <span class="sc">&amp;</span> wave2 <span class="sc">==</span> <span class="dv">3</span> <span class="sc">~</span> neither_pp_1<span class="sc">*</span>neither_pp_2<span class="sc">*</span>both_pp_3,</span>
+<span id="cb8-53"><a href="#cb8-53" tabindex="-1"></a>                            <span class="cn">TRUE</span> <span class="sc">~</span> denom1<span class="sc">*</span>denom2),</span>
+<span id="cb8-54"><a href="#cb8-54" tabindex="-1"></a>                <span class="at">phase2_variance_contribution =</span> (<span class="dv">1</span><span class="sc">-</span>denom1<span class="sc">*</span>denom2<span class="sc">/</span>pairwise_prob)<span class="sc">*</span></span>
+<span id="cb8-55"><a href="#cb8-55" tabindex="-1"></a>                  Petal.Length1<span class="sc">*</span>Petal.Length2<span class="sc">/</span>(denom1<span class="sc">*</span>denom2)</span>
+<span id="cb8-56"><a href="#cb8-56" tabindex="-1"></a>  )</span>
+<span id="cb8-57"><a href="#cb8-57" tabindex="-1"></a></span>
+<span id="cb8-58"><a href="#cb8-58" tabindex="-1"></a>phase2_variance_est <span class="ot">&lt;-</span> <span class="fu">sum</span>(pairwise_df<span class="sc">$</span>phase2_variance_contribution)<span class="sc">/</span><span class="fu">nrow</span>(phase1_data)<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span><span class="dv">3</span><span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb8-59"><a href="#cb8-59" tabindex="-1"></a></span>
+<span id="cb8-60"><a href="#cb8-60" tabindex="-1"></a><span class="do">##</span></span>
+<span id="cb8-61"><a href="#cb8-61" tabindex="-1"></a><span class="do">## Final variance estimator combines the phase 2 variance that we just calculated with</span></span>
+<span id="cb8-62"><a href="#cb8-62" tabindex="-1"></a><span class="do">## phase 1 variance (which was already calculated in post-stratified estimator)</span></span>
+<span id="cb8-63"><a href="#cb8-63" tabindex="-1"></a></span>
+<span id="cb8-64"><a href="#cb8-64" tabindex="-1"></a><span class="do">### Extract phase 1 variance estimate from pst_est</span></span>
+<span id="cb8-65"><a href="#cb8-65" tabindex="-1"></a>phase1_variance_est <span class="ot">&lt;-</span> <span class="fu">attr</span>(<span class="fu">SE</span>(pst_est), <span class="st">&quot;phases&quot;</span>)<span class="sc">$</span>phase1[<span class="dv">1</span>]</span>
+<span id="cb8-66"><a href="#cb8-66" tabindex="-1"></a></span>
+<span id="cb8-67"><a href="#cb8-67" tabindex="-1"></a><span class="do">### Estimate variance with two-phase()</span></span>
+<span id="cb8-68"><a href="#cb8-68" tabindex="-1"></a>cp_est_ase <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(phase2_variance_est <span class="sc">+</span> phase1_variance_est)</span>
+<span id="cb8-69"><a href="#cb8-69" tabindex="-1"></a>cp_est_ase</span>
+<span id="cb8-70"><a href="#cb8-70" tabindex="-1"></a><span class="co">#&gt; [1] 0.07430421</span></span></code></pre></div>
+<p>Rather than computing the variance entirely by hand as in the final
+steps above, another option is to feed the pairwise sampling probability
+matrix to <code>survey</code>. This will lead to the same answer.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>pairwise_probs <span class="ot">&lt;-</span> <span class="fu">matrix</span>(pairwise_df<span class="sc">$</span>pairwise_prob,</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>                         <span class="at">ncol =</span> <span class="fu">length</span>(phase2_ids), <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>phase2_data <span class="ot">&lt;-</span> survey_data[survey_data<span class="sc">$</span>sampled_phase2 <span class="sc">==</span> <span class="dv">1</span>,]</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>cp_design_phase2 <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">id =</span> <span class="sc">~</span>id,</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>                              <span class="at">data =</span> phase2_data, <span class="at">probs =</span> <span class="sc">~</span>denom,</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>                              <span class="at">pps =</span> <span class="fu">ppsmat</span>(pairwise_probs))</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>phase2_variance_est <span class="ot">&lt;-</span> (<span class="fu">SE</span>(<span class="fu">svytotal</span>(<span class="sc">~</span>Petal.Length, <span class="at">design =</span> cp_design_phase2))<span class="sc">/</span><span class="fu">nrow</span>(phase1_data)<span class="sc">/</span><span class="dv">3</span>)<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>cp_est_ase <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(phase2_variance_est <span class="sc">+</span> phase1_variance_est)</span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>cp_est_ase</span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="co">#&gt;            [,1]</span></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="co">#&gt; [1,] 0.07430421</span></span></code></pre></div>
+<p>The above computation of the Phase 2 variance Equation (<span class="math inline">\(\ref{eq:eq7}\)</span>) can be a bit arduous, but
+when each stratum is sampled at least twice in each wave, the result is
+closely approximated by only a few lines in the <code>survey</code>
+package. This can be done by stratifying on both original strata and
+sampling wave in a phase 2-specific call to <code>svydesign</code>:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>phase2_data <span class="ot">&lt;-</span> survey_data[survey_data<span class="sc">$</span>sampled_phase2 <span class="sc">==</span> <span class="dv">1</span>,]</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>phase2_data<span class="sc">$</span>strata_int <span class="ot">&lt;-</span> <span class="fu">paste0</span>(phase2_data<span class="sc">$</span>Species, <span class="st">&quot;.&quot;</span>, phase2_data<span class="sc">$</span>wave)</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>svydesign_phase2 <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">data =</span> phase2_data,</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>                              <span class="at">ids =</span> <span class="sc">~</span>id,</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>                              <span class="at">strata =</span> <span class="sc">~</span>strata_int,</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>                              <span class="at">probs =</span> <span class="sc">~</span>denom)</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>estimate_approx <span class="ot">&lt;-</span> <span class="fu">svytotal</span>(<span class="sc">~</span>Petal.Length, svydesign_phase2)</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>estimate_approx[<span class="dv">1</span>]<span class="sc">/</span><span class="fu">nrow</span>(phase1_data)<span class="sc">/</span><span class="dv">3</span></span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a><span class="co">#&gt; Petal.Length </span></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="co">#&gt;     3.553907</span></span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>variance_approx <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(phase1_variance_est <span class="sc">+</span> (<span class="fu">SE</span>(estimate_approx)<span class="sc">/</span><span class="fu">nrow</span>(phase1_data)<span class="sc">/</span><span class="dv">3</span>)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a>variance_approx</span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a><span class="co">#&gt;              Petal.Length</span></span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a><span class="co">#&gt; Petal.Length   0.07500754</span></span></code></pre></div>
+</div>
+</div>
+<div id="comparing-estimation-methods-through-simulation" class="section level2">
+<h2>Comparing estimation methods through simulation</h2>
+<p>To compare the performance of these estimators, we perform two-phase,
+multiwave sampling on repeatedly simulated phase 2 datasets of the same
+form as the large <code>iris</code> dataset in the previous section. The
+tables below show the results from each estimation strategy. Here we use
+the abbreviations ASE: asymptotic standard error estimated with
+<code>survey</code>, ESE: empirical standard error, RMSE: root mean
+square error. Median over 2,000 simulations was reported for each point
+estimate and ASE. The code to run these simulations is available on
+Github <a href="https://github.com/yangjasp/optimall/blob/master/inst/simulations/poststrat_sims.R">here</a>.</p>
+<p><strong>With n = 80 per wave:</strong></p>
+<table>
+<colgroup>
+<col width="41%" />
+<col width="11%" />
+<col width="10%" />
+<col width="11%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Case</th>
+<th>True mean</th>
+<th>Estimate</th>
+<th>Coverage</th>
+<th>ASE</th>
+<th>ESE</th>
+<th>RMSE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Post-stratification</td>
+<td>3.76</td>
+<td>3.76</td>
+<td>0.953</td>
+<td>0.062</td>
+<td>0.061</td>
+<td>0.061</td>
+</tr>
+<tr class="even">
+<td>Post-stratification w/ raking</td>
+<td>3.76</td>
+<td>3.76</td>
+<td>0.957</td>
+<td>0.060</td>
+<td>0.059</td>
+<td>0.059</td>
+</tr>
+<tr class="odd">
+<td>Wave-specific probs. (eq. 6)</td>
+<td>3.76</td>
+<td>3.76</td>
+<td>0.955</td>
+<td>0.064</td>
+<td>0.064</td>
+<td>0.064</td>
+</tr>
+</tbody>
+</table>
+<p><strong>With n = 50 per wave:</strong></p>
+<table>
+<colgroup>
+<col width="41%" />
+<col width="11%" />
+<col width="10%" />
+<col width="11%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Case</th>
+<th>True mean</th>
+<th>Estimate</th>
+<th>Coverage</th>
+<th>ASE</th>
+<th>ESE</th>
+<th>RMSE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Post-stratification</td>
+<td>3.76</td>
+<td>3.76</td>
+<td>0.952</td>
+<td>0.067</td>
+<td>0.066</td>
+<td>0.066</td>
+</tr>
+<tr class="even">
+<td>Post-stratification w/ raking</td>
+<td>3.76</td>
+<td>3.76</td>
+<td>0.952</td>
+<td>0.063</td>
+<td>0.062</td>
+<td>0.062</td>
+</tr>
+<tr class="odd">
+<td>Wave-specific probs. (eq. 6)</td>
+<td>3.76</td>
+<td>3.76</td>
+<td>0.956</td>
+<td>0.070</td>
+<td>0.071</td>
+<td>0.071</td>
+</tr>
+</tbody>
+</table>
+<p><strong>With n = 20 per wave:</strong></p>
+<table>
+<colgroup>
+<col width="41%" />
+<col width="11%" />
+<col width="10%" />
+<col width="10%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Case</th>
+<th>True mean</th>
+<th>Estimate</th>
+<th>Coverage</th>
+<th>ASE</th>
+<th>ESE</th>
+<th>RMSE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Post-stratification</td>
+<td>3.76</td>
+<td>3.75</td>
+<td>0.936</td>
+<td>0.081</td>
+<td>0.085</td>
+<td>0.085</td>
+</tr>
+<tr class="even">
+<td>Post-stratification w/ raking</td>
+<td>3.76</td>
+<td>3.76</td>
+<td>0.941</td>
+<td>0.072</td>
+<td>0.075</td>
+<td>0.075</td>
+</tr>
+<tr class="odd">
+<td>Wave-specific probs. (eq. 6)</td>
+<td>3.76</td>
+<td>3.76</td>
+<td>0.944</td>
+<td>0.087</td>
+<td>0.091</td>
+<td>0.091</td>
+</tr>
+</tbody>
+</table>
+<p><!--
+  Note on these variance estimates: As $n$ gets smaller, the post-stratified ase estimate starts to underestimate the ese more - see Sarndal 7.6 and (here)[https://www.sciencedirect.com/topics/mathematics/poststratification] for an idea about why - there is a second order term that makes true post-stratified variance larger that just a stratified random sampling estimate with the same strata. This happens because the groups/strata are also random. 
+
+---></p>
+<p>## References * Breslow, N. E., Lumley, T., Ballantyne, C. M.,
+Chambless, L. E., &amp; Kulich, M. (2009). Improved Horvitz–Thompson
+estimation of model parameters from two-phase stratified samples:
+applications in epidemiology. Statistics in biosciences, 1, 32-49. *
+Chen, T., &amp; Lumley, T. (2022). Optimal sampling for design‐based
+estimators of regression models. Statistics in medicine, 41(8),
+1482-1497. * Holt, D., &amp; Smith, T. F. (1979). Post stratification.
+Journal of the Royal Statistical Society Series A: Statistics in
+Society, 142(1), 33-46. * Lumley, T., Shaw, P. A., &amp; Dai, J. Y.
+(2011). Connections between survey calibration estimators and
+semiparametric models for incomplete data. International Statistical
+Review, 79(2), 200-220. * McIsaac MA, Cook RJ. Adaptive sampling in
+two‐phase designs: a biomarker study for progression in arthritis.
+Statistics in Medicine. 2015 Sep 20;34(21):2899-912. * Särndal CE,
+Swensson B, Wretman J (2003). Model Assisted Survey Sampling. Springer-
+Verlag Science &amp; Business Media * Shepherd BE, Han K, Chen T, Bian
+A, Pugh S, Duda S, Lumley T, Heerman WJ, Shaw PA (2023). “Multiwave
+validation sampling for error-prone electronic health records.”
+Biometrics, 79(3), 2649–2663. <a href="doi:10.1111/biom.13713" class="uri">doi:10.1111/biom.13713</a>. * Valliant R (1993).
+“Poststratification and conditional variance estimation.” Journal of the
+American Statistical Association, 88(421), 89–96. * Wright, T. A simple
+method of exact optimal sample allocation under stratification with any
+mixed constraint patterns.2014; Statistics, 07.</p>
+</div>
+<div id="appendix" class="section level2">
+<h2>Appendix</h2>
+<p>The code to generate the example <code>iris</code> dataset with
+<code>optimall</code> is provided below:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="do">#####</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="do">## Generate data</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="do">#####</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rmultinom</span>(<span class="dv">1</span>, <span class="dv">1000</span>, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>)))</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>col1 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&quot;setosa&quot;</span>, <span class="at">times =</span> n[<span class="dv">1</span>]),</span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>          <span class="fu">rep</span>(<span class="st">&quot;versicolor&quot;</span>, <span class="at">times =</span> n[<span class="dv">2</span>]),</span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>          <span class="fu">rep</span>(<span class="st">&quot;virginica&quot;</span>, <span class="at">times =</span> n[<span class="dv">3</span>]))</span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>pl <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rnorm</span>(n[<span class="dv">1</span>], <span class="fl">1.462</span>, <span class="fl">0.432</span>),</span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a>        <span class="fu">rnorm</span>(n[<span class="dv">2</span>], <span class="fl">4.260</span>, <span class="fl">0.470</span>),</span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>        <span class="fu">rnorm</span>(n[<span class="dv">3</span>], <span class="fl">5.552</span>, <span class="fl">0.552</span>))</span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a>sl <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rnorm</span>(n[<span class="dv">1</span>], pl[<span class="dv">1</span><span class="sc">:</span>n[<span class="dv">1</span>]] <span class="sc">*</span> <span class="fl">3.35</span>, <span class="fl">0.341</span>),</span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a>        <span class="fu">rnorm</span>(n[<span class="dv">2</span>], pl[(n[<span class="dv">1</span>]<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(n[<span class="dv">1</span>]<span class="sc">+</span>n[<span class="dv">2</span>])] <span class="sc">*</span> <span class="fl">1.32</span>, <span class="fl">0.366</span>),</span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a>        <span class="fu">rnorm</span>(n[<span class="dv">3</span>],  pl[(n[<span class="dv">2</span>]<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span><span class="dv">1000</span>] <span class="sc">*</span> <span class="fl">1.14</span>, <span class="fl">0.302</span>))</span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a>full_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="st">&quot;id&quot;</span> <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>,</span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a>                        <span class="st">&quot;Species&quot;</span> <span class="ot">=</span> <span class="fu">as.factor</span>(col1),</span>
+<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a>                        <span class="st">&quot;Sepal.Length&quot;</span> <span class="ot">=</span> sl,</span>
+<span id="cb11-18"><a href="#cb11-18" tabindex="-1"></a>                        <span class="st">&quot;Petal.Length&quot;</span> <span class="ot">=</span> pl)</span>
+<span id="cb11-19"><a href="#cb11-19" tabindex="-1"></a>phase1_data <span class="ot">&lt;-</span> full_data[,<span class="sc">-</span><span class="dv">4</span>]</span>
+<span id="cb11-20"><a href="#cb11-20" tabindex="-1"></a></span>
+<span id="cb11-21"><a href="#cb11-21" tabindex="-1"></a><span class="do">####</span></span>
+<span id="cb11-22"><a href="#cb11-22" tabindex="-1"></a><span class="do">## Multiwave object setup</span></span>
+<span id="cb11-23"><a href="#cb11-23" tabindex="-1"></a><span class="do">####</span></span>
+<span id="cb11-24"><a href="#cb11-24" tabindex="-1"></a></span>
+<span id="cb11-25"><a href="#cb11-25" tabindex="-1"></a>Survey <span class="ot">&lt;-</span> <span class="fu">multiwave</span>(<span class="at">phases =</span> <span class="dv">2</span>, <span class="at">waves =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>),</span>
+<span id="cb11-26"><a href="#cb11-26" tabindex="-1"></a>                    <span class="at">phase1 =</span> phase1_data)</span>
+<span id="cb11-27"><a href="#cb11-27" tabindex="-1"></a></span>
+<span id="cb11-28"><a href="#cb11-28" tabindex="-1"></a><span class="fu">set_mw</span>(Survey, <span class="at">phase =</span> <span class="dv">2</span>, <span class="at">slot =</span> <span class="st">&quot;metadata&quot;</span>) <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">id =</span> <span class="st">&quot;id&quot;</span>,</span>
+<span id="cb11-29"><a href="#cb11-29" tabindex="-1"></a>                                                     <span class="at">strata =</span> <span class="st">&quot;Species&quot;</span>,</span>
+<span id="cb11-30"><a href="#cb11-30" tabindex="-1"></a>                                                     <span class="at">design_strata =</span> <span class="st">&quot;strata&quot;</span>,</span>
+<span id="cb11-31"><a href="#cb11-31" tabindex="-1"></a>                                                     <span class="at">include_probs =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb11-32"><a href="#cb11-32" tabindex="-1"></a></span>
+<span id="cb11-33"><a href="#cb11-33" tabindex="-1"></a><span class="do">####</span></span>
+<span id="cb11-34"><a href="#cb11-34" tabindex="-1"></a><span class="do">## Wave 1</span></span>
+<span id="cb11-35"><a href="#cb11-35" tabindex="-1"></a><span class="do">####</span></span>
+<span id="cb11-36"><a href="#cb11-36" tabindex="-1"></a></span>
+<span id="cb11-37"><a href="#cb11-37" tabindex="-1"></a><span class="do">### Allocation: X-allocate with Phase 1 sepal length</span></span>
+<span id="cb11-38"><a href="#cb11-38" tabindex="-1"></a>Survey <span class="ot">&lt;-</span> <span class="fu">apply_multiwave</span>(Survey, <span class="at">phase =</span> <span class="dv">2</span>, <span class="at">wave =</span> <span class="dv">1</span>,</span>
+<span id="cb11-39"><a href="#cb11-39" tabindex="-1"></a>                          <span class="at">fun =</span> <span class="st">&quot;optimum_allocation&quot;</span>,</span>
+<span id="cb11-40"><a href="#cb11-40" tabindex="-1"></a>                          <span class="at">y =</span> <span class="st">&quot;Sepal.Length&quot;</span>,</span>
+<span id="cb11-41"><a href="#cb11-41" tabindex="-1"></a>                          <span class="at">nsample =</span> <span class="dv">50</span>, <span class="at">method =</span> <span class="st">&quot;Neyman&quot;</span>)</span>
+<span id="cb11-42"><a href="#cb11-42" tabindex="-1"></a></span>
+<span id="cb11-43"><a href="#cb11-43" tabindex="-1"></a><span class="co"># get_mw(Survey, phase = 2, wave = 1, slot =&quot;design&quot;)</span></span>
+<span id="cb11-44"><a href="#cb11-44" tabindex="-1"></a></span>
+<span id="cb11-45"><a href="#cb11-45" tabindex="-1"></a><span class="do">### Select samples </span></span>
+<span id="cb11-46"><a href="#cb11-46" tabindex="-1"></a>Survey <span class="ot">&lt;-</span> <span class="fu">apply_multiwave</span>(Survey, <span class="at">phase =</span> <span class="dv">2</span>, <span class="at">wave =</span> <span class="dv">1</span>,</span>
+<span id="cb11-47"><a href="#cb11-47" tabindex="-1"></a>                          <span class="at">fun =</span> <span class="st">&quot;sample_strata&quot;</span>, </span>
+<span id="cb11-48"><a href="#cb11-48" tabindex="-1"></a>                          <span class="at">n_allocated =</span> <span class="st">&quot;stratum_size&quot;</span>,</span>
+<span id="cb11-49"><a href="#cb11-49" tabindex="-1"></a>                          <span class="at">probs =</span> <span class="sc">~</span>stratum_size<span class="sc">/</span>npop)</span>
+<span id="cb11-50"><a href="#cb11-50" tabindex="-1"></a></span>
+<span id="cb11-51"><a href="#cb11-51" tabindex="-1"></a><span class="do">### &quot;Collect&quot; data</span></span>
+<span id="cb11-52"><a href="#cb11-52" tabindex="-1"></a><span class="fu">set_mw</span>(Survey, <span class="at">phase =</span> <span class="dv">2</span>, <span class="at">wave =</span> <span class="dv">1</span>, <span class="at">slot =</span> <span class="st">&quot;sampled_data&quot;</span>) <span class="ot">&lt;-</span> </span>
+<span id="cb11-53"><a href="#cb11-53" tabindex="-1"></a>  full_data[full_data<span class="sc">$</span>id <span class="sc">%in%</span> <span class="fu">get_mw</span>(Survey, <span class="at">phase =</span> <span class="dv">2</span>, <span class="at">wave =</span> <span class="dv">1</span>,</span>
+<span id="cb11-54"><a href="#cb11-54" tabindex="-1"></a>                                     <span class="at">slot =</span> <span class="st">&quot;samples&quot;</span>)<span class="sc">$</span>ids, </span>
+<span id="cb11-55"><a href="#cb11-55" tabindex="-1"></a>            <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;Petal.Length&quot;</span>)]</span>
+<span id="cb11-56"><a href="#cb11-56" tabindex="-1"></a></span>
+<span id="cb11-57"><a href="#cb11-57" tabindex="-1"></a>Survey <span class="ot">&lt;-</span> <span class="fu">merge_samples</span>(Survey, <span class="at">phase =</span> <span class="dv">2</span>, <span class="at">wave =</span> <span class="dv">1</span>)</span>
+<span id="cb11-58"><a href="#cb11-58" tabindex="-1"></a></span>
+<span id="cb11-59"><a href="#cb11-59" tabindex="-1"></a><span class="do">####</span></span>
+<span id="cb11-60"><a href="#cb11-60" tabindex="-1"></a><span class="do">## Wave 2</span></span>
+<span id="cb11-61"><a href="#cb11-61" tabindex="-1"></a><span class="do">####</span></span>
+<span id="cb11-62"><a href="#cb11-62" tabindex="-1"></a></span>
+<span id="cb11-63"><a href="#cb11-63" tabindex="-1"></a><span class="do">### Allocation: Neyman allocation with already-collected phase 2 data.</span></span>
+<span id="cb11-64"><a href="#cb11-64" tabindex="-1"></a>Survey <span class="ot">&lt;-</span> <span class="fu">apply_multiwave</span>(Survey, <span class="at">phase =</span> <span class="dv">2</span>, <span class="at">wave =</span> <span class="dv">2</span>,</span>
+<span id="cb11-65"><a href="#cb11-65" tabindex="-1"></a>                          <span class="at">fun =</span> <span class="st">&quot;allocate_wave&quot;</span>,</span>
+<span id="cb11-66"><a href="#cb11-66" tabindex="-1"></a>                          <span class="at">y =</span> <span class="st">&quot;Petal.Length&quot;</span>,</span>
+<span id="cb11-67"><a href="#cb11-67" tabindex="-1"></a>                          <span class="at">nsample =</span> <span class="dv">50</span>, <span class="at">allocation_method =</span> <span class="st">&quot;Neyman&quot;</span>,</span>
+<span id="cb11-68"><a href="#cb11-68" tabindex="-1"></a>                          <span class="at">already_sampled =</span> <span class="st">&quot;sampled_phase2&quot;</span>)</span>
+<span id="cb11-69"><a href="#cb11-69" tabindex="-1"></a></span>
+<span id="cb11-70"><a href="#cb11-70" tabindex="-1"></a><span class="co"># get_mw(phase = 2, wave = 2, slot = &quot;design&quot;)</span></span>
+<span id="cb11-71"><a href="#cb11-71" tabindex="-1"></a></span>
+<span id="cb11-72"><a href="#cb11-72" tabindex="-1"></a><span class="do">### Select samples </span></span>
+<span id="cb11-73"><a href="#cb11-73" tabindex="-1"></a>Survey <span class="ot">&lt;-</span> <span class="fu">apply_multiwave</span>(Survey, <span class="at">phase =</span> <span class="dv">2</span>, <span class="at">wave =</span> <span class="dv">2</span>,</span>
+<span id="cb11-74"><a href="#cb11-74" tabindex="-1"></a>                          <span class="at">fun =</span> <span class="st">&quot;sample_strata&quot;</span>, </span>
+<span id="cb11-75"><a href="#cb11-75" tabindex="-1"></a>                          <span class="at">n_allocated =</span> <span class="st">&quot;n_to_sample&quot;</span>,</span>
+<span id="cb11-76"><a href="#cb11-76" tabindex="-1"></a>                          <span class="at">probs =</span> <span class="sc">~</span>n_to_sample<span class="sc">/</span>(npop <span class="sc">-</span> nsample_prior),</span>
+<span id="cb11-77"><a href="#cb11-77" tabindex="-1"></a>                          <span class="at">already_sampled =</span> <span class="st">&quot;sampled_phase2&quot;</span>)</span>
+<span id="cb11-78"><a href="#cb11-78" tabindex="-1"></a></span>
+<span id="cb11-79"><a href="#cb11-79" tabindex="-1"></a><span class="do">### &quot;Collect&quot; data</span></span>
+<span id="cb11-80"><a href="#cb11-80" tabindex="-1"></a><span class="fu">set_mw</span>(Survey, <span class="at">phase =</span> <span class="dv">2</span>, <span class="at">wave =</span> <span class="dv">2</span>, <span class="at">slot =</span> <span class="st">&quot;sampled_data&quot;</span>) <span class="ot">&lt;-</span> </span>
+<span id="cb11-81"><a href="#cb11-81" tabindex="-1"></a>  full_data[full_data<span class="sc">$</span>id <span class="sc">%in%</span> <span class="fu">get_mw</span>(Survey, <span class="at">phase =</span> <span class="dv">2</span>, <span class="at">wave =</span> <span class="dv">2</span>,</span>
+<span id="cb11-82"><a href="#cb11-82" tabindex="-1"></a>                                     <span class="at">slot =</span> <span class="st">&quot;samples&quot;</span>)<span class="sc">$</span>ids, </span>
+<span id="cb11-83"><a href="#cb11-83" tabindex="-1"></a>            <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;Petal.Length&quot;</span>)]</span>
+<span id="cb11-84"><a href="#cb11-84" tabindex="-1"></a>Survey <span class="ot">&lt;-</span> <span class="fu">merge_samples</span>(Survey, <span class="at">phase =</span> <span class="dv">2</span>, <span class="at">wave =</span> <span class="dv">2</span>)</span>
+<span id="cb11-85"><a href="#cb11-85" tabindex="-1"></a></span>
+<span id="cb11-86"><a href="#cb11-86" tabindex="-1"></a><span class="do">####</span></span>
+<span id="cb11-87"><a href="#cb11-87" tabindex="-1"></a><span class="do">## Wave 3</span></span>
+<span id="cb11-88"><a href="#cb11-88" tabindex="-1"></a><span class="do">####</span></span>
+<span id="cb11-89"><a href="#cb11-89" tabindex="-1"></a></span>
+<span id="cb11-90"><a href="#cb11-90" tabindex="-1"></a><span class="do">### Allocation: Neyman allocation with already-collected phase 2 data.</span></span>
+<span id="cb11-91"><a href="#cb11-91" tabindex="-1"></a>Survey <span class="ot">&lt;-</span> <span class="fu">apply_multiwave</span>(Survey, <span class="at">phase =</span> <span class="dv">2</span>, <span class="at">wave =</span> <span class="dv">3</span>,</span>
+<span id="cb11-92"><a href="#cb11-92" tabindex="-1"></a>                          <span class="at">fun =</span> <span class="st">&quot;allocate_wave&quot;</span>,</span>
+<span id="cb11-93"><a href="#cb11-93" tabindex="-1"></a>                          <span class="at">y =</span> <span class="st">&quot;Petal.Length&quot;</span>,</span>
+<span id="cb11-94"><a href="#cb11-94" tabindex="-1"></a>                          <span class="at">nsample =</span> <span class="dv">50</span>, <span class="at">allocation_method =</span> <span class="st">&quot;Neyman&quot;</span>,</span>
+<span id="cb11-95"><a href="#cb11-95" tabindex="-1"></a>                          <span class="at">already_sampled =</span> <span class="st">&quot;sampled_phase2&quot;</span>)</span>
+<span id="cb11-96"><a href="#cb11-96" tabindex="-1"></a></span>
+<span id="cb11-97"><a href="#cb11-97" tabindex="-1"></a><span class="co"># get_mw(phase = 2, wave = 3, slot = &quot;design&quot;)</span></span>
+<span id="cb11-98"><a href="#cb11-98" tabindex="-1"></a></span>
+<span id="cb11-99"><a href="#cb11-99" tabindex="-1"></a><span class="do">### Select samples </span></span>
+<span id="cb11-100"><a href="#cb11-100" tabindex="-1"></a>Survey <span class="ot">&lt;-</span> <span class="fu">apply_multiwave</span>(Survey, <span class="at">phase =</span> <span class="dv">2</span>, <span class="at">wave =</span> <span class="dv">3</span>,</span>
+<span id="cb11-101"><a href="#cb11-101" tabindex="-1"></a>                          <span class="at">fun =</span> <span class="st">&quot;sample_strata&quot;</span>, </span>
+<span id="cb11-102"><a href="#cb11-102" tabindex="-1"></a>                          <span class="at">n_allocated =</span> <span class="st">&quot;n_to_sample&quot;</span>,</span>
+<span id="cb11-103"><a href="#cb11-103" tabindex="-1"></a>                          <span class="at">probs =</span> <span class="sc">~</span>n_to_sample<span class="sc">/</span>(npop <span class="sc">-</span> nsample_prior),</span>
+<span id="cb11-104"><a href="#cb11-104" tabindex="-1"></a>                          <span class="at">already_sampled =</span> <span class="st">&quot;sampled_phase2&quot;</span>)</span>
+<span id="cb11-105"><a href="#cb11-105" tabindex="-1"></a></span>
+<span id="cb11-106"><a href="#cb11-106" tabindex="-1"></a><span class="do">### &quot;Collect&quot; data</span></span>
+<span id="cb11-107"><a href="#cb11-107" tabindex="-1"></a><span class="fu">set_mw</span>(Survey, <span class="at">phase =</span> <span class="dv">2</span>, <span class="at">wave =</span> <span class="dv">3</span>, <span class="at">slot =</span> <span class="st">&quot;sampled_data&quot;</span>) <span class="ot">&lt;-</span> </span>
+<span id="cb11-108"><a href="#cb11-108" tabindex="-1"></a>  full_data[full_data<span class="sc">$</span>id <span class="sc">%in%</span> <span class="fu">get_mw</span>(Survey, <span class="at">phase =</span> <span class="dv">2</span>, <span class="at">wave =</span> <span class="dv">3</span>,</span>
+<span id="cb11-109"><a href="#cb11-109" tabindex="-1"></a>                                     <span class="at">slot =</span> <span class="st">&quot;samples&quot;</span>)<span class="sc">$</span>ids, </span>
+<span id="cb11-110"><a href="#cb11-110" tabindex="-1"></a>            <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;Petal.Length&quot;</span>)]</span>
+<span id="cb11-111"><a href="#cb11-111" tabindex="-1"></a>Survey <span class="ot">&lt;-</span> <span class="fu">merge_samples</span>(Survey, <span class="at">phase =</span> <span class="dv">2</span>, <span class="at">wave =</span> <span class="dv">3</span>)</span>
+<span id="cb11-112"><a href="#cb11-112" tabindex="-1"></a></span>
+<span id="cb11-113"><a href="#cb11-113" tabindex="-1"></a><span class="do">### Final dataset for analysis</span></span>
+<span id="cb11-114"><a href="#cb11-114" tabindex="-1"></a>survey_data <span class="ot">&lt;-</span> <span class="fu">get_mw</span>(Survey, <span class="at">phase =</span> <span class="dv">2</span>, <span class="at">wave =</span> <span class="dv">3</span>, <span class="at">slot =</span> <span class="st">&quot;data&quot;</span>)</span>
+<span id="cb11-115"><a href="#cb11-115" tabindex="-1"></a></span>
+<span id="cb11-116"><a href="#cb11-116" tabindex="-1"></a><span class="do">### Clean up for printing</span></span>
+<span id="cb11-117"><a href="#cb11-117" tabindex="-1"></a>survey_data <span class="ot">&lt;-</span> survey_data[,<span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;Species&quot;</span>, <span class="st">&quot;Sepal.Length&quot;</span>, </span>
+<span id="cb11-118"><a href="#cb11-118" tabindex="-1"></a>                              <span class="st">&quot;Petal.Length&quot;</span>, <span class="st">&quot;sampled_phase2&quot;</span>,</span>
+<span id="cb11-119"><a href="#cb11-119" tabindex="-1"></a>                              <span class="st">&quot;sampled_wave2.1&quot;</span>, <span class="st">&quot;sampled_wave2.2&quot;</span>,</span>
+<span id="cb11-120"><a href="#cb11-120" tabindex="-1"></a>                              <span class="st">&quot;sampled_wave2.3&quot;</span>, <span class="st">&quot;sampling_prob&quot;</span>)]</span>
+<span id="cb11-121"><a href="#cb11-121" tabindex="-1"></a>survey_data <span class="ot">&lt;-</span> survey_data[<span class="fu">order</span>(<span class="sc">-</span>survey_data<span class="sc">$</span>sampled_phase2, </span>
+<span id="cb11-122"><a href="#cb11-122" tabindex="-1"></a>                                 survey_data<span class="sc">$</span>id), , drop <span class="ot">=</span> <span class="cn">FALSE</span>] <span class="sc">%&gt;%</span></span>
+<span id="cb11-123"><a href="#cb11-123" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">wave =</span> <span class="fu">case_when</span>(sampled_wave2<span class="fl">.1</span> <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb11-124"><a href="#cb11-124" tabindex="-1"></a>                                 sampled_wave2<span class="fl">.2</span> <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">2</span>,</span>
+<span id="cb11-125"><a href="#cb11-125" tabindex="-1"></a>                                 sampled_wave2<span class="fl">.3</span> <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">3</span>))</span></code></pre></div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
